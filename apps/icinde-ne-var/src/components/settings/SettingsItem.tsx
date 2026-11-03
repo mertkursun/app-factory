@@ -11,6 +11,8 @@ interface SettingsItemProps {
   danger?: boolean;
   showChevron?: boolean;
   rightElement?: ReactNode;
+  iconBg?: string;
+  iconColor?: string;
 }
 
 export function SettingsItem({
@@ -20,8 +22,13 @@ export function SettingsItem({
   danger = false,
   showChevron = true,
   rightElement,
+  iconBg,
+  iconColor,
 }: SettingsItemProps) {
   const { colors } = useTheme();
+
+  const tileBg = iconBg ?? (danger ? colors.dangerBg : colors.surfaceTint);
+  const tileColor = iconColor ?? (danger ? colors.dangerText : colors.primaryDeep);
 
   return (
     <Pressable
@@ -31,13 +38,8 @@ export function SettingsItem({
       style={({ pressed }) => [styles.container, { opacity: pressed ? 0.7 : 1 }]}
     >
       {/* Icon tile */}
-      <View
-        style={[
-          styles.iconTile,
-          { backgroundColor: danger ? colors.dangerBg : colors.surfaceTint },
-        ]}
-      >
-        <Icon size={16} color={danger ? colors.dangerText : colors.primaryDeep} />
+      <View style={[styles.iconTile, { backgroundColor: tileBg }]}>
+        <Icon size={16} color={tileColor} />
       </View>
 
       {/* Label */}

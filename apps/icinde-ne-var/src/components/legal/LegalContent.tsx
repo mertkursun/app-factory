@@ -1,11 +1,12 @@
 import { View, Text, ScrollView, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ArrowLeft, Clock, BookOpen } from "lucide-react-native";
-import { useTheme, typography, radius, spacing, fonts } from "@/theme/tokens";
+import { ArrowLeft } from "lucide-react-native";
+import { useTheme, radius, fonts } from "@/theme/tokens";
 import { IconButton } from "@/components/ui/IconButton";
-import { Card } from "@/components/ui/Card";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
+
+const SCREEN_PAD_X = 18;
 
 interface LegalSection {
   n: string;
@@ -21,85 +22,57 @@ interface LegalContentProps {
 }
 
 export function LegalContent({ title, sections, lastUpdated, readTime }: LegalContentProps) {
-  const { colors } = useTheme();
+  const { colors, shadow } = useTheme();
   const router = useRouter();
   const { t } = useTranslation();
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-      {/* Header */}
-      <View style={styles.header}>
-        <IconButton
-          icon={<ArrowLeft size={20} color={colors.text} />}
-          onPress={() => router.back()}
-          accessibilityLabel={t("common.back")}
-        />
-        <Text
-          style={[typography.button, styles.headerTitle, { color: colors.text, fontSize: 16 }]}
-          numberOfLines={1}
-        >
-          {title}
-        </Text>
-        <View style={styles.headerSpacer} />
-      </View>
-
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Info pill */}
-        <View style={[styles.infoPill, { backgroundColor: colors.surfaceTint }]}>
-          <View style={styles.infoPillRow}>
-            <Clock size={13} color={colors.muted} />
-            <Text style={[typography.captionSm, { color: colors.muted }]}>{lastUpdated}</Text>
+        {/* Header */}
+        <View style={styles.header}>
+          <IconButton
+            icon={<ArrowLeft size={18} color={colors.text} />}
+            onPress={() => router.back()}
+            accessibilityLabel={t("common.back")}
+          />
+          <Text style={[styles.headerTitle, { color: colors.text }]} numberOfLines={1}>
+            {title}
+          </Text>
+          <View style={styles.headerSpacer} />
+        </View>
+
+        {/* Info row: pill + read time */}
+        <View style={styles.infoRow}>
+          <View style={[styles.datePill, { backgroundColor: colors.surfaceTint }]}>
+            <Text style={[styles.datePillText, { color: colors.primaryDeep }]}>{lastUpdated}</Text>
           </View>
-          <View style={styles.infoPillDot} />
-          <View style={styles.infoPillRow}>
-            <BookOpen size={13} color={colors.muted} />
-            <Text style={[typography.captionSm, { color: colors.muted }]}>{readTime}</Text>
-          </View>
+          <Text style={[styles.readTime, { color: colors.muted }]}>{readTime}</Text>
         </View>
 
         {/* Sections card */}
-        <Card style={styles.sectionsCard}>
+        <View
+          style={[
+            styles.sectionsCard,
+            {
+              backgroundColor: colors.surface,
+              borderColor: colors.border,
+            },
+            shadow.low,
+          ]}
+        >
           {sections.map((section, index) => (
             <View key={section.n}>
               <View style={styles.sectionItem}>
-                <Text
-                  style={[
-                    {
-                      fontFamily: fonts.display800,
-                      fontSize: 12,
-                      lineHeight: 12,
-                      color: colors.primary,
-                      marginBottom: 8,
-                    },
-                  ]}
-                >
-                  {section.n}
-                </Text>
-                <Text
-                  style={[
-                    {
-                      fontFamily: fonts.body700,
-                      fontSize: 14,
-                      lineHeight: 20,
-                      color: colors.text,
-                      marginBottom: 6,
-                    },
-                  ]}
-                >
-                  {section.h}
-                </Text>
-                <Text
-                  style={{
-                    fontFamily: fonts.body400,
-                    fontSize: 12,
-                    lineHeight: 19.8,
-                    color: colors.textSecondary,
-                  }}
-                >
+                <View style={styles.sectionHeadingRow}>
+                  <Text style={[styles.sectionNumber, { color: colors.primary }]}>{section.n}</Text>
+                  <Text style={[styles.sectionTitle, { color: colors.text }]}>{section.h}</Text>
+                </View>
+                <Text style={[styles.sectionBody, { color: colors.textSecondary }]}>
                   {section.p}
                 </Text>
               </View>
@@ -108,12 +81,7 @@ export function LegalContent({ title, sections, lastUpdated, readTime }: LegalCo
               )}
             </View>
           ))}
-        </Card>
-
-        {/* Disclaimer */}
-        <Text style={[typography.captionSm, styles.disclaimer, { color: colors.muted }]}>
-          {t("legal.disclaimer")}
-        </Text>
+        </View>
 
         <View style={styles.bottomSpacer} />
       </ScrollView>
@@ -125,63 +93,89 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingHorizontal: SCREEN_PAD_X,
+    paddingBottom: 28,
+  },
   header: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: spacing.screenX,
-    paddingVertical: 12,
-    gap: 12,
+    justifyContent: "space-between",
+    paddingVertical: 8,
   },
   headerTitle: {
+    fontFamily: fonts.display700,
+    fontSize: 16,
+    lineHeight: 16,
+    letterSpacing: -0.3,
+    textAlign: "center",
     flex: 1,
   },
   headerSpacer: {
     width: 40,
   },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: spacing.screenX,
-    paddingTop: 8,
-  },
-  infoPill: {
+  infoRow: {
     flexDirection: "row",
     alignItems: "center",
-    alignSelf: "flex-start",
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: radius.pill,
     gap: 8,
-    marginBottom: 20,
+    marginTop: 16,
   },
-  infoPillRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 5,
+  datePill: {
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: radius.pill,
   },
-  infoPillDot: {
-    width: 3,
-    height: 3,
-    borderRadius: 1.5,
-    backgroundColor: "#B0ADA8",
+  datePillText: {
+    fontFamily: fonts.body700,
+    fontSize: 11,
+    lineHeight: 11,
+  },
+  readTime: {
+    fontFamily: fonts.body500,
+    fontSize: 11,
+    lineHeight: 11,
   },
   sectionsCard: {
-    padding: 20,
+    marginTop: 16,
+    borderRadius: 22,
+    borderWidth: 1,
+    paddingHorizontal: 18,
+    paddingTop: 4,
+    paddingBottom: 10,
   },
   sectionItem: {
-    paddingVertical: 16,
+    paddingVertical: 14,
+  },
+  sectionHeadingRow: {
+    flexDirection: "row",
+    alignItems: "baseline",
+    gap: 10,
+  },
+  sectionNumber: {
+    fontFamily: fonts.display800,
+    fontSize: 12,
+    lineHeight: 12,
+  },
+  sectionTitle: {
+    fontFamily: fonts.display700,
+    fontSize: 14,
+    lineHeight: 18.2,
+    letterSpacing: -0.2,
+    flex: 1,
+  },
+  sectionBody: {
+    fontFamily: fonts.body400,
+    fontSize: 12,
+    lineHeight: 19.8,
+    marginTop: 6,
   },
   separator: {
     height: 1,
   },
-  disclaimer: {
-    textAlign: "center",
-    marginTop: 24,
-    marginBottom: 8,
-    fontStyle: "italic",
-  },
   bottomSpacer: {
-    height: 32,
+    height: 28,
   },
 });
