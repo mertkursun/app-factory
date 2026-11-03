@@ -28,6 +28,7 @@ export async function getAnalysisByBarcode(barcode: string): Promise<AnalysisRow
 export interface AnalyzeRequest {
   barcode?: string;
   photoUri?: string;
+  ingredients?: string[];
   audiences: string[];
 }
 

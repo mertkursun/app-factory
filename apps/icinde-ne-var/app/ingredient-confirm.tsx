@@ -11,9 +11,14 @@ import {
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ArrowLeft, Plus, Check } from "lucide-react-native";
+import { ArrowLeft, Plus, Check, AlertTriangle } from "lucide-react-native";
 import { Image } from "expo-image";
 import { IngredientList } from "@/components/ingredients/IngredientList";
+import { useAuthStore } from "@/stores/authStore";
+import { useAnalyzeProduct } from "@/hooks/useAnalysis";
+import { useAddToHistory } from "@/hooks/useHistory";
+import { useProfile } from "@/hooks/useProfile";
+import type { SkorRenk } from "@/lib/schemas";
 
 const ICON_SIZE = 24;
 const SMALL_ICON_SIZE = 20;
@@ -25,6 +30,11 @@ const THUMBNAIL_HEIGHT = 80;
 
 export default function IngredientConfirmScreen() {
   const router = useRouter();
+  const user = useAuthStore((s) => s.user);
+  const { data: profile } = useProfile(user?.id);
+  const analyzeMutation = useAnalyzeProduct();
+  const addHistoryMutation = useAddToHistory();
+
   const { photoUri, ingredients: rawIngredients } = useLocalSearchParams<{
     photoUri: string;
     ingredients: string;
@@ -34,6 +44,7 @@ export default function IngredientConfirmScreen() {
   const [items, setItems] = useState<string[]>(initialIngredients);
   const [newItem, setNewItem] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const handleAdd = useCallback(() => {
     const trimmed = newItem.trim();
@@ -48,13 +59,41 @@ export default function IngredientConfirmScreen() {
 
   const handleConfirm = useCallback(async () => {
     if (isSubmitting || items.length === 0) return;
+    if (!user) {
+      router.push("/(auth)/login");
+      return;
+    }
+
     setIsSubmitting(true);
-    // T14'te Edge Function entegrasyonu yapilacak
-    // analyzeProduct({ photoUri, ingredients: items, audiences: [...] })
-    // eslint-disable-next-line no-console
-    console.log("Analiz baslatiliyor:", items);
-    setIsSubmitting(false);
-  }, [isSubmitting, items]);
+    setSubmitError(null);
+
+    try {
+      const audiences = profile?.audiences ?? [];
+      const result = await analyzeMutation.mutateAsync({
+        photoUri,
+        ingredients: items,
+        audiences,
+      });
+
+      // Gecmise ekle
+      addHistoryMutation.mutate({
+        user_id: user.id,
+        analiz_id: result.analysis.id,
+        barkod: result.analysis.barkod ?? undefined,
+        urun_adi: result.analysis.urun_adi ?? undefined,
+        skor: result.analysis.skor as SkorRenk,
+      });
+
+      // Sonuc ekranina yonlendir
+      router.push(`/analysis/${result.analysis.id}`);
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : "Analiz sırasında bir hata oluştu. Tekrar deneyin.";
+      setSubmitError(message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  }, [isSubmitting, items, user, profile, analyzeMutation, addHistoryMutation, photoUri, router]);
 
   const isConfirmDisabled = isSubmitting || items.length === 0;
 
@@ -106,6 +145,14 @@ export default function IngredientConfirmScreen() {
               "Fotoğraftan çıkarılan maddeler aşağıda. Eksik veya yanlış olanları düzenleyebilirsiniz."
             }
           </Text>
+
+          {/* Hata mesaji */}
+          {submitError ? (
+            <View className="bg-danger-light rounded-lg p-3 mb-4 flex-row items-start gap-2">
+              <AlertTriangle size={SMALL_ICON_SIZE} color="#991B1B" />
+              <Text className="text-sm font-body text-danger-text flex-1">{submitError}</Text>
+            </View>
+          ) : null}
 
           {/* Madde listesi */}
           <IngredientList items={items} onRemove={handleRemove} disabled={isSubmitting} />
