@@ -67,7 +67,7 @@
   Kabul: Pro kullanıcı için `isPro: true` döner; ücretsiz kullanıcı için doğru `remaining` sayısı döner
   Dosyalar: `supabase/functions/check-quota/index.ts`
 
-- [ ] T13 — Analysis Result ekranı: skor dairesi (yeşil/sarı/kırmızı), profil uyarıları (kırmızı banner), Claude açıklaması, madde detayları (accordion), bilinmeyenler kutusu, 'tıbbi tavsiye değildir' notu, geçmişe kaydet
+- [x] T13 — Analysis Result ekranı: skor dairesi (yeşil/sarı/kırmızı), profil uyarıları (kırmızı banner), Claude açıklaması, madde detayları (accordion), bilinmeyenler kutusu, 'tıbbi tavsiye değildir' notu, geçmişe kaydet
   Kabul: Analiz verisi doğru render edilir, profil uyarıları en üstte gösterilir, accordion açılıp kapanır, geçmişe kayıt eklenir
   Dosyalar: `app/analysis/[id].tsx`, `src/components/analysis/ScoreCircle.tsx`, `src/components/analysis/ProfileWarnings.tsx`, `src/components/analysis/ExplanationCard.tsx`, `src/components/analysis/IngredientDetails.tsx`, `src/components/analysis/UnknownIngredients.tsx`, `src/components/analysis/DisclaimerNote.tsx`
 
