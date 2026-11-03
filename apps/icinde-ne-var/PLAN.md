@@ -27,7 +27,7 @@
   Kabul: Auth store testleri geçer, giriş yapılmadan korunan ekranlara erişim engellenir
   Dosyalar: `src/stores/authStore.ts`, `src/lib/auth.ts`, `src/__tests__/stores/authStore.test.ts`, `app/_layout.tsx` (güncelleme)
 
-- [ ] T05 — Login ekranı: e-posta girişi + OTP gönderme, Google Sign-In butonu (config plugin), Apple Sign-In butonu (iOS), KVKK linki
+- [x] T05 — Login ekranı: e-posta girişi + OTP gönderme, Google Sign-In butonu (config plugin), Apple Sign-In butonu (iOS), KVKK linki
   Kabul: Email OTP gönderme akışı çalışır; Google/Apple butonları platform bazlı gösterilir; form validasyonu (Zod + react-hook-form) çalışır
   Dosyalar: `app/(auth)/_layout.tsx`, `app/(auth)/login.tsx`, `src/components/auth/EmailOTPForm.tsx`, `src/components/auth/GoogleSignInButton.tsx`, `src/components/auth/AppleSignInButton.tsx`
 
