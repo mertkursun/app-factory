@@ -63,7 +63,7 @@
   Kabul: Barkodlu ürün için Open Food Facts'ten veri çekilir, maddeler eşleştirilir, skor hesaplanır, açıklama üretilir; kota aşımında 402 döner; önbellekteki ürün için kota artmaz
   Dosyalar: `supabase/functions/analyze-product/index.ts`, `supabase/functions/analyze-product/steps/read.ts`, `supabase/functions/analyze-product/steps/match.ts`, `supabase/functions/analyze-product/steps/rules.ts`, `supabase/functions/analyze-product/steps/explain.ts`, `supabase/functions/analyze-product/lib/quota.ts`, `supabase/functions/analyze-product/lib/cache.ts`
 
-- [ ] T12 — Edge Function: `check-quota` — kullanıcının kalan hakkını ve Pro durumunu döndüren endpoint
+- [x] T12 — Edge Function: `check-quota` — kullanıcının kalan hakkını ve Pro durumunu döndüren endpoint
   Kabul: Pro kullanıcı için `isPro: true` döner; ücretsiz kullanıcı için doğru `remaining` sayısı döner
   Dosyalar: `supabase/functions/check-quota/index.ts`
 

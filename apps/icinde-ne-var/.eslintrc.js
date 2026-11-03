@@ -1,6 +1,7 @@
 module.exports = {
   extends: ["expo", "prettier"],
   plugins: ["prettier"],
+  ignorePatterns: ["supabase/functions/**"],
   rules: {
     "prettier/prettier": "error",
     "@typescript-eslint/no-redeclare": "off",
