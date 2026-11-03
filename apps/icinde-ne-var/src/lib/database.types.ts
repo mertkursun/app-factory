@@ -1,0 +1,194 @@
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
+
+export interface Database {
+  public: {
+    Tables: {
+      profiller: {
+        Row: {
+          id: string;
+          user_id: string;
+          audiences: string[];
+          display_name: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          audiences?: string[];
+          display_name?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          audiences?: string[];
+          display_name?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      maddeler: {
+        Row: {
+          id: string;
+          ad: string;
+          es_anlamlilar: string[];
+          kategori: "gida" | "kozmetik" | "temizlik" | "genel";
+          islev: string;
+          risk_seviyesi: "guvenli" | "dikkat" | "sakincali";
+          kaynak: string | null;
+          kitle_bayraklari: Json | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          ad: string;
+          es_anlamlilar?: string[];
+          kategori: "gida" | "kozmetik" | "temizlik" | "genel";
+          islev?: string;
+          risk_seviyesi: "guvenli" | "dikkat" | "sakincali";
+          kaynak?: string | null;
+          kitle_bayraklari?: Json | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          ad?: string;
+          es_anlamlilar?: string[];
+          kategori?: "gida" | "kozmetik" | "temizlik" | "genel";
+          islev?: string;
+          risk_seviyesi?: "guvenli" | "dikkat" | "sakincali";
+          kaynak?: string | null;
+          kitle_bayraklari?: Json | null;
+          created_at?: string;
+        };
+      };
+      urun_analizleri: {
+        Row: {
+          id: string;
+          barkod: string | null;
+          urun_adi: string | null;
+          kategori: "gida" | "kozmetik" | "temizlik" | "genel";
+          skor: "yesil" | "sari" | "kirmizi";
+          aciklama: string;
+          maddeler: Json;
+          profil_uyarilari: Json;
+          bilinmeyenler: string[];
+          kaynak_url: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          barkod?: string | null;
+          urun_adi?: string | null;
+          kategori: "gida" | "kozmetik" | "temizlik" | "genel";
+          skor: "yesil" | "sari" | "kirmizi";
+          aciklama: string;
+          maddeler: Json;
+          profil_uyarilari: Json;
+          bilinmeyenler?: string[];
+          kaynak_url?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          barkod?: string | null;
+          urun_adi?: string | null;
+          kategori?: "gida" | "kozmetik" | "temizlik" | "genel";
+          skor?: "yesil" | "sari" | "kirmizi";
+          aciklama?: string;
+          maddeler?: Json;
+          profil_uyarilari?: Json;
+          bilinmeyenler?: string[];
+          kaynak_url?: string | null;
+          created_at?: string;
+        };
+      };
+      tarama_gecmisi: {
+        Row: {
+          id: string;
+          user_id: string;
+          analiz_id: string;
+          barkod: string | null;
+          urun_adi: string | null;
+          skor: "yesil" | "sari" | "kirmizi";
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          analiz_id: string;
+          barkod?: string | null;
+          urun_adi?: string | null;
+          skor: "yesil" | "sari" | "kirmizi";
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          analiz_id?: string;
+          barkod?: string | null;
+          urun_adi?: string | null;
+          skor?: "yesil" | "sari" | "kirmizi";
+          created_at?: string;
+        };
+      };
+      kullanim: {
+        Row: {
+          id: string;
+          user_id: string;
+          donem: string;
+          sorgu_sayisi: number;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          donem: string;
+          sorgu_sayisi?: number;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          donem?: string;
+          sorgu_sayisi?: number;
+        };
+      };
+      abonelikler: {
+        Row: {
+          id: string;
+          user_id: string;
+          durum: "aktif" | "suresi_dolmus" | "iptal_edildi" | "deneme";
+          bitis: string;
+          magaza: "app_store" | "play_store";
+          revenuecat_id: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          durum: "aktif" | "suresi_dolmus" | "iptal_edildi" | "deneme";
+          bitis: string;
+          magaza: "app_store" | "play_store";
+          revenuecat_id: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          durum?: "aktif" | "suresi_dolmus" | "iptal_edildi" | "deneme";
+          bitis?: string;
+          magaza?: "app_store" | "play_store";
+          revenuecat_id?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+    };
+    Views: Record<string, never>;
+    Functions: Record<string, never>;
+    Enums: Record<string, never>;
+  };
+}

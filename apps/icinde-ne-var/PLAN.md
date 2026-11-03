@@ -11,7 +11,7 @@
   Kabul: `npm run check` geçer, boş tab navigasyonu çalışır, NativeWind className'ler render edilir
   Dosyalar: `app/_layout.tsx`, `app/(tabs)/_layout.tsx`, `app/(tabs)/index.tsx`, `app/(tabs)/history.tsx`, `app/(tabs)/profile.tsx`, `tailwind.config.js`, `global.css`, `package.json`, `tsconfig.json`, `.eslintrc.js`, `.prettierrc`, `app.json`, `babel.config.js`, `jest.config.js`
 
-- [ ] T02 — Supabase client + init: `supabase init`, migration dosyası (tüm tablolar + RLS + indexler), seed.sql şablonu, `src/lib/supabase.ts` client, `src/lib/schemas.ts` Zod tipleri, `.env.example`
+- [x] T02 — Supabase client + init: `supabase init`, migration dosyası (tüm tablolar + RLS + indexler), seed.sql şablonu, `src/lib/supabase.ts` client, `src/lib/schemas.ts` Zod tipleri, `.env.example`
   Kabul: `supabase db reset` başarılı, tipler üretilir (`supabase gen types typescript`), Supabase client import edilebilir
   Dosyalar: `supabase/config.toml`, `supabase/migrations/0001_init.sql`, `supabase/seed.sql`, `src/lib/supabase.ts`, `src/lib/schemas.ts`, `src/lib/database.types.ts`, `.env.example`
 
