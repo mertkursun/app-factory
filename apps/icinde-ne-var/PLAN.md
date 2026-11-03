@@ -95,7 +95,7 @@
   Kabul: RevenueCat SDK başlatılır, test offering'leri çekilir (sandbox); EAS dev-client build'de çalışır
   Dosyalar: `src/lib/revenuecat.ts`, `src/hooks/useSubscription.ts`, `app.json` (plugin config)
 
-- [ ] T18 — Paywall ekranı: fiyat gösterimi (RevenueCat'ten dinamik), özellik listesi, satın al butonu, satın alımları geri yükle, gizlilik + kullanım şartları linkleri
+- [x] T18 — Paywall ekranı: fiyat gösterimi (RevenueCat'ten dinamik), özellik listesi, satın al butonu, satın alımları geri yükle, gizlilik + kullanım şartları linkleri
   Kabul: Fiyat doğru gösterilir, satın alma akışı başlar (sandbox), geri yükleme çalışır, yasal linkler açılır
   Dosyalar: `app/paywall.tsx`, `src/components/paywall/PricingCard.tsx`, `src/components/paywall/FeatureList.tsx`, `src/components/paywall/PurchaseButton.tsx`, `src/components/paywall/RestoreButton.tsx`
 

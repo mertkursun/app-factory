@@ -148,9 +148,7 @@ export default function ProfileScreen() {
         {/* Pro'ya geç butonu (Pro değilse) */}
         {quota && !quota.isPro && (
           <Pressable
-            onPress={() => {
-              // T18 paywall ekranı yapıldığında router.push("/paywall")
-            }}
+            onPress={() => router.push("/paywall")}
             accessibilityRole="button"
             accessibilityLabel="Pro'ya Geç — Sınırsız Tarama"
             className="mb-6 h-12 items-center justify-center rounded-xl bg-primary"

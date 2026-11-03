@@ -15,6 +15,7 @@ import Constants from "expo-constants";
 import { SettingsItem } from "@/components/settings/SettingsItem";
 import { useAppStore } from "@/stores/appStore";
 import { signOut } from "@/lib/auth";
+import { restorePurchases } from "@/lib/revenuecat";
 
 const APP_VERSION = Constants.expoConfig?.version ?? "1.0.0";
 
@@ -28,11 +29,16 @@ export default function SettingsScreen() {
   };
 
   const handleManageSubscription = () => {
-    // T18 paywall ekranı yapıldığında router.push("/paywall")
+    router.push("/paywall");
   };
 
-  const handleRestorePurchases = () => {
-    // T17 RevenueCat entegrasyonu yapıldığında Purchases.restorePurchases()
+  const handleRestorePurchases = async () => {
+    try {
+      await restorePurchases();
+      Alert.alert("Başarılı", "Satın alımlarınız geri yüklendi.");
+    } catch {
+      Alert.alert("Hata", "Satın alımlar geri yüklenemedi. Tekrar deneyin.");
+    }
   };
 
   const handleSignOut = () => {
