@@ -1,14 +1,21 @@
-import { View, Text } from "react-native";
-import { Info } from "lucide-react-native";
+import { Text, StyleSheet } from "react-native";
+import { useTranslation } from "react-i18next";
+import { useTheme, fonts } from "@/theme/tokens";
 
 export function DisclaimerNote() {
-  return (
-    <View className="flex-row items-start gap-2 p-3 rounded-xl bg-surface-secondary">
-      <Info size={14} color="#78716C" />
-      <Text className="flex-1 text-xs font-caption text-muted leading-4">
-        Bu analiz bilgilendirme amaçlıdır, tıbbi tavsiye niteliği taşımaz. Sağlık kararlarınız için
-        mutlaka bir uzmana danışın.
-      </Text>
-    </View>
-  );
+  const { colors } = useTheme();
+  const { t } = useTranslation();
+
+  return <Text style={[styles.text, { color: colors.muted }]}>{t("analysis.disclaimer")}</Text>;
 }
+
+const styles = StyleSheet.create({
+  text: {
+    fontFamily: fonts.body400,
+    fontSize: 11,
+    lineHeight: 16,
+    textAlign: "center",
+    paddingHorizontal: 16,
+    marginBottom: 8,
+  },
+});

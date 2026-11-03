@@ -1,5 +1,7 @@
-import { View, Text } from "react-native";
-import { AlertTriangle } from "lucide-react-native";
+import { View, Text, Pressable, StyleSheet } from "react-native";
+import { AlertTriangle, ChevronRight } from "lucide-react-native";
+import { useTranslation } from "react-i18next";
+import { useTheme, fonts, radius } from "@/theme/tokens";
 import { AUDIENCE_LABELS } from "@/lib/constants";
 
 interface Warning {
@@ -11,35 +13,102 @@ interface Warning {
 
 interface ProfileWarningsProps {
   warnings: Warning[];
+  onPress?: () => void;
 }
 
-export function ProfileWarnings({ warnings }: ProfileWarningsProps) {
+/** Groups warnings by kitle, shows one banner per audience */
+export function ProfileWarnings({ warnings, onPress }: ProfileWarningsProps) {
+  const { colors } = useTheme();
+  const { t } = useTranslation();
+
+  if (warnings.length === 0) return null;
+
+  // Group by audience
+  const grouped = warnings.reduce<Record<string, Warning[]>>((acc, w) => {
+    const key = w.kitle;
+    return { ...acc, [key]: [...(acc[key] ?? []), w] };
+  }, {});
+
   return (
-    <View className="gap-2 mb-4">
-      {warnings.map((w, i) => {
-        const isDanger = w.riskSeviyesi === "sakincali";
+    <View style={styles.container}>
+      {Object.entries(grouped).map(([kitle, items]) => {
+        const dangerCount = items.filter((w) => w.riskSeviyesi === "sakincali").length;
+        const audienceLabel = AUDIENCE_LABELS[kitle] ?? kitle;
+        const audienceEmoji = kitle === "hamile" ? "🤰" : kitle === "bebek" ? "👶" : "";
+
         return (
-          <View
-            key={`${w.kitle}-${w.maddeAd}-${i}`}
-            className={`flex-row items-start gap-3 p-3 rounded-xl ${isDanger ? "bg-danger-light" : "bg-warning-light"}`}
+          <Pressable
+            key={kitle}
+            onPress={onPress}
             accessibilityRole="alert"
+            accessibilityLabel={`${audienceLabel}: ${dangerCount} ${t("analysis.dangerCount", { count: dangerCount })}`}
+            style={({ pressed }) => [
+              styles.banner,
+              {
+                backgroundColor: colors.dangerBg,
+                borderWidth: 1,
+                borderColor: "rgba(224,62,62,0.18)",
+                borderRadius: radius.md,
+                opacity: pressed ? 0.85 : 1,
+              },
+            ]}
           >
-            <AlertTriangle size={18} color={isDanger ? "#DC2626" : "#CA8A04"} />
-            <View className="flex-1">
-              <Text
-                className={`text-sm font-label ${isDanger ? "text-danger-text" : "text-warning-text"}`}
-              >
-                {AUDIENCE_LABELS[w.kitle] ?? w.kitle}: {w.maddeAd}
+            {/* Danger icon tile */}
+            <View style={[styles.iconTile, { backgroundColor: colors.danger }]}>
+              <AlertTriangle size={18} color="#FFFFFF" />
+            </View>
+
+            {/* Text */}
+            <View style={styles.textContainer}>
+              <Text style={[styles.titleText, { color: colors.dangerText }]}>
+                {audienceEmoji ? `${audienceEmoji} ` : ""}
+                {t("analysis.profileWarningTitle", { audience: audienceLabel })}
               </Text>
-              <Text
-                className={`text-xs font-caption mt-1 ${isDanger ? "text-danger-text" : "text-warning-text"}`}
-              >
-                {w.aciklama}
+              <Text style={[styles.detailText, { color: colors.dangerText }]}>
+                {t("analysis.profileWarningDetail", { count: dangerCount })}
               </Text>
             </View>
-          </View>
+
+            {/* Chevron */}
+            <ChevronRight size={18} color={colors.dangerText} />
+          </Pressable>
         );
       })}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    gap: 8,
+    marginBottom: 16,
+  },
+  banner: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 12,
+    gap: 12,
+  },
+  iconTile: {
+    width: 40,
+    height: 40,
+    borderRadius: 13,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  textContainer: {
+    flex: 1,
+    gap: 2,
+  },
+  titleText: {
+    fontFamily: fonts.body800,
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  detailText: {
+    fontFamily: fonts.body500,
+    fontSize: 12,
+    lineHeight: 16,
+    opacity: 0.75,
+  },
+});
