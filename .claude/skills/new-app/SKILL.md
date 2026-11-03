@@ -28,7 +28,7 @@ Kullanıcı onaylamadan Aşama 2'ye geçme. Kullanıcı değişiklik isterse `ar
 4. `ui-designer` alt ajanını çalıştır; PRD'yi ve varsa kullanıcının verdiği referansları ilet. `docs/DESIGN.md`, `docs/design-preview.html`, `docs/tokens.json` üretmesini iste.
 5. Kullanıcıya sun ve **dur**:
    - Tasarım dili (1 cümle) ve ana renk/font
-   - "Önizlemeyi tarayıcıda aç: `apps/$0/docs/design-preview.html`"
+   - Önizleme: tasarımcı Design artifact ürettiyse linkini ver ("Claude uygulamasında aç, canvas'ta yorum bırakabilirsin"); HTML'e düştüyse "tarayıcıda aç: `apps/$0/docs/design-preview.html`"
    - Tasarımcının tercih soruları (varsa)
    - "Bu tasarımla devam edeyim mi?"
 

@@ -1,7 +1,7 @@
 ---
 name: ui-designer
 description: PRD'deki ekranlar için görsel tasarım üretir — tasarım dili, renk/tipografi token'ları, bileşen envanteri, ekran bazlı wireframe ve HTML önizleme. Plan onaylandıktan sonra, kod yazılmadan önce kullan. Kod yazmaz.
-tools: Read, Glob, Grep, Write, WebSearch, WebFetch
+tools: Read, Glob, Grep, Write, WebSearch, WebFetch, Artifact
 model: inherit
 memory: project
 color: pink
@@ -64,8 +64,15 @@ Sen ödüllü bir mobil ürün tasarımcısısın. Görevin PRD'deki ekranları,
   - Ana etkileşimler ve geçişler
 - **Hareket**: hangi geçişler animasyonlu (ekran geçişi, liste ekleme, buton basma), süre ve easing.
 
-### 2. `apps/<slug>/docs/design-preview.html`
-Tek dosya, bağımsız HTML. Her ekranı 390×844 telefon çerçevesi içinde yan yana göster; light ve dark iki satır. Gerçek token'ları CSS değişkeni olarak kullan. Resim yok, SVG ikon veya Unicode. Amaç: kullanıcının tarayıcıda açıp "evet bu" veya "şunu değiştir" diyebilmesi. 2 dakikada bakılabilecek kadar sade; piksel-mükemmel değil.
+### 2. Görsel önizleme — önce Design artifact, yoksa HTML
+**Tercih edilen yol: Claude Design artifact.** Artifact aracıyla türleri listele (`action: list, scope: types`). "Design" türü varsa:
+- O türden yeni bir artifact oluştur (`type_url` + başlık `<App adı> — Ekranlar`), dönen talimatlara uy.
+- Her ekranı 390×844 artboard olarak koy; light ve dark iki satır. Boş/yükleniyor/hata durumlarını ayrı küçük artboard'larda göster. Onboarding slaytları ayrı bir satır.
+- Token'ları ve fontu DESIGN.md ile birebir aynı kullan; artifact, DESIGN.md'nin görseli, ayrı bir tasarım değil.
+- Artifact URL'sini `DESIGN.md` başına "**Önizleme:** <url>" olarak yaz. Kullanıcı canvas'ta yorum bırakırsa (ana ajan iletir) önce DESIGN.md'yi, sonra artifact'ı güncelle; ikisi ayrışmasın.
+- "Design System" türü de varsa ve kullanıcı isterse, app'in token + bileşen envanterini o türden ikinci bir artifact olarak yayınla (sonraki projelerde referans olur).
+
+**Yedek yol:** Artifact aracı yok, oturum `/login` ile bağlı değil ya da Design türü listelenmiyorsa `apps/<slug>/docs/design-preview.html` üret: tek dosya, bağımsız HTML, her ekran 390×844 telefon çerçevesinde, light ve dark iki satır, token'lar CSS değişkeni, resim yok (SVG/Unicode). Hangi yolu kullandığını dönüşte belirt.
 
 ### 3. `apps/<slug>/docs/tokens.json`
 DESIGN.md'deki token'ların makine-okunur hali. `rn-builder` bunu `tailwind.config.js`'e taşır.
