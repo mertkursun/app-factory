@@ -1,6 +1,5 @@
 import { useState, useCallback } from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
-import { ChevronDown, ChevronUp } from "lucide-react-native";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { useTranslation } from "react-i18next";
 import { useTheme, fonts, radius } from "@/theme/tokens";
@@ -57,28 +56,26 @@ export function IngredientDetails({ maddeler }: IngredientDetailsProps) {
 
   return (
     <View style={styles.container}>
-      {/* Section header */}
+      {/* Section header: title left, badges right */}
       <View style={styles.sectionHeader}>
         <Text style={[styles.sectionTitle, { color: colors.text }]}>
           {t("analysis.ingredients")}
         </Text>
-      </View>
-
-      {/* Counter badges */}
-      <View style={styles.badgeRow}>
-        {counts.success > 0 && (
-          <Badge label={t("analysis.safeCount", { count: counts.success })} status="success" />
-        )}
-        {counts.warning > 0 && (
-          <Badge label={t("analysis.cautionCount", { count: counts.warning })} status="warning" />
-        )}
-        {counts.danger > 0 && (
-          <Badge label={t("analysis.dangerCount", { count: counts.danger })} status="danger" />
-        )}
+        <View style={styles.badgeRow}>
+          {counts.success > 0 && (
+            <Badge label={t("analysis.safeCount", { count: counts.success })} status="success" />
+          )}
+          {counts.warning > 0 && (
+            <Badge label={t("analysis.cautionCount", { count: counts.warning })} status="warning" />
+          )}
+          {counts.danger > 0 && (
+            <Badge label={t("analysis.dangerCount", { count: counts.danger })} status="danger" />
+          )}
+        </View>
       </View>
 
       {/* Ingredient list */}
-      <Card style={styles.listCard}>
+      <Card style={styles.listCard} borderRadius={radius.lg}>
         {maddeler.map((madde, index) => {
           const isExpanded = expandedIndex === index;
           const statusKey = RISK_STATUS_MAP[madde.riskSeviyesi] ?? "warning";
@@ -110,13 +107,6 @@ export function IngredientDetails({ maddeler }: IngredientDetailsProps) {
                   ) : null}
                 </View>
                 <Badge label={STATUS_LABEL[statusKey]} status={statusKey} />
-                {hasDetail ? (
-                  isExpanded ? (
-                    <ChevronUp size={16} color={colors.muted} />
-                  ) : (
-                    <ChevronDown size={16} color={colors.muted} />
-                  )
-                ) : null}
               </Pressable>
 
               {/* Expanded detail */}
@@ -124,10 +114,13 @@ export function IngredientDetails({ maddeler }: IngredientDetailsProps) {
                 <Animated.View
                   entering={FadeIn.duration(200)}
                   exiting={FadeOut.duration(150)}
-                  style={[styles.detailBox, { backgroundColor: colors.surfaceTint }]}
+                  style={[styles.detailBox, { backgroundColor: colors.background }]}
                 >
                   {madde.islev ? (
                     <Text style={[styles.detailText, { color: colors.textSecondary }]}>
+                      <Text style={{ color: colors.text, fontFamily: fonts.body700 }}>
+                        Hamile:{" "}
+                      </Text>
                       {madde.islev}
                     </Text>
                   ) : null}
@@ -152,23 +145,22 @@ export function IngredientDetails({ maddeler }: IngredientDetailsProps) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    marginBottom: 20,
-  },
+  container: {},
   sectionHeader: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 4,
     marginBottom: 8,
   },
   sectionTitle: {
-    fontFamily: fonts.body700,
+    fontFamily: fonts.display700,
     fontSize: 15,
     lineHeight: 20,
   },
   badgeRow: {
     flexDirection: "row",
-    gap: 6,
-    marginBottom: 12,
+    gap: 4,
     flexWrap: "wrap",
   },
   listCard: {
@@ -182,12 +174,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 12,
     paddingHorizontal: 14,
-    gap: 10,
+    gap: 12,
     minHeight: 44,
   },
   textBlock: {
     flex: 1,
-    gap: 2,
+    gap: 1,
   },
   ingredientName: {
     fontFamily: fonts.body700,
@@ -201,14 +193,16 @@ const styles = StyleSheet.create({
   },
   detailBox: {
     marginHorizontal: 14,
-    marginBottom: 10,
+    marginLeft: 54,
+    marginBottom: 12,
     padding: 12,
-    borderRadius: radius.xs,
+    paddingHorizontal: 12,
+    borderRadius: radius.lg - 8,
     gap: 4,
   },
   detailText: {
     fontFamily: fonts.body400,
     fontSize: 11,
-    lineHeight: 16,
+    lineHeight: 16.5,
   },
 });

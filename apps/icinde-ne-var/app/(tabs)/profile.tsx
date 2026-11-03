@@ -94,7 +94,7 @@ export default function ProfileScreen() {
         <View style={styles.header}>
           <Text style={[typography.screenTitle, { color: colors.text }]}>{t("tabs.profile")}</Text>
           <IconButton
-            icon={<Settings size={20} color={colors.muted} />}
+            icon={<Settings size={18} color={colors.text} />}
             onPress={() => router.push("/settings")}
             accessibilityLabel={t("profile.settings")}
           />
@@ -108,14 +108,14 @@ export default function ProfileScreen() {
           end={{ x: 1, y: 1 }}
           style={[styles.heroCard, shadow.card]}
         >
-          {/* Decorative rings */}
-          <View style={styles.decoRing1} />
-          <View style={styles.decoRing2} />
+          {/* Decorative circles */}
+          <View style={styles.decoCircle1} />
+          <View style={styles.decoCircle2} />
 
           <View style={styles.heroRow}>
             {/* Avatar */}
             <LinearGradient
-              colors={["#FFFFFF", "#E0E0E0"]}
+              colors={["#FFFFFF", "rgba(255,255,255,0.4)"]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               style={styles.avatarRing}
@@ -127,10 +127,10 @@ export default function ProfileScreen() {
 
             {/* Info */}
             <View style={styles.heroInfo}>
-              <Text style={styles.heroName} numberOfLines={1}>
+              <Text style={[styles.heroName, { color: colors.primaryFg }]} numberOfLines={1}>
                 {profile?.display_name ?? user.email ?? ""}
               </Text>
-              <Text style={styles.heroEmail} numberOfLines={1}>
+              <Text style={[styles.heroEmail, { color: colors.primaryFg }]} numberOfLines={1}>
                 {user.email ?? ""}
               </Text>
             </View>
@@ -150,11 +150,18 @@ export default function ProfileScreen() {
               {t("profile.audienceCount", { count: selectedAudiences.length })}
             </Text>
           </View>
-          <AudienceSelector
-            selected={selectedAudiences}
-            onChange={handleAudienceChange}
-            disabled={isSaving}
-          />
+          <Text style={[styles.audienceDesc, { color: colors.textSecondary }]}>
+            {t("profile.audienceDescText", {
+              defaultValue: "Uyarılar bu profillere göre kişiselleşir.",
+            })}
+          </Text>
+          <View style={styles.audienceGrid}>
+            <AudienceSelector
+              selected={selectedAudiences}
+              onChange={handleAudienceChange}
+              disabled={isSaving}
+            />
+          </View>
           {isSaving && (
             <ActivityIndicator size="small" color={colors.primary} style={styles.savingIndicator} />
           )}
@@ -183,39 +190,38 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: spacing.screenX,
+    gap: 16,
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingTop: 12,
-    paddingBottom: 16,
+    paddingTop: 6,
+    paddingHorizontal: 2,
   },
   heroCard: {
     borderRadius: 24,
     padding: 18,
-    marginBottom: 24,
     overflow: "hidden",
   },
-  decoRing1: {
+  decoCircle1: {
     position: "absolute",
-    top: -30,
-    right: -30,
+    top: -80,
+    right: -60,
+    width: 180,
+    height: 180,
+    borderRadius: 90,
+    backgroundColor: "rgba(255,255,255,0.12)",
+  },
+  decoCircle2: {
+    position: "absolute",
+    bottom: -70,
+    right: 10,
     width: 120,
     height: 120,
     borderRadius: 60,
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.12)",
-  },
-  decoRing2: {
-    position: "absolute",
-    bottom: -20,
-    left: -20,
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.08)",
+    borderColor: "rgba(255,255,255,0.25)",
   },
   heroRow: {
     flexDirection: "row",
@@ -226,12 +232,10 @@ const styles = StyleSheet.create({
     width: AVATAR_SIZE,
     height: AVATAR_SIZE,
     borderRadius: AVATAR_SIZE / 2,
-    alignItems: "center",
-    justifyContent: "center",
+    padding: AVATAR_RING_WIDTH,
   },
   avatarInner: {
-    width: AVATAR_INNER,
-    height: AVATAR_INNER,
+    flex: 1,
     borderRadius: AVATAR_INNER / 2,
     backgroundColor: AVATAR_BG,
     alignItems: "center",
@@ -241,37 +245,46 @@ const styles = StyleSheet.create({
     fontFamily: fonts.display800,
     fontSize: 20,
     color: AVATAR_TEXT_COLOR,
+    letterSpacing: -0.5,
   },
   heroInfo: {
     flex: 1,
-    gap: 2,
+    gap: 4,
   },
   heroName: {
     fontFamily: fonts.display800,
     fontSize: 18,
-    color: "#FFFFFF",
+    lineHeight: 20,
+    letterSpacing: -0.3,
   },
   heroEmail: {
     fontFamily: fonts.body400,
     fontSize: 12,
-    color: "rgba(255,255,255,0.8)",
+    opacity: 0.8,
   },
-  section: {
-    marginBottom: 20,
-  },
+  section: {},
   sectionHeader: {
     flexDirection: "row",
     alignItems: "baseline",
-    gap: 8,
-    marginBottom: 10,
+    justifyContent: "space-between",
+    paddingHorizontal: 2,
   },
   sectionTitle: {
-    fontFamily: fonts.body700,
+    fontFamily: fonts.display700,
     fontSize: 16,
   },
   sectionCount: {
     fontFamily: fonts.body500,
     fontSize: 11,
+  },
+  audienceDesc: {
+    fontFamily: fonts.body400,
+    fontSize: 12,
+    marginTop: 6,
+    paddingHorizontal: 2,
+  },
+  audienceGrid: {
+    marginTop: 12,
   },
   savingIndicator: {
     marginTop: 8,

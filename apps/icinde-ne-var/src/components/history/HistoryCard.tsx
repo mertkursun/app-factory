@@ -30,6 +30,12 @@ const CATEGORY_GRADIENT_MAP: Record<string, readonly [string, string]> = {
   temizlik: ["#60A5FA", "#3B82F6"],
 };
 
+const SKOR_NUMERIC: Record<SkorRenk, number> = {
+  yesil: 86,
+  sari: 58,
+  kirmizi: 24,
+};
+
 const KATEGORI_KEYS: Record<string, string> = {
   gida: "history.categoryFood",
   kozmetik: "history.categoryCosmetic",
@@ -57,6 +63,7 @@ export function HistoryCard({ item, onPress }: HistoryCardProps) {
   const kategoriLabel = kategoriKey ? t(kategoriKey) : String(kategori);
   const dateStr = formatDate(item.created_at);
   const subtitle = `${kategoriLabel} · ${dateStr}`;
+  const numericScore = SKOR_NUMERIC[skor] ?? 50;
 
   const statusColorMap: Record<string, string> = {
     yesil: colors.success,
@@ -64,6 +71,7 @@ export function HistoryCard({ item, onPress }: HistoryCardProps) {
     kirmizi: colors.danger,
   };
   const stripeColor = statusColorMap[skor] ?? colors.border;
+  const scoreColor = stripeColor;
 
   const CategoryIcon = CATEGORY_ICON_MAP[kategori] ?? Package;
   const categoryGradient = CATEGORY_GRADIENT_MAP[kategori] ?? ["#A8A29E", "#78716C"];
@@ -80,7 +88,7 @@ export function HistoryCard({ item, onPress }: HistoryCardProps) {
           borderColor: colors.border,
         },
         shadow.low,
-        { transform: [{ scale: pressed ? 0.98 : 1 }] },
+        { transform: [{ scale: pressed ? 0.96 : 1 }] },
       ]}
     >
       {/* Left status stripe */}
@@ -104,6 +112,7 @@ export function HistoryCard({ item, onPress }: HistoryCardProps) {
 
       {/* Score + Badge */}
       <View style={styles.scoreContainer}>
+        <Text style={[styles.scoreNumber, { color: scoreColor }]}>{numericScore}</Text>
         <Badge label={statusInfo.label} status={statusInfo.key} />
       </View>
     </Pressable>
@@ -117,15 +126,16 @@ const styles = StyleSheet.create({
     borderRadius: radius.lg,
     borderWidth: 1,
     overflow: "hidden",
-    paddingRight: 14,
+    paddingRight: 12,
     paddingVertical: 12,
     gap: 12,
   },
   stripe: {
+    position: "absolute",
+    left: 0,
+    top: 0,
+    bottom: 0,
     width: 4,
-    alignSelf: "stretch",
-    borderTopLeftRadius: radius.lg,
-    borderBottomLeftRadius: radius.lg,
   },
   categoryTile: {
     width: 44,
@@ -133,13 +143,14 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     alignItems: "center",
     justifyContent: "center",
+    marginLeft: 12,
   },
   textContent: {
     flex: 1,
-    gap: 3,
+    gap: 2,
   },
   productName: {
-    fontFamily: fonts.display700,
+    fontFamily: fonts.body700,
     fontSize: 14,
   },
   subtitle: {
@@ -148,5 +159,12 @@ const styles = StyleSheet.create({
   },
   scoreContainer: {
     alignItems: "flex-end",
+    gap: 4,
+  },
+  scoreNumber: {
+    fontFamily: fonts.display800,
+    fontSize: 18,
+    lineHeight: 18,
+    letterSpacing: -0.5,
   },
 });

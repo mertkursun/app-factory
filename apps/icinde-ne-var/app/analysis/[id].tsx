@@ -1,7 +1,7 @@
 import { View, Text, ScrollView, StyleSheet } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ArrowLeft, Share2 } from "lucide-react-native";
+import { ChevronLeft, Share } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import { useAnalysis } from "@/hooks/useAnalysis";
 import { ScoreCircle } from "@/components/ui/ScoreCircle";
@@ -11,7 +11,6 @@ import { IngredientDetails } from "@/components/analysis/IngredientDetails";
 import { UnknownIngredients } from "@/components/analysis/UnknownIngredients";
 import { DisclaimerNote } from "@/components/analysis/DisclaimerNote";
 import { IconButton } from "@/components/ui/IconButton";
-import { Badge } from "@/components/ui/Badge";
 import { LoadingScreen } from "@/components/ui/LoadingScreen";
 import { ErrorScreen } from "@/components/ui/ErrorScreen";
 import { useTheme, fonts, spacing } from "@/theme/tokens";
@@ -45,13 +44,6 @@ const SKOR_NUMERIC: Record<SkorRenk, number> = {
   yesil: 86,
   sari: 58,
   kirmizi: 25,
-};
-
-const CATEGORY_BADGE_STATUS: Record<string, StatusKey> = {
-  gida: "success",
-  kozmetik: "warning",
-  temizlik: "warning",
-  genel: "success",
 };
 
 function capitalize(str: string): string {
@@ -92,36 +84,35 @@ export default function AnalysisScreen() {
   };
   const haloColor = statusColorMap[status];
 
-  const categoryLabel = capitalize(analysis.kategori);
-  const categoryBadgeStatus = CATEGORY_BADGE_STATUS[analysis.kategori] ?? "success";
+  const categoryBadgeLabel = capitalize(analysis.kategori);
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-      {/* Status halo (decorative) */}
-      <View
-        style={[
-          styles.halo,
-          {
-            backgroundColor: haloColor,
-            opacity: 0.08,
-          },
-        ]}
-      />
+      {/* Status halo (large blurred glow) */}
+      <View style={[styles.halo, { backgroundColor: haloColor }]} />
 
       {/* Header */}
       <View style={styles.header}>
         <IconButton
-          icon={<ArrowLeft size={20} color={colors.text} />}
+          icon={<ChevronLeft size={18} color={colors.text} />}
           onPress={() => router.back()}
           accessibilityLabel={t("common.back")}
+          style={{
+            backgroundColor: colors.glass,
+            borderColor: colors.glassBorder,
+          }}
         />
         <Text style={[styles.headerTitle, { color: colors.text }]} numberOfLines={1}>
           {t("analysis.result")}
         </Text>
         <IconButton
-          icon={<Share2 size={18} color={colors.text} />}
+          icon={<Share size={17} color={colors.text} />}
           onPress={() => {}}
           accessibilityLabel={t("analysis.share")}
+          style={{
+            backgroundColor: colors.glass,
+            borderColor: colors.glassBorder,
+          }}
         />
       </View>
 
@@ -144,7 +135,11 @@ export default function AnalysisScreen() {
             {analysis.urun_adi ?? t("common.unknownProduct")}
           </Text>
           <View style={styles.productMeta}>
-            <Badge label={categoryLabel} status={categoryBadgeStatus} />
+            <View style={[styles.categoryBadge, { backgroundColor: colors.surfaceTint }]}>
+              <Text style={[styles.categoryBadgeText, { color: colors.primaryDeep }]}>
+                {categoryBadgeLabel}
+              </Text>
+            </View>
             {analysis.barkod ? (
               <Text style={[styles.barcodeText, { color: colors.muted }]}>{analysis.barkod}</Text>
             ) : null}
@@ -177,52 +172,63 @@ const styles = StyleSheet.create({
   },
   halo: {
     position: "absolute",
-    top: -60,
-    left: "25%",
-    width: "50%",
-    height: 200,
-    borderRadius: 100,
+    top: -120,
+    left: -60,
+    right: -60,
+    height: 380,
+    borderRadius: 190,
+    opacity: 0.55,
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
     paddingHorizontal: spacing.screenX,
     paddingVertical: 12,
-    gap: 12,
   },
   headerTitle: {
-    flex: 1,
-    textAlign: "center",
-    fontFamily: fonts.body700,
+    fontFamily: fonts.display700,
     fontSize: 17,
-    lineHeight: 22,
+    letterSpacing: -0.3,
+    textAlign: "center",
   },
   scroll: {
     flex: 1,
   },
   scrollContent: {
     paddingHorizontal: spacing.screenX,
+    gap: 14,
+    paddingBottom: 28,
   },
   scoreContainer: {
     alignItems: "center",
-    marginBottom: 20,
+    paddingTop: 10,
+    paddingBottom: 4,
   },
   productInfo: {
     alignItems: "center",
-    marginBottom: 20,
     gap: 8,
   },
   productName: {
     fontFamily: fonts.display800,
     fontSize: 21,
-    lineHeight: 28,
+    lineHeight: 24,
     textAlign: "center",
-    letterSpacing: -0.3,
+    letterSpacing: -0.5,
   },
   productMeta: {
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
+  },
+  categoryBadge: {
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+    borderRadius: 999,
+  },
+  categoryBadgeText: {
+    fontFamily: fonts.body700,
+    fontSize: 11,
   },
   barcodeText: {
     fontFamily: fonts.body500,
@@ -231,6 +237,6 @@ const styles = StyleSheet.create({
     fontVariant: ["tabular-nums"],
   },
   bottomSpacer: {
-    height: 32,
+    height: 28,
   },
 });

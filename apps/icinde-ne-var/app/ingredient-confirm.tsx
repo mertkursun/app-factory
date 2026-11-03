@@ -11,17 +11,17 @@ import {
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ArrowLeft, Sparkles, RefreshCw } from "lucide-react-native";
+import { ChevronLeft, Sparkles, RotateCcw, X, Plus } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTranslation } from "react-i18next";
-import { IngredientList } from "@/components/ingredients/IngredientList";
 import { IconButton } from "@/components/ui/IconButton";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
+import { Card } from "@/components/ui/Card";
 import { useAuthStore } from "@/stores/authStore";
 import { useAnalyzeProduct } from "@/hooks/useAnalysis";
 import { useAddToHistory } from "@/hooks/useHistory";
 import { useProfile } from "@/hooks/useProfile";
-import { useTheme, typography, fonts, radius, spacing } from "@/theme/tokens";
+import { useTheme, fonts, radius, spacing } from "@/theme/tokens";
 import type { SkorRenk } from "@/lib/schemas";
 
 const PHOTO_CARD_HEIGHT = 92;
@@ -30,7 +30,7 @@ const OCR_CONFIDENCE = 94;
 export default function IngredientConfirmScreen() {
   const router = useRouter();
   const { t } = useTranslation();
-  const { colors } = useTheme();
+  const { colors, shadow } = useTheme();
   const user = useAuthStore((s) => s.user);
   const { data: profile } = useProfile(user?.id);
   const analyzeMutation = useAnalyzeProduct();
@@ -118,17 +118,11 @@ export default function IngredientConfirmScreen() {
         {/* Header */}
         <View style={styles.header}>
           <IconButton
-            icon={<ArrowLeft size={20} color={colors.text} />}
+            icon={<ChevronLeft size={18} color={colors.text} />}
             onPress={() => router.back()}
             accessibilityLabel={t("common.back")}
           />
-          <Text
-            style={[
-              { fontFamily: fonts.body700, fontSize: 17, color: colors.text },
-              styles.headerTitle,
-            ]}
-            numberOfLines={1}
-          >
+          <Text style={[styles.headerTitle, { color: colors.text }]} numberOfLines={1}>
             {t("ingredients.confirm")}
           </Text>
           <View style={styles.headerSpacer} />
@@ -141,18 +135,20 @@ export default function IngredientConfirmScreen() {
           showsVerticalScrollIndicator={false}
         >
           {/* Photo card */}
-          <View style={[styles.photoCard, { borderRadius: radius.lg }]}>
+          <View style={[styles.photoCard, shadow.card]}>
             <LinearGradient
               colors={["#243633", "#121F1D"]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
-              style={[styles.photoGradient, { borderRadius: radius.lg }]}
+              style={styles.photoGradient}
             >
               {/* Decorative OCR lines */}
               <View style={styles.ocrLinesContainer}>
-                {[40, 28, 36, 20, 32].map((w, i) => (
-                  <View key={i} style={[styles.ocrLine, { width: `${w}%` }]} />
-                ))}
+                <View style={[styles.ocrLineFirst, { width: "60%" }]} />
+                <View style={[styles.ocrLine, { width: "95%" }]} />
+                <View style={[styles.ocrLine, { width: "88%" }]} />
+                <View style={[styles.ocrLine, { width: "70%" }]} />
+                <View style={[styles.ocrLine, { width: "92%" }]} />
               </View>
 
               {/* Retake pill */}
@@ -160,47 +156,105 @@ export default function IngredientConfirmScreen() {
                 onPress={() => router.back()}
                 accessibilityRole="button"
                 accessibilityLabel={t("ingredients.retake")}
-                style={({ pressed }) => [
-                  styles.retakePill,
-                  {
-                    backgroundColor: "rgba(255,255,255,0.15)",
-                    borderWidth: 1,
-                    borderColor: "rgba(255,255,255,0.2)",
-                    opacity: pressed ? 0.7 : 1,
-                  },
-                ]}
+                style={({ pressed }) => [styles.retakePill, { opacity: pressed ? 0.7 : 1 }]}
               >
-                <RefreshCw size={12} color="#FFFFFF" />
+                <RotateCcw size={12} color="#FFFFFF" strokeWidth={2.5} />
                 <Text style={styles.retakeText}>{t("ingredients.retake")}</Text>
               </Pressable>
 
               {/* OCR confidence */}
-              <Text style={styles.ocrConfidence}>
-                {t("ingredients.ocrConfidence", { percent: OCR_CONFIDENCE })}
-              </Text>
+              <View style={styles.ocrConfidenceRow}>
+                <Sparkles size={12} color="#9BF0E3" strokeWidth={2.5} />
+                <Text style={styles.ocrConfidence}>
+                  {t("ingredients.ocrConfidence", { percent: OCR_CONFIDENCE })}
+                </Text>
+              </View>
             </LinearGradient>
           </View>
 
           {/* Error banner */}
           {submitError ? (
             <View style={[styles.errorBanner, { backgroundColor: colors.dangerBg }]}>
-              <Text style={[typography.bodySecondary, { color: colors.dangerText }]}>
+              <Text style={{ fontFamily: fonts.body500, fontSize: 13, color: colors.dangerText }}>
                 {submitError}
               </Text>
             </View>
           ) : null}
 
-          {/* Ingredient list */}
-          <IngredientList
-            items={items}
-            onRemove={handleRemove}
-            onAddPress={handleAddPress}
-            disabled={isSubmitting}
-          />
+          {/* Section header */}
+          <View style={styles.sectionHeader}>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>
+              {t("ingredients.extracted")}
+            </Text>
+            <View style={[styles.countBadge, { backgroundColor: colors.surfaceTint }]}>
+              <Text
+                style={{
+                  fontFamily: fonts.body800,
+                  fontSize: 11,
+                  color: colors.primaryDeep,
+                }}
+              >
+                {items.length}
+              </Text>
+            </View>
+          </View>
+
+          {/* Ingredient list card */}
+          <Card style={styles.listCard} borderRadius={radius.lg}>
+            <ScrollView
+              style={styles.listScroll}
+              nestedScrollEnabled
+              showsVerticalScrollIndicator={false}
+            >
+              {items.map((item, index) => (
+                <View
+                  key={`${item}-${index}`}
+                  style={[
+                    styles.ingredientRow,
+                    index < items.length - 1 && {
+                      borderBottomWidth: 1,
+                      borderBottomColor: colors.border,
+                    },
+                  ]}
+                >
+                  <Text style={[styles.ingredientText, { color: colors.text }]} numberOfLines={1}>
+                    {item}
+                  </Text>
+                  <Pressable
+                    onPress={() => handleRemove(index)}
+                    disabled={isSubmitting}
+                    hitSlop={8}
+                    accessibilityRole="button"
+                    accessibilityLabel={t("ingredients.removeIngredient", { name: item })}
+                    style={({ pressed }) => ({
+                      minWidth: 44,
+                      minHeight: 44,
+                      alignItems: "center" as const,
+                      justifyContent: "center" as const,
+                      opacity: pressed ? 0.5 : 1,
+                    })}
+                  >
+                    <X size={14} color={colors.muted} strokeWidth={2.2} />
+                  </Pressable>
+                </View>
+              ))}
+              {/* Add ingredient button */}
+              <Pressable
+                onPress={handleAddPress}
+                disabled={isSubmitting}
+                accessibilityRole="button"
+                accessibilityLabel={t("ingredients.addButton")}
+                style={styles.addButton}
+              >
+                <Plus size={14} color={colors.primary} strokeWidth={2.5} />
+                <Text style={[styles.addButtonText, { color: colors.primary }]}>Madde ekle</Text>
+              </Pressable>
+            </ScrollView>
+          </Card>
 
           {/* Inline add input */}
           {showAddInput ? (
-            <View style={[styles.addInputRow, { borderColor: colors.border }]}>
+            <View style={styles.addInputRow}>
               <TextInput
                 autoFocus
                 style={[
@@ -250,12 +304,14 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
     paddingHorizontal: spacing.screenX,
     paddingVertical: 12,
-    gap: 12,
   },
   headerTitle: {
-    flex: 1,
+    fontFamily: fonts.display700,
+    fontSize: 17,
+    letterSpacing: -0.3,
     textAlign: "center",
   },
   headerSpacer: {
@@ -267,21 +323,28 @@ const styles = StyleSheet.create({
   },
   photoCard: {
     height: PHOTO_CARD_HEIGHT,
+    borderRadius: radius.lg,
     overflow: "hidden",
-    marginBottom: 20,
+    marginBottom: 18,
   },
   photoGradient: {
     flex: 1,
-    padding: 14,
+    padding: 16,
     justifyContent: "space-between",
   },
   ocrLinesContainer: {
-    gap: 5,
+    gap: 6,
+    paddingRight: 74,
+  },
+  ocrLineFirst: {
+    height: 5,
+    borderRadius: 3,
+    backgroundColor: "rgba(255,255,255,0.55)",
   },
   ocrLine: {
-    height: 2,
-    backgroundColor: "rgba(255,255,255,0.18)",
-    borderRadius: 1,
+    height: 4,
+    borderRadius: 3,
+    backgroundColor: "rgba(255,255,255,0.3)",
   },
   retakePill: {
     position: "absolute",
@@ -289,18 +352,26 @@ const styles = StyleSheet.create({
     right: 12,
     flexDirection: "row",
     alignItems: "center",
-    gap: 5,
+    gap: 6,
     paddingVertical: 6,
     paddingHorizontal: 10,
     borderRadius: 999,
+    backgroundColor: "rgba(255,255,255,0.14)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.18)",
   },
   retakeText: {
-    fontFamily: "PlusJakartaSans_600SemiBold",
+    fontFamily: fonts.body700,
     fontSize: 11,
     color: "#FFFFFF",
   },
+  ocrConfidenceRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
   ocrConfidence: {
-    fontFamily: "PlusJakartaSans_500Medium",
+    fontFamily: fonts.body600,
     fontSize: 11,
     color: "#9BF0E3",
   },
@@ -308,6 +379,51 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 12,
     marginBottom: 16,
+  },
+  sectionHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 4,
+  },
+  sectionTitle: {
+    fontFamily: fonts.display700,
+    fontSize: 15,
+  },
+  countBadge: {
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+    borderRadius: 999,
+  },
+  listCard: {
+    flex: 1,
+    overflow: "hidden",
+    marginTop: 10,
+  },
+  listScroll: {
+    flex: 1,
+  },
+  ingredientRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+  },
+  ingredientText: {
+    fontFamily: fonts.body500,
+    fontSize: 13,
+    flex: 1,
+  },
+  addButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+  },
+  addButtonText: {
+    fontFamily: fonts.body700,
+    fontSize: 13,
   },
   addInputRow: {
     marginTop: 12,
@@ -321,7 +437,7 @@ const styles = StyleSheet.create({
   },
   bottomCta: {
     paddingHorizontal: spacing.screenX,
-    paddingBottom: 16,
-    paddingTop: 8,
+    paddingBottom: 20,
+    paddingTop: 14,
   },
 });

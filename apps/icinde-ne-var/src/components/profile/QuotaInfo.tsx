@@ -28,7 +28,7 @@ export function QuotaInfo({ used, remaining, isPro }: QuotaInfoProps) {
         style={[
           styles.card,
           { backgroundColor: colors.surface, borderColor: colors.border },
-          shadow.low,
+          shadow.card,
         ]}
       >
         <View style={styles.proContent}>
@@ -49,7 +49,7 @@ export function QuotaInfo({ used, remaining, isPro }: QuotaInfoProps) {
       style={[
         styles.card,
         { backgroundColor: colors.surface, borderColor: colors.border },
-        shadow.low,
+        shadow.card,
       ]}
     >
       <View style={styles.row}>
@@ -80,10 +80,10 @@ export function QuotaInfo({ used, remaining, isPro }: QuotaInfoProps) {
               origin={`${RING_SIZE / 2}, ${RING_SIZE / 2}`}
             />
           </Svg>
-          <View style={styles.ringText}>
+          {/* Inner surface circle */}
+          <View style={[styles.ringInner, { backgroundColor: colors.surface }]}>
             <Text style={[styles.ringUsed, { color: colors.text }]}>{used}</Text>
-            <Text style={[styles.ringSep, { color: colors.muted }]}>/</Text>
-            <Text style={[styles.ringTotal, { color: colors.muted }]}>{total}</Text>
+            <Text style={[styles.ringTotal, { color: colors.muted }]}>/ {total}</Text>
           </View>
         </View>
 
@@ -92,7 +92,9 @@ export function QuotaInfo({ used, remaining, isPro }: QuotaInfoProps) {
           <Text style={[styles.infoTitle, { color: colors.text }]}>
             {t("profile.monthlyQuota")}
           </Text>
-          <Text style={[styles.infoDesc, { color: colors.muted }]}>{t("profile.quotaDesc")}</Text>
+          <Text style={[styles.infoDesc, { color: colors.textSecondary }]}>
+            {t("profile.quotaDesc")}
+          </Text>
         </View>
 
         {/* Pro pill */}
@@ -102,11 +104,10 @@ export function QuotaInfo({ used, remaining, isPro }: QuotaInfoProps) {
           accessibilityLabel={t("profile.goToPro")}
           style={({ pressed }) => [
             styles.proPill,
-            { backgroundColor: colors.surfaceTint, opacity: pressed ? 0.7 : 1 },
+            { backgroundColor: colors.text, opacity: pressed ? 0.7 : 1 },
           ]}
         >
-          <Crown size={12} color={colors.primary} />
-          <Text style={[styles.proPillText, { color: colors.primary }]}>
+          <Text style={[styles.proPillText, { color: colors.background }]}>
             {t("profile.goToPro")}
           </Text>
         </Pressable>
@@ -117,9 +118,9 @@ export function QuotaInfo({ used, remaining, isPro }: QuotaInfoProps) {
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: 20,
+    borderRadius: 22,
     borderWidth: 1,
-    padding: 18,
+    padding: 16,
   },
   row: {
     flexDirection: "row",
@@ -132,50 +133,45 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  ringText: {
-    position: "absolute" as const,
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
+  ringInner: {
+    position: "absolute",
+    width: RING_SIZE - 14,
+    height: RING_SIZE - 14,
+    borderRadius: (RING_SIZE - 14) / 2,
     alignItems: "center",
     justifyContent: "center",
-    flexDirection: "row",
   },
   ringUsed: {
     fontFamily: fonts.display800,
-    fontSize: 16,
-  },
-  ringSep: {
-    fontFamily: fonts.body400,
-    fontSize: 12,
-    marginHorizontal: 1,
+    fontSize: 17,
+    lineHeight: 17,
+    letterSpacing: -0.5,
   },
   ringTotal: {
-    fontFamily: fonts.body400,
-    fontSize: 12,
+    fontFamily: fonts.body600,
+    fontSize: 9,
+    marginTop: 2,
   },
   infoContent: {
     flex: 1,
-    gap: 4,
+    gap: 3,
   },
   infoTitle: {
-    fontFamily: fonts.display700,
+    fontFamily: fonts.body700,
     fontSize: 14,
   },
   infoDesc: {
     fontFamily: fonts.body400,
     fontSize: 12,
-    lineHeight: 17,
+    lineHeight: 17.4,
   },
   proPill: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
     borderRadius: 999,
-    minHeight: 32,
+    minHeight: 40,
+    alignItems: "center",
+    justifyContent: "center",
   },
   proPillText: {
     fontFamily: fonts.body700,

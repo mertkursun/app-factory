@@ -32,9 +32,9 @@ interface FilterChipProps {
 }
 
 const CATEGORY_DOT_COLORS: Record<string, string> = {
-  gida: "#F2B544",
-  kozmetik: "#F08BC4",
-  temizlik: "#60A5FA",
+  gida: "#E39B07",
+  kozmetik: "#D95BA3",
+  temizlik: "#3B82F6",
 };
 
 function FilterChip({ label, isActive, onPress, dotColor }: FilterChipProps) {
@@ -51,11 +51,20 @@ function FilterChip({ label, isActive, onPress, dotColor }: FilterChipProps) {
         {
           backgroundColor: isActive ? colors.text : colors.surface,
           borderColor: isActive ? colors.text : colors.border,
+          borderWidth: isActive ? 0 : 1,
         },
       ]}
     >
       {dotColor && !isActive && <View style={[styles.chipDot, { backgroundColor: dotColor }]} />}
-      <Text style={[styles.chipText, { color: isActive ? colors.background : colors.text }]}>
+      <Text
+        style={[
+          styles.chipText,
+          {
+            color: isActive ? colors.background : colors.textSecondary,
+            fontWeight: isActive ? "700" : "600",
+          },
+        ]}
+      >
         {label}
       </Text>
     </Pressable>
@@ -140,7 +149,7 @@ export default function HistoryScreen() {
           )}
         </View>
         <IconButton
-          icon={<Search size={20} color={colors.muted} />}
+          icon={<Search size={17} color={colors.text} />}
           onPress={() => {}}
           accessibilityLabel={t("history.search")}
         />
@@ -207,8 +216,8 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     justifyContent: "space-between",
     paddingHorizontal: spacing.screenX,
-    paddingTop: 12,
-    paddingBottom: 8,
+    paddingTop: 6,
+    paddingBottom: 0,
   },
   headerLeft: {
     flex: 1,
@@ -217,25 +226,25 @@ const styles = StyleSheet.create({
   subtitle: {
     fontFamily: fonts.body500,
     fontSize: 12,
-    marginTop: 2,
+    marginTop: 6,
   },
   chipScrollView: {
     flexGrow: 0,
-    marginBottom: 12,
+    marginTop: 16,
+    marginBottom: 4,
   },
   chipRow: {
     paddingHorizontal: spacing.screenX,
-    gap: 8,
+    gap: 6,
   },
   chip: {
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
+    paddingHorizontal: 13,
+    paddingVertical: 7,
     borderRadius: 999,
-    borderWidth: 1,
-    minHeight: 36,
+    minHeight: 34,
   },
   chipDot: {
     width: 7,
@@ -243,11 +252,12 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   chipText: {
-    fontFamily: fonts.body600,
-    fontSize: 13,
+    fontFamily: fonts.body700,
+    fontSize: 12,
   },
   listContent: {
     paddingHorizontal: spacing.screenX,
+    paddingTop: 10,
     paddingBottom: 110,
   },
   separator: {
