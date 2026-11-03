@@ -28,6 +28,7 @@ export interface Database {
           created_at?: string;
           updated_at?: string;
         };
+        Relationships: [];
       };
       maddeler: {
         Row: {
@@ -63,6 +64,7 @@ export interface Database {
           kitle_bayraklari?: Json | null;
           created_at?: string;
         };
+        Relationships: [];
       };
       urun_analizleri: {
         Row: {
@@ -104,6 +106,7 @@ export interface Database {
           kaynak_url?: string | null;
           created_at?: string;
         };
+        Relationships: [];
       };
       tarama_gecmisi: {
         Row: {
@@ -133,6 +136,7 @@ export interface Database {
           skor?: "yesil" | "sari" | "kirmizi";
           created_at?: string;
         };
+        Relationships: [];
       };
       kullanim: {
         Row: {
@@ -153,6 +157,7 @@ export interface Database {
           donem?: string;
           sorgu_sayisi?: number;
         };
+        Relationships: [];
       };
       abonelikler: {
         Row: {
@@ -185,6 +190,7 @@ export interface Database {
           created_at?: string;
           updated_at?: string;
         };
+        Relationships: [];
       };
     };
     Views: Record<string, never>;

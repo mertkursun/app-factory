@@ -15,7 +15,7 @@
   Kabul: `supabase db reset` başarılı, tipler üretilir (`supabase gen types typescript`), Supabase client import edilebilir
   Dosyalar: `supabase/config.toml`, `supabase/migrations/0001_init.sql`, `supabase/seed.sql`, `src/lib/supabase.ts`, `src/lib/schemas.ts`, `src/lib/database.types.ts`, `.env.example`
 
-- [ ] T03 — Servis katmanı + React Query hook'ları: profil CRUD, kota sorgulama, geçmiş listeleme, analiz getirme
+- [x] T03 — Servis katmanı + React Query hook'ları: profil CRUD, kota sorgulama, geçmiş listeleme, analiz getirme
   Kabul: Servis fonksiyonları birim testleri geçer (mock Supabase client ile), hook'lar export edilir
   Dosyalar: `src/services/profile.ts`, `src/services/quota.ts`, `src/services/history.ts`, `src/services/analysis.ts`, `src/hooks/useProfile.ts`, `src/hooks/useQuota.ts`, `src/hooks/useHistory.ts`, `src/hooks/useAnalysis.ts`, `src/__tests__/services/profile.test.ts`, `src/__tests__/services/quota.test.ts`
 
