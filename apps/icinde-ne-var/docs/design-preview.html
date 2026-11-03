@@ -1,0 +1,1496 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>İçinde Ne Var? — Tasarım Önizleme</title>
+<style>
+  /* ===== RESET & BASE ===== */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --primary: #0F766E;
+    --primary-fg: #FFFFFF;
+    --bg: #FAFAF7;
+    --surface: #FFFFFF;
+    --surface2: #F0FDFA;
+    --text: #1C1917;
+    --text2: #57534E;
+    --muted: #78716C;
+    --border: #E7E5E4;
+    --border-s: #D6D3D1;
+    --success: #16A34A;
+    --success-lt: #DCFCE7;
+    --success-tx: #15803D;
+    --warning: #CA8A04;
+    --warning-lt: #FEF9C3;
+    --warning-tx: #854D0E;
+    --danger: #DC2626;
+    --danger-lt: #FEE2E2;
+    --danger-tx: #991B1B;
+    --shadow: 0 2px 8px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+    --page-bg: #E8E6E3;
+  }
+
+  .dark {
+    --primary: #2DD4BF;
+    --primary-fg: #042F2E;
+    --bg: #0C0A09;
+    --surface: #1C1917;
+    --surface2: #042F2E;
+    --text: #FAFAF9;
+    --text2: #A8A29E;
+    --muted: #87817B;
+    --border: #292524;
+    --border-s: #44403C;
+    --success: #4ADE80;
+    --success-lt: #052E16;
+    --success-tx: #4ADE80;
+    --warning: #FACC15;
+    --warning-lt: #422006;
+    --warning-tx: #FACC15;
+    --danger: #F87171;
+    --danger-lt: #450A0A;
+    --danger-tx: #F87171;
+    --shadow: 0 0 0 1px var(--border);
+    --shadow-sm: 0 0 0 1px var(--border);
+    --page-bg: #1a1a1a;
+  }
+
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+  body {
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    background: var(--page-bg);
+    color: var(--text);
+    padding: 24px;
+    transition: background 0.3s;
+  }
+
+  /* ===== PAGE HEADER ===== */
+  .page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1400px;
+    margin: 0 auto 32px;
+    padding: 16px 24px;
+    background: var(--surface);
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+  }
+  .page-header h1 { font-size: 22px; font-weight: 800; color: var(--text); }
+  .page-header span { font-size: 14px; color: var(--text2); }
+  .theme-toggle {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 20px; border-radius: 9999px;
+    background: var(--primary); color: var(--primary-fg);
+    border: none; cursor: pointer; font-family: inherit;
+    font-weight: 600; font-size: 13px;
+    transition: transform 0.15s ease-out;
+  }
+  .theme-toggle:active { transform: scale(0.96); }
+
+  /* ===== SCREEN NAV ===== */
+  .screen-nav {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    max-width: 1400px; margin: 0 auto 24px;
+    padding: 0 8px;
+  }
+  .screen-nav a {
+    padding: 6px 14px; border-radius: 9999px;
+    font-size: 12px; font-weight: 600; text-decoration: none;
+    background: var(--surface); color: var(--text2);
+    border: 1px solid var(--border);
+    transition: all 0.15s;
+  }
+  .screen-nav a:hover { background: var(--primary); color: var(--primary-fg); border-color: var(--primary); }
+
+  /* ===== PHONE GRID ===== */
+  .phone-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 32px;
+    justify-content: center;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  /* ===== PHONE FRAME ===== */
+  .phone-wrap { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .phone-label { font-size: 13px; font-weight: 700; color: var(--text2); letter-spacing: 0.5px; text-transform: uppercase; }
+
+  .phone {
+    width: 320px;
+    height: 693px;
+    border-radius: 36px;
+    background: var(--bg);
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+  }
+  .dark .phone { box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.06); }
+
+  /* Notch */
+  .notch {
+    position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    width: 120px; height: 28px;
+    background: #000; border-radius: 0 0 18px 18px; z-index: 10;
+  }
+  .dark .notch { background: #000; }
+
+  /* Status bar */
+  .status-bar {
+    height: 48px; padding: 0 24px;
+    display: flex; align-items: flex-end; justify-content: space-between;
+    font-size: 11px; font-weight: 600; color: var(--text);
+    padding-bottom: 4px; flex-shrink: 0;
+  }
+
+  /* Screen content */
+  .screen { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+
+  /* ===== COMMON COMPONENTS ===== */
+  .px { padding-left: 16px; padding-right: 16px; }
+  .py { padding-top: 8px; padding-bottom: 8px; }
+  .gap-sm { gap: 8px; }
+  .gap-md { gap: 16px; }
+  .flex-col { display: flex; flex-direction: column; }
+  .flex-row { display: flex; flex-direction: row; align-items: center; }
+  .flex-1 { flex: 1; }
+  .center { text-align: center; }
+  .items-center { align-items: center; }
+
+  /* Typography */
+  .t-display { font-size: 26px; font-weight: 800; line-height: 1.19; letter-spacing: -0.5px; color: var(--text); }
+  .t-title { font-size: 18px; font-weight: 700; line-height: 1.27; letter-spacing: -0.3px; color: var(--text); }
+  .t-body { font-size: 14px; font-weight: 400; line-height: 1.5; color: var(--text); }
+  .t-caption { font-size: 11px; font-weight: 500; line-height: 1.38; color: var(--text2); }
+  .t-label { font-size: 12px; font-weight: 600; line-height: 1.43; letter-spacing: 0.1px; }
+
+  /* Button */
+  .btn {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    height: 44px; padding: 0 24px; border-radius: 9999px;
+    font-family: inherit; font-weight: 600; font-size: 14px;
+    border: none; cursor: pointer; transition: transform 0.15s ease-out;
+    text-decoration: none;
+  }
+  .btn:active { transform: scale(0.96); }
+  .btn-primary { background: var(--primary); color: var(--primary-fg); }
+  .btn-secondary { background: transparent; color: var(--primary); border: 1.5px solid var(--primary); }
+  .btn-ghost { background: transparent; color: var(--primary); }
+  .btn-danger { background: transparent; color: var(--danger); }
+  .btn-full { width: 100%; }
+  .btn-lg { height: 52px; font-size: 15px; }
+  .btn-sm { height: 36px; padding: 0 16px; font-size: 12px; }
+
+  /* Card */
+  .card {
+    background: var(--surface);
+    border-radius: 20px;
+    padding: 16px;
+    box-shadow: var(--shadow);
+  }
+
+  /* Input */
+  .input {
+    height: 44px; padding: 0 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px; background: var(--surface);
+    font-family: inherit; font-size: 14px; color: var(--text);
+    width: 100%;
+  }
+  .input::placeholder { color: var(--muted); }
+  .input:focus { border-color: var(--primary); outline: none; }
+
+  /* Chip */
+  .chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    height: 32px; padding: 0 14px;
+    border-radius: 9999px; border: 1.5px solid var(--border);
+    font-family: inherit; font-size: 12px; font-weight: 500;
+    color: var(--text2); background: var(--surface);
+    cursor: pointer; transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .chip.selected { background: var(--primary); color: var(--primary-fg); border-color: var(--primary); }
+
+  /* Badge */
+  .badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    height: 22px; padding: 0 10px;
+    border-radius: 9999px; font-size: 10px; font-weight: 700;
+    white-space: nowrap;
+  }
+  .badge-success { background: var(--success-lt); color: var(--success-tx); }
+  .badge-warning { background: var(--warning-lt); color: var(--warning-tx); }
+  .badge-danger { background: var(--danger-lt); color: var(--danger-tx); }
+  .badge-pro { background: var(--primary); color: var(--primary-fg); }
+  .badge-neutral { background: var(--surface); color: var(--text2); border: 1px solid var(--border); }
+
+  /* Divider */
+  .divider { height: 1px; background: var(--border); margin: 12px 0; }
+  .divider-text {
+    display: flex; align-items: center; gap: 12px;
+    color: var(--muted); font-size: 12px;
+  }
+  .divider-text::before, .divider-text::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+  }
+
+  /* Warning Banner */
+  .warning-banner {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px; border-radius: 12px;
+    font-size: 12px; font-weight: 500;
+    border-left: 4px solid;
+  }
+  .warning-banner.danger { background: var(--danger-lt); color: var(--danger-tx); border-left-color: var(--danger); }
+  .warning-banner.warning { background: var(--warning-lt); color: var(--warning-tx); border-left-color: var(--warning); }
+
+  /* Settings row */
+  .settings-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 16px; border-bottom: 1px solid var(--border);
+    font-size: 14px; color: var(--text); cursor: pointer;
+  }
+  .settings-row:last-child { border-bottom: none; }
+  .settings-row .chevron { color: var(--muted); font-size: 16px; }
+
+  /* Section label */
+  .section-label {
+    font-size: 11px; font-weight: 700; color: var(--muted);
+    letter-spacing: 1px; text-transform: uppercase;
+    padding: 16px 16px 8px;
+  }
+
+  /* Score circle */
+  .score-circle {
+    width: 100px; height: 100px;
+    border-radius: 50%; display: flex;
+    flex-direction: column; align-items: center; justify-content: center;
+    margin: 0 auto;
+  }
+  .score-circle.green { border: 5px solid var(--success); }
+  .score-circle.yellow { border: 5px solid var(--warning); }
+  .score-circle.red { border: 5px solid var(--danger); }
+  .score-circle .score-icon { font-size: 28px; line-height: 1; }
+  .score-circle .score-label { font-size: 12px; font-weight: 700; margin-top: 2px; }
+  .score-circle.green .score-label { color: var(--success); }
+  .score-circle.yellow .score-label { color: var(--warning); }
+  .score-circle.red .score-label { color: var(--danger); }
+
+  /* Tab bar */
+  .tab-bar {
+    display: flex; align-items: center; justify-content: space-around;
+    margin: 8px 16px 12px; padding: 6px;
+    background: var(--surface); border-radius: 28px;
+    box-shadow: var(--shadow); flex-shrink: 0;
+  }
+  .tab-item {
+    display: flex; align-items: center; gap: 6px;
+    padding: 8px 18px; border-radius: 9999px;
+    font-size: 12px; font-weight: 600; color: var(--text2);
+    transition: all 0.2s;
+  }
+  .tab-item.active { background: var(--primary); color: var(--primary-fg); }
+  .tab-item .tab-icon { font-size: 16px; }
+
+  /* Header bar */
+  .header-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 16px 12px; flex-shrink: 0;
+  }
+  .header-bar .back { font-size: 18px; color: var(--text); cursor: pointer; width: 32px; }
+  .header-bar .title { font-size: 18px; font-weight: 700; color: var(--text); }
+  .header-bar .action { font-size: 18px; color: var(--text2); width: 32px; text-align: right; }
+
+  /* Progress bar */
+  .progress-bar { height: 6px; background: var(--border); border-radius: 9999px; overflow: hidden; }
+  .progress-bar .fill { height: 100%; border-radius: 9999px; background: var(--primary); }
+
+  /* Ingredient row */
+  .ingredient-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 0; border-bottom: 1px solid var(--border);
+  }
+  .ingredient-row:last-child { border-bottom: none; }
+  .ingredient-row .risk-dot {
+    width: 28px; height: 28px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; flex-shrink: 0;
+  }
+  .ingredient-row .risk-dot.green { background: var(--success-lt); color: var(--success); }
+  .ingredient-row .risk-dot.yellow { background: var(--warning-lt); color: var(--warning); }
+  .ingredient-row .risk-dot.red { background: var(--danger-lt); color: var(--danger); }
+
+  /* History card */
+  .history-card {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 16px; background: var(--surface);
+    border-radius: 16px; box-shadow: var(--shadow-sm);
+  }
+  .history-card .h-icon {
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; flex-shrink: 0;
+  }
+  .history-card .h-icon.green { background: var(--success); color: #fff; }
+  .history-card .h-icon.yellow { background: var(--warning); color: #fff; }
+  .history-card .h-icon.red { background: var(--danger); color: #fff; }
+
+  /* OTP boxes */
+  .otp-boxes { display: flex; gap: 8px; justify-content: center; }
+  .otp-box {
+    width: 40px; height: 48px; border: 2px solid var(--border);
+    border-radius: 8px; display: flex; align-items: center; justify-content: center;
+    font-size: 20px; font-weight: 700; color: var(--text);
+    background: var(--surface);
+  }
+  .otp-box.filled { border-color: var(--primary); background: var(--surface2); }
+
+  /* Floating pill (kota) */
+  .kota-pill {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 4px 10px; border-radius: 9999px;
+    background: var(--surface); font-size: 11px; font-weight: 700;
+    color: var(--text2); box-shadow: var(--shadow-sm);
+  }
+
+  /* Avatar */
+  .avatar {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: var(--primary); color: var(--primary-fg);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 700; flex-shrink: 0;
+  }
+
+  /* Info box */
+  .info-box {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 12px 14px; border-radius: 12px;
+    background: var(--surface2); font-size: 12px; color: var(--text2);
+  }
+
+  /* Pricing */
+  .price-display { font-size: 36px; font-weight: 800; color: var(--text); letter-spacing: -1px; }
+  .price-period { font-size: 14px; font-weight: 400; color: var(--text2); }
+  .feature-row { display: flex; align-items: center; gap: 8px; padding: 6px 0; font-size: 13px; color: var(--text); }
+  .feature-check { color: var(--primary); font-weight: 700; }
+
+  /* Scanner specific */
+  .camera-view {
+    flex: 1; background: #1a1a1a; border-radius: 16px;
+    margin: 0 12px; position: relative;
+    display: flex; align-items: center; justify-content: center;
+    min-height: 300px; overflow: hidden;
+  }
+  .scan-frame {
+    width: 200px; height: 200px; position: relative;
+  }
+  .scan-corner {
+    position: absolute; width: 24px; height: 24px;
+  }
+  .scan-corner::before, .scan-corner::after {
+    content: ''; position: absolute; background: var(--primary);
+    border-radius: 2px;
+  }
+  .scan-corner::before { width: 24px; height: 3px; }
+  .scan-corner::after { width: 3px; height: 24px; }
+  .scan-corner.tl { top: 0; left: 0; }
+  .scan-corner.tl::before { top: 0; left: 0; }
+  .scan-corner.tl::after { top: 0; left: 0; }
+  .scan-corner.tr { top: 0; right: 0; }
+  .scan-corner.tr::before { top: 0; right: 0; }
+  .scan-corner.tr::after { top: 0; right: 0; }
+  .scan-corner.bl { bottom: 0; left: 0; }
+  .scan-corner.bl::before { bottom: 0; left: 0; }
+  .scan-corner.bl::after { bottom: 0; left: 0; }
+  .scan-corner.br { bottom: 0; right: 0; }
+  .scan-corner.br::before { bottom: 0; right: 0; }
+  .scan-corner.br::after { bottom: 0; right: 0; }
+  .scan-line {
+    position: absolute; left: 10%; right: 10%; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--primary), transparent);
+    top: 50%; animation: scanPulse 2s ease-in-out infinite;
+  }
+  @keyframes scanPulse {
+    0%, 100% { opacity: 0.3; transform: translateY(-40px); }
+    50% { opacity: 1; transform: translateY(40px); }
+  }
+  .camera-controls {
+    display: flex; align-items: center; justify-content: space-around;
+    padding: 12px 24px; flex-shrink: 0;
+  }
+  .capture-btn {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: var(--primary); border: 4px solid var(--surface);
+    box-shadow: 0 0 0 2px var(--primary);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--primary-fg); font-size: 22px; cursor: pointer;
+  }
+  .cam-icon-btn {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: rgba(255,255,255,0.15); border: none;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 18px; cursor: pointer;
+  }
+
+  /* Splash specific */
+  .splash-bg {
+    background: #0F766E; display: flex;
+    align-items: center; justify-content: center;
+    flex-direction: column; gap: 12px;
+  }
+  .dark .splash-bg { background: #115E59; }
+
+  /* Onboarding dots */
+  .dots { display: flex; gap: 8px; justify-content: center; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); }
+  .dot.active { background: var(--primary); width: 24px; border-radius: 9999px; }
+
+  /* Empty state */
+  .empty-state {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 48px 24px; text-align: center; gap: 8px; flex: 1;
+  }
+  .empty-state .empty-icon { font-size: 48px; margin-bottom: 8px; opacity: 0.5; }
+
+  /* Scrollable content */
+  .scroll-content { padding: 16px; flex: 1; overflow-y: auto; }
+
+  /* Legal text */
+  .legal-text { font-size: 12px; line-height: 1.7; color: var(--text2); }
+  .legal-text h3 { font-size: 14px; font-weight: 700; color: var(--text); margin: 16px 0 6px; }
+
+  /* Accordion detail */
+  .accordion-detail {
+    padding: 8px 0 8px 38px; font-size: 11px; color: var(--text2);
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* Photo preview strip */
+  .photo-preview {
+    height: 64px; border-radius: 12px; background: #333;
+    display: flex; align-items: center; justify-content: center;
+    color: #999; font-size: 11px; overflow: hidden;
+  }
+
+  /* Ingredient confirm row */
+  .confirm-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 14px; border-bottom: 1px solid var(--border);
+    font-size: 13px; color: var(--text);
+  }
+  .confirm-row .remove { color: var(--muted); cursor: pointer; font-size: 14px; }
+
+</style>
+</head>
+<body>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div>
+    <h1>İçinde Ne Var?</h1>
+    <span>Tasarım Önizleme — 13 Ekran — Plus Jakarta Sans — Teal + Fildişi</span>
+  </div>
+  <button class="theme-toggle" onclick="toggleTheme()">
+    <span id="themeIcon">&#9790;</span>
+    <span id="themeLabel">Dark Mode</span>
+  </button>
+</div>
+
+<!-- SCREEN NAV -->
+<nav class="screen-nav">
+  <a href="#splash">Splash</a>
+  <a href="#onboarding">Onboarding</a>
+  <a href="#login">Login</a>
+  <a href="#otp">OTP</a>
+  <a href="#scanner">Scanner</a>
+  <a href="#confirm">Confirm</a>
+  <a href="#result">Result</a>
+  <a href="#history">History</a>
+  <a href="#profile">Profile</a>
+  <a href="#settings">Settings</a>
+  <a href="#paywall">Paywall</a>
+  <a href="#privacy">Privacy</a>
+  <a href="#terms">Terms</a>
+</nav>
+
+<!-- PHONE GRID -->
+<div class="phone-grid">
+
+  <!-- ========== 1. SPLASH ========== -->
+  <div class="phone-wrap" id="splash">
+    <span class="phone-label">1. Splash</span>
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="screen splash-bg">
+        <svg width="100" height="100" viewBox="0 0 120 120" fill="none">
+          <circle cx="60" cy="60" r="52" stroke="rgba(255,255,255,0.2)" stroke-width="2.5"/>
+          <circle cx="52" cy="50" r="22" stroke="#fff" stroke-width="3.5" fill="none"/>
+          <circle cx="52" cy="50" r="18" fill="rgba(255,255,255,0.06)"/>
+          <line x1="68" y1="66" x2="86" y2="84" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+          <path d="M42 42 C46 34, 56 33, 58 41" stroke="#2DD4BF" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+          <path d="M38 48 C40 38, 52 36, 56 44" stroke="#2DD4BF" stroke-width="1.8" stroke-linecap="round" fill="none" opacity="0.5"/>
+          <circle cx="44" cy="54" r="3" fill="#4ADE80"/>
+          <circle cx="52" cy="54" r="3" fill="#FACC15"/>
+          <circle cx="60" cy="54" r="3" fill="#F87171"/>
+        </svg>
+        <div style="color: #fff; font-size: 22px; font-weight: 800; letter-spacing: -0.5px;">İçinde Ne Var?</div>
+        <div style="color: rgba(255,255,255,0.7); font-size: 11px; font-weight: 500;">Ne yediğini bil</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 2. ONBOARDING ========== -->
+  <div class="phone-wrap" id="onboarding">
+    <span class="phone-label">2. Onboarding (Slayt 1)</span>
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="status-bar"><span>09:41</span><span></span></div>
+      <div class="screen flex-col" style="padding: 0 16px 16px;">
+        <!-- Skip -->
+        <div style="display:flex; justify-content:flex-end; padding: 4px 0;">
+          <span class="btn-ghost" style="font-size:13px; font-weight:600; color:var(--primary); cursor:pointer;">Atla</span>
+        </div>
+
+        <!-- Illustration -->
+        <div style="flex:1; display:flex; align-items:center; justify-content:center;">
+          <svg width="180" height="180" viewBox="0 0 180 180" fill="none">
+            <!-- Phone body -->
+            <rect x="50" y="20" width="80" height="140" rx="14" stroke="var(--primary)" stroke-width="2.5" fill="var(--surface)"/>
+            <rect x="70" y="28" width="40" height="6" rx="3" fill="var(--border)"/>
+            <!-- Screen content -->
+            <rect x="58" y="44" width="64" height="96" rx="4" fill="var(--surface2)"/>
+            <!-- Barcode lines -->
+            <rect x="66" y="64" width="3" height="40" rx="1" fill="var(--primary)" opacity="0.8"/>
+            <rect x="72" y="64" width="2" height="40" rx="1" fill="var(--primary)" opacity="0.6"/>
+            <rect x="77" y="64" width="4" height="40" rx="1" fill="var(--primary)" opacity="0.9"/>
+            <rect x="84" y="64" width="2" height="40" rx="1" fill="var(--primary)" opacity="0.5"/>
+            <rect x="89" y="64" width="3" height="40" rx="1" fill="var(--primary)" opacity="0.7"/>
+            <rect x="95" y="64" width="2" height="40" rx="1" fill="var(--primary)" opacity="0.8"/>
+            <rect x="100" y="64" width="4" height="40" rx="1" fill="var(--primary)" opacity="0.6"/>
+            <rect x="107" y="64" width="2" height="40" rx="1" fill="var(--primary)" opacity="0.9"/>
+            <!-- Scan line -->
+            <line x1="62" y1="84" x2="118" y2="84" stroke="var(--primary)" stroke-width="2" stroke-dasharray="4 3" opacity="0.6"/>
+            <!-- Camera icon floating -->
+            <circle cx="140" cy="50" r="18" fill="var(--primary)" opacity="0.1"/>
+            <circle cx="140" cy="50" r="10" stroke="var(--primary)" stroke-width="1.5" fill="none"/>
+            <circle cx="140" cy="50" r="4" fill="var(--primary)" opacity="0.4"/>
+          </svg>
+        </div>
+
+        <!-- Text -->
+        <div style="text-align:center; margin-bottom:24px;">
+          <div class="t-display" style="margin-bottom:8px;">Okut ya da Fotoğrafla</div>
+          <div class="t-body" style="color:var(--text2);">Barkodu tarat veya içindekiler etiketinin fotoğrafını çek, gerisini bize bırak.</div>
+        </div>
+
+        <!-- Dots -->
+        <div class="dots" style="margin-bottom:24px;">
+          <div class="dot active"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+        </div>
+
+        <!-- Button -->
+        <button class="btn btn-primary btn-full">Devam Et</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 2b. ONBOARDING SLIDE 2 ========== -->
+  <div class="phone-wrap">
+    <span class="phone-label">2. Onboarding (Slayt 2)</span>
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="status-bar"><span>09:41</span><span></span></div>
+      <div class="screen flex-col" style="padding: 0 16px 16px;">
+        <div style="display:flex; justify-content:flex-end; padding: 4px 0;">
+          <span style="font-size:13px; font-weight:600; color:var(--primary); cursor:pointer;">Atla</span>
+        </div>
+
+        <div style="flex:1; display:flex; align-items:center; justify-content:center;">
+          <svg width="180" height="180" viewBox="0 0 180 180" fill="none">
+            <!-- Three score circles like traffic light -->
+            <circle cx="50" cy="90" r="32" fill="var(--success-lt)" stroke="var(--success)" stroke-width="2"/>
+            <text x="50" y="86" text-anchor="middle" fill="var(--success)" font-size="24" font-weight="800">&#10003;</text>
+            <text x="50" y="104" text-anchor="middle" fill="var(--success-tx)" font-size="9" font-weight="600">Güvenli</text>
+            <circle cx="90" cy="56" r="26" fill="var(--warning-lt)" stroke="var(--warning)" stroke-width="2"/>
+            <text x="90" y="52" text-anchor="middle" fill="var(--warning)" font-size="20" font-weight="800">!</text>
+            <text x="90" y="68" text-anchor="middle" fill="var(--warning-tx)" font-size="8" font-weight="600">Dikkat</text>
+            <circle cx="130" cy="90" r="32" fill="var(--danger-lt)" stroke="var(--danger)" stroke-width="2"/>
+            <text x="130" y="86" text-anchor="middle" fill="var(--danger)" font-size="24" font-weight="800">&#10007;</text>
+            <text x="130" y="104" text-anchor="middle" fill="var(--danger-tx)" font-size="9" font-weight="600">Sakıncalı</text>
+            <!-- Arrow pointing to green -->
+            <path d="M50 130 L50 145 L60 140 Z" fill="var(--success)" opacity="0.5"/>
+          </svg>
+        </div>
+
+        <div style="text-align:center; margin-bottom:24px;">
+          <div class="t-display" style="margin-bottom:8px;">Tek Renkte Anla</div>
+          <div class="t-body" style="color:var(--text2);">Yeşil güvenli, sarı dikkatli ol, kırmızı sakıncalı. Karmaşık kimyasallar sade Türkçe'ye dönüşür.</div>
+        </div>
+
+        <div class="dots" style="margin-bottom:24px;">
+          <div class="dot"></div>
+          <div class="dot active"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+        </div>
+
+        <button class="btn btn-primary btn-full">Devam Et</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 3. LOGIN ========== -->
+  <div class="phone-wrap" id="login">
+    <span class="phone-label">3. Login</span>
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="status-bar"><span>09:41</span><span></span></div>
+      <div class="screen flex-col" style="padding: 0 16px;">
+        <div style="height:32px;"></div>
+
+        <div style="margin-bottom:32px;">
+          <div class="t-display" style="margin-bottom:8px;">Hoş Geldiniz</div>
+          <div class="t-body" style="color:var(--text2);">Hesabınıza giriş yapın veya yeni hesap oluşturun.</div>
+        </div>
+
+        <!-- Email input -->
+        <div style="margin-bottom:16px;">
+          <label class="t-caption" style="display:block; margin-bottom:6px;">E-posta</label>
+          <input class="input" type="email" placeholder="ornek@mail.com" />
+        </div>
+
+        <!-- CTA -->
+        <button class="btn btn-primary btn-full" style="margin-bottom:24px;">Kod Gönder</button>
+
+        <!-- Divider -->
+        <div class="divider-text" style="margin-bottom:24px;">veya</div>
+
+        <!-- Social buttons -->
+        <div class="flex-col gap-sm" style="margin-bottom:32px;">
+          <button class="btn btn-secondary btn-full" style="gap:10px;">
+            <svg width="18" height="18" viewBox="0 0 18 18"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 01-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z" fill="#34A853"/><path d="M3.964 10.706A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.706V4.962H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.038l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.962L3.964 7.294C4.672 5.166 6.656 3.58 9 3.58z" fill="#EA4335"/></svg>
+            Google ile devam et
+          </button>
+          <button class="btn btn-secondary btn-full" style="gap:10px;">
+            <svg width="16" height="18" viewBox="0 0 16 18" fill="var(--text)"><path d="M12.744 9.554c-.022-2.157 1.76-3.193 1.84-3.243-1.002-1.465-2.562-1.665-3.116-1.687-1.326-.134-2.59.781-3.263.781-.673 0-1.714-.761-2.816-.741-1.449.02-2.786.843-3.533 2.142-1.505 2.612-.385 6.482 1.081 8.601.717 1.037 1.572 2.201 2.695 2.159 1.082-.043 1.49-.7 2.797-.7 1.306 0 1.674.7 2.816.678 1.163-.02 1.902-1.056 2.616-2.096.824-1.202 1.163-2.365 1.183-2.426-.026-.011-2.27-.872-2.3-3.468zM10.587 3.07c.596-.722.998-1.725.889-2.725-.859.035-1.9.572-2.516 1.294-.553.64-1.037 1.662-.907 2.642.959.075 1.938-.487 2.534-1.21z"/></svg>
+            Apple ile devam et
+          </button>
+        </div>
+
+        <!-- Legal -->
+        <div style="text-align:center; padding-bottom:24px;">
+          <span class="t-caption">Devam ederek <span style="color:var(--primary); text-decoration:underline;">KVKK Aydınlatma Metni</span> ve <span style="color:var(--primary); text-decoration:underline;">Kullanım Şartları</span>'nı kabul etmiş olursunuz.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 4. VERIFY OTP ========== -->
+  <div class="phone-wrap" id="otp">
+    <span class="phone-label">4. Verify OTP</span>
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="status-bar"><span>09:41</span><span></span></div>
+      <div class="header-bar">
+        <span class="back">&#8249;</span>
+        <span></span>
+        <span class="action"></span>
+      </div>
+      <div class="screen flex-col" style="padding: 0 16px;">
+        <div style="margin-bottom:32px;">
+          <div class="t-display" style="margin-bottom:8px;">Doğrulama Kodu</div>
+          <div class="t-body" style="color:var(--text2);"><strong style="color:var(--text)">örnek@mail.com</strong> adresine gönderilen 6 haneli kodu girin.</div>
+        </div>
+
+        <!-- OTP boxes -->
+        <div class="otp-boxes" style="margin-bottom:24px;">
+          <div class="otp-box filled">4</div>
+          <div class="otp-box filled">7</div>
+          <div class="otp-box filled">2</div>
+          <div class="otp-box" style="border-color:var(--primary);">_</div>
+          <div class="otp-box"></div>
+          <div class="otp-box"></div>
+        </div>
+
+        <!-- Countdown -->
+        <div style="text-align:center; margin-bottom:24px;">
+          <span class="t-caption" style="font-variant-numeric:tabular-nums;">02:47 kaldı</span>
+        </div>
+
+        <!-- Resend -->
+        <div style="text-align:center;">
+          <span class="t-body" style="color:var(--text2);">Kod gelmedi mi?</span>
+          <br>
+          <span class="t-label" style="color:var(--muted); opacity:0.6;">Tekrar gönder</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 5. SCANNER (HOME) ========== -->
+  <div class="phone-wrap" id="scanner">
+    <span class="phone-label">5. Scanner (Home)</span>
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="status-bar" style="color:#fff; position:relative; z-index:5;">
+        <span>09:41</span><span></span>
+      </div>
+      <div class="screen flex-col" style="gap:0;">
+        <!-- Header overlay -->
+        <div class="flex-row px" style="justify-content:space-between; padding-top:4px; padding-bottom:8px;">
+          <span class="t-title" style="font-size:16px;">İçinde Ne Var?</span>
+          <div class="flex-row" style="gap:6px;">
+            <div class="kota-pill">3/5</div>
+          </div>
+        </div>
+
+        <!-- Camera area -->
+        <div class="camera-view">
+          <!-- Scan frame corners -->
+          <div class="scan-frame">
+            <div class="scan-corner tl"></div>
+            <div class="scan-corner tr"></div>
+            <div class="scan-corner bl"></div>
+            <div class="scan-corner br"></div>
+            <div class="scan-line"></div>
+          </div>
+          <!-- Hint text -->
+          <div style="position:absolute; bottom:16px; left:0; right:0; text-align:center; color:rgba(255,255,255,0.7); font-size:11px;">
+            Barkodu çerçeve içine alın
+          </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="camera-controls">
+          <button class="cam-icon-btn" title="Flash">&#9889;</button>
+          <button class="capture-btn" title="Fotoğraf çek">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
+              <circle cx="12" cy="13" r="4"/>
+            </svg>
+          </button>
+          <button class="cam-icon-btn" title="Galeri">&#128444;</button>
+        </div>
+
+        <!-- Tab bar -->
+        <div class="tab-bar">
+          <div class="tab-item active">
+            <span class="tab-icon">&#8984;</span> Tara
+          </div>
+          <div class="tab-item">
+            <span class="tab-icon">&#9201;</span> Geçmiş
+          </div>
+          <div class="tab-item">
+            <span class="tab-icon">&#9786;</span> Profil
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 6. INGREDIENT CONFIRM ========== -->
+  <div class="phone-wrap" id="confirm">
+    <span class="phone-label">6. Ingredient Confirm</span>
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="status-bar"><span>09:41</span><span></span></div>
+      <div class="header-bar">
+        <span class="back">&#8249;</span>
+        <span class="title">İçeriği Onayla</span>
+        <span class="action"></span>
+      </div>
+      <div class="screen scroll-content flex-col gap-md">
+        <!-- Photo preview -->
+        <div class="photo-preview">
+          <svg width="120" height="40" viewBox="0 0 120 40" fill="none">
+            <rect x="5" y="5" width="110" height="30" rx="4" fill="#444"/>
+            <text x="60" y="24" text-anchor="middle" fill="#888" font-size="9">Etiket fotoğrafı</text>
+          </svg>
+        </div>
+
+        <!-- Count -->
+        <div class="flex-row" style="justify-content:space-between;">
+          <span class="t-title" style="font-size:16px;">Çıkarılan İçerikler</span>
+          <span class="badge badge-neutral">14</span>
+        </div>
+
+        <!-- Ingredient list -->
+        <div class="card" style="padding:0;">
+          <div class="confirm-row"><span>Sodyum benzoat</span><span class="remove">&#10005;</span></div>
+          <div class="confirm-row"><span>Sitrik asit</span><span class="remove">&#10005;</span></div>
+          <div class="confirm-row"><span>Potasyum sorbat</span><span class="remove">&#10005;</span></div>
+          <div class="confirm-row"><span>Şeker</span><span class="remove">&#10005;</span></div>
+          <div class="confirm-row"><span>Su</span><span class="remove">&#10005;</span></div>
+          <div class="confirm-row"><span>Mısır nişastası</span><span class="remove">&#10005;</span></div>
+          <div class="confirm-row"><span>Doğal aroma verici</span><span class="remove">&#10005;</span></div>
+          <div class="confirm-row"><span>Askorbik asit (C vit.)</span><span class="remove">&#10005;</span></div>
+        </div>
+
+        <!-- Add -->
+        <button class="btn btn-ghost btn-sm" style="align-self:flex-start;">+ Madde ekle</button>
+
+        <!-- Spacer -->
+        <div style="flex:1;"></div>
+
+        <!-- CTA -->
+        <button class="btn btn-primary btn-full btn-lg">Analiz Et</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 7. ANALYSIS RESULT (GREEN) ========== -->
+  <div class="phone-wrap" id="result">
+    <span class="phone-label">7. Result (Güvenli)</span>
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="status-bar"><span>09:41</span><span></span></div>
+      <div class="header-bar">
+        <span class="back">&#8249;</span>
+        <span class="title">Sonuç</span>
+        <span class="action"></span>
+      </div>
+      <div class="screen scroll-content flex-col gap-md">
+        <!-- Score circle -->
+        <div style="text-align:center; padding: 8px 0;">
+          <div class="score-circle green">
+            <span class="score-icon" style="color:var(--success);">&#10003;</span>
+            <span class="score-label">Güvenli</span>
+          </div>
+          <div class="t-title" style="margin-top:12px;">Eti Cicibebe</div>
+          <div class="t-caption">Gıda &middot; 8690526069265</div>
+        </div>
+
+        <!-- Explanation -->
+        <div class="card">
+          <div class="t-body" style="color:var(--text2);">Bu ürün genel olarak güvenli içeriklere sahiptir. Doğal tatlandırıcılar ve vitaminler içermektedir. Bebek ve çocuk beslenmesi için uygun bir tercih olarak değerlendirilebilir.</div>
+        </div>
+
+        <!-- Ingredients -->
+        <div>
+          <div class="flex-row" style="justify-content:space-between; margin-bottom:8px;">
+            <span class="t-title" style="font-size:15px;">Maddeler</span>
+            <span class="badge badge-neutral">8</span>
+          </div>
+          <div class="card" style="padding:8px 14px;">
+            <div class="ingredient-row">
+              <div class="risk-dot green">&#10003;</div>
+              <div class="flex-1">
+                <div class="t-label">Un (buğday)</div>
+                <div class="t-caption">Temel gıda maddesi</div>
+              </div>
+              <span class="badge badge-success" style="font-size:9px;">Güvenli</span>
+            </div>
+            <div class="ingredient-row">
+              <div class="risk-dot green">&#10003;</div>
+              <div class="flex-1">
+                <div class="t-label">Şeker</div>
+                <div class="t-caption">Tatlandırıcı</div>
+              </div>
+              <span class="badge badge-success" style="font-size:9px;">Güvenli</span>
+            </div>
+            <div class="ingredient-row">
+              <div class="risk-dot green">&#10003;</div>
+              <div class="flex-1">
+                <div class="t-label">Bitkisel yağ</div>
+                <div class="t-caption">Yağ kaynağı</div>
+              </div>
+              <span class="badge badge-success" style="font-size:9px;">Güvenli</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Disclaimer -->
+        <div class="t-caption" style="text-align:center; color:var(--muted); padding: 8px 0; font-style:italic;">
+          Bu sonuç tıbbi tavsiye değildir. Kesin bilgi için uzmanınıza danışınız.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 7b. ANALYSIS RESULT (YELLOW - WITH WARNINGS) ========== -->
+  <div class="phone-wrap">
+    <span class="phone-label">7. Result (Dikkat + Uyarı)</span>
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="status-bar"><span>09:41</span><span></span></div>
+      <div class="header-bar">
+        <span class="back">&#8249;</span>
+        <span class="title">Sonuç</span>
+        <span class="action"></span>
+      </div>
+      <div class="screen scroll-content flex-col gap-md">
+        <!-- Warning banners -->
+        <div class="warning-banner danger">
+          <span style="font-size:16px;">&#9888;</span>
+          <div>
+            <div style="font-weight:700;">Hamile profili için</div>
+            <div>2 sakıncalı madde tespit edildi</div>
+          </div>
+        </div>
+
+        <!-- Score circle -->
+        <div style="text-align:center; padding: 4px 0;">
+          <div class="score-circle yellow">
+            <span class="score-icon" style="color:var(--warning);">!</span>
+            <span class="score-label">Dikkat</span>
+          </div>
+          <div class="t-title" style="margin-top:12px;">Ülker Çikolata Gofret</div>
+          <div class="t-caption">Gıda &middot; 8690504012345</div>
+        </div>
+
+        <!-- Explanation -->
+        <div class="card">
+          <div class="t-body" style="color:var(--text2);">Bu üründe dikkat edilmesi gereken bazı katkı maddeleri bulunmaktadır. Özellikle sodyum benzoat ve yüksek şeker içeriği nedeniyle sınırlı tüketim önerilir.</div>
+        </div>
+
+        <!-- Ingredients -->
+        <div>
+          <div class="flex-row" style="justify-content:space-between; margin-bottom:8px;">
+            <span class="t-title" style="font-size:15px;">Maddeler</span>
+            <span class="badge badge-neutral">12</span>
+          </div>
+          <div class="card" style="padding:8px 14px;">
+            <div class="ingredient-row">
+              <div class="risk-dot red">&#10007;</div>
+              <div class="flex-1">
+                <div class="t-label">Sodyum benzoat</div>
+                <div class="t-caption">E211 &middot; Koruyucu</div>
+              </div>
+              <span class="badge badge-danger" style="font-size:9px;">Sakıncalı</span>
+            </div>
+            <div class="accordion-detail">
+              <div style="margin-bottom:4px;">&#9888; <strong>Hamile:</strong> Yüksek dozda fetüsa zarar verebilir. Sınırlı tüketim önerilir.</div>
+              <div>Kaynak: EFSA, 2021</div>
+            </div>
+            <div class="ingredient-row">
+              <div class="risk-dot yellow">!</div>
+              <div class="flex-1">
+                <div class="t-label">Aspartam</div>
+                <div class="t-caption">E951 &middot; Yapay tatlandırıcı</div>
+              </div>
+              <span class="badge badge-warning" style="font-size:9px;">Dikkat</span>
+            </div>
+            <div class="ingredient-row">
+              <div class="risk-dot green">&#10003;</div>
+              <div class="flex-1">
+                <div class="t-label">Kakao yağı</div>
+                <div class="t-caption">Yağ kaynağı</div>
+              </div>
+              <span class="badge badge-success" style="font-size:9px;">Güvenli</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Unknown -->
+        <div class="info-box">
+          <span style="font-size:14px; flex-shrink:0;">&#8505;</span>
+          <div>
+            <div style="font-weight:600; color:var(--text); margin-bottom:2px;">Bilinmeyen: 2 madde</div>
+            <div>Polisorbat 80, BHT — Veritabanımızda bulunamadı. AI tahminiyle değerlendirildi.</div>
+          </div>
+        </div>
+
+        <!-- Disclaimer -->
+        <div class="t-caption" style="text-align:center; color:var(--muted); padding: 4px 0; font-style:italic;">
+          Bu sonuç tıbbi tavsiye değildir.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 8. HISTORY ========== -->
+  <div class="phone-wrap" id="history">
+    <span class="phone-label">8. History</span>
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="status-bar"><span>09:41</span><span></span></div>
+      <div class="screen flex-col">
+        <div class="px" style="padding-top:8px; padding-bottom:16px;">
+          <div class="t-display" style="font-size:22px;">Geçmiş</div>
+        </div>
+
+        <div class="scroll-content flex-col gap-sm" style="padding-top:0;">
+          <div class="history-card">
+            <div class="h-icon green">&#10003;</div>
+            <div class="flex-1">
+              <div class="t-label">Eti Cicibebe</div>
+              <div class="t-caption">Gıda &middot; 3 Kas 2026</div>
+            </div>
+            <span class="badge badge-success">Güvenli</span>
+          </div>
+
+          <div class="history-card">
+            <div class="h-icon yellow">!</div>
+            <div class="flex-1">
+              <div class="t-label">Ülker Çikolata Gofret</div>
+              <div class="t-caption">Gıda &middot; 2 Kas 2026</div>
+            </div>
+            <span class="badge badge-warning">Dikkat</span>
+          </div>
+
+          <div class="history-card">
+            <div class="h-icon red">&#10007;</div>
+            <div class="flex-1">
+              <div class="t-label">Cif Power Cream</div>
+              <div class="t-caption">Temizlik &middot; 1 Kas 2026</div>
+            </div>
+            <span class="badge badge-danger">Sakıncalı</span>
+          </div>
+
+          <div class="history-card">
+            <div class="h-icon green">&#10003;</div>
+            <div class="flex-1">
+              <div class="t-label">Nivea Soft Krem</div>
+              <div class="t-caption">Kozmetik &middot; 31 Eki 2026</div>
+            </div>
+            <span class="badge badge-success">Güvenli</span>
+          </div>
+
+          <div class="history-card">
+            <div class="h-icon yellow">!</div>
+            <div class="flex-1">
+              <div class="t-label">Torku Banada</div>
+              <div class="t-caption">Gıda &middot; 30 Eki 2026</div>
+            </div>
+            <span class="badge badge-warning">Dikkat</span>
+          </div>
+
+          <div class="history-card">
+            <div class="h-icon green">&#10003;</div>
+            <div class="flex-1">
+              <div class="t-label">Sana Margarin</div>
+              <div class="t-caption">Gıda &middot; 28 Eki 2026</div>
+            </div>
+            <span class="badge badge-success">Güvenli</span>
+          </div>
+        </div>
+
+        <!-- Tab bar -->
+        <div class="tab-bar">
+          <div class="tab-item">
+            <span class="tab-icon">&#8984;</span> Tara
+          </div>
+          <div class="tab-item active">
+            <span class="tab-icon">&#9201;</span> Geçmiş
+          </div>
+          <div class="tab-item">
+            <span class="tab-icon">&#9786;</span> Profil
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 8b. HISTORY EMPTY ========== -->
+  <div class="phone-wrap">
+    <span class="phone-label">8. History (Boş)</span>
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="status-bar"><span>09:41</span><span></span></div>
+      <div class="screen flex-col">
+        <div class="px" style="padding-top:8px; padding-bottom:16px;">
+          <div class="t-display" style="font-size:22px;">Geçmiş</div>
+        </div>
+
+        <div class="empty-state">
+          <div class="empty-icon">&#128269;</div>
+          <div class="t-title" style="font-size:16px;">Henüz tarama yapmadınız</div>
+          <div class="t-body" style="color:var(--text2); font-size:13px;">İlk ürününü tarayarak içindekiler hakkında bilgi edin.</div>
+          <button class="btn btn-primary" style="margin-top:16px;">İlk Taramanı Yap</button>
+        </div>
+
+        <div class="tab-bar">
+          <div class="tab-item">
+            <span class="tab-icon">&#8984;</span> Tara
+          </div>
+          <div class="tab-item active">
+            <span class="tab-icon">&#9201;</span> Geçmiş
+          </div>
+          <div class="tab-item">
+            <span class="tab-icon">&#9786;</span> Profil
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 9. PROFILE ========== -->
+  <div class="phone-wrap" id="profile">
+    <span class="phone-label">9. Profile</span>
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="status-bar"><span>09:41</span><span></span></div>
+      <div class="screen flex-col">
+        <!-- Header -->
+        <div class="flex-row px" style="justify-content:space-between; padding-top:8px; padding-bottom:12px;">
+          <div class="t-display" style="font-size:22px;">Profil</div>
+          <div style="width:36px; height:36px; border-radius:50%; background:var(--surface); display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow-sm); cursor:pointer; color:var(--text2); font-size:16px;">&#9881;</div>
+        </div>
+
+        <div class="scroll-content flex-col gap-md" style="padding-top:0;">
+          <!-- User card -->
+          <div class="card flex-row" style="gap:12px;">
+            <div class="avatar">MK</div>
+            <div class="flex-1">
+              <div class="t-title" style="font-size:16px;">Mert Kursun</div>
+              <div class="t-caption">ornek@mail.com</div>
+            </div>
+            <span class="badge badge-pro">PRO</span>
+          </div>
+
+          <!-- Audience selection -->
+          <div>
+            <div class="t-title" style="font-size:15px; margin-bottom:4px;">Kitle Seçimi</div>
+            <div class="t-caption" style="margin-bottom:12px;">Sana özel uyarılar için profilini oluştur.</div>
+            <div style="display:flex; flex-wrap:wrap; gap:8px;">
+              <span class="chip selected">&#128118; Bebek</span>
+              <span class="chip selected">&#129328; Hamile</span>
+              <span class="chip">&#9995; Hassas Cilt</span>
+              <span class="chip">&#127806; Gluten</span>
+              <span class="chip">&#129371; Laktoz</span>
+              <span class="chip">&#129372; Fıstık</span>
+              <span class="chip selected">&#127807; Vegan</span>
+              <span class="chip">&#128137; Diyabet</span>
+            </div>
+          </div>
+
+          <!-- Quota -->
+          <div class="card flex-col gap-sm">
+            <div class="flex-row" style="justify-content:space-between;">
+              <span class="t-label">Bu ay</span>
+              <span class="t-caption" style="font-variant-numeric:tabular-nums;">3 / 5 tarama</span>
+            </div>
+            <div class="progress-bar">
+              <div class="fill" style="width:60%;"></div>
+            </div>
+            <button class="btn btn-secondary btn-sm" style="align-self:stretch;">Pro'ya Yükselt</button>
+          </div>
+        </div>
+
+        <!-- Tab bar -->
+        <div class="tab-bar">
+          <div class="tab-item">
+            <span class="tab-icon">&#8984;</span> Tara
+          </div>
+          <div class="tab-item">
+            <span class="tab-icon">&#9201;</span> Geçmiş
+          </div>
+          <div class="tab-item active">
+            <span class="tab-icon">&#9786;</span> Profil
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 10. SETTINGS ========== -->
+  <div class="phone-wrap" id="settings">
+    <span class="phone-label">10. Settings</span>
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="status-bar"><span>09:41</span><span></span></div>
+      <div class="header-bar">
+        <span class="back">&#8249;</span>
+        <span class="title">Ayarlar</span>
+        <span class="action"></span>
+      </div>
+      <div class="screen scroll-content flex-col" style="padding:0; gap:0;">
+        <div class="section-label">Genel</div>
+        <div class="card" style="border-radius:12px; margin:0 16px; padding:0;">
+          <div class="settings-row">
+            <span>Onboarding'ı tekrar izle</span>
+            <span class="chevron">&#8250;</span>
+          </div>
+        </div>
+
+        <div class="section-label">Abonelik</div>
+        <div class="card" style="border-radius:12px; margin:0 16px; padding:0;">
+          <div class="settings-row">
+            <span>Abonelik yönetimi</span>
+            <span class="chevron">&#8250;</span>
+          </div>
+          <div class="settings-row">
+            <span>Satın almaları geri yükle</span>
+            <span class="chevron">&#8250;</span>
+          </div>
+        </div>
+
+        <div class="section-label">Yasal</div>
+        <div class="card" style="border-radius:12px; margin:0 16px; padding:0;">
+          <div class="settings-row">
+            <span>KVKK Aydınlatma Metni</span>
+            <span class="chevron">&#8250;</span>
+          </div>
+          <div class="settings-row">
+            <span>Kullanım Şartları</span>
+            <span class="chevron">&#8250;</span>
+          </div>
+        </div>
+
+        <div class="section-label">Hesap</div>
+        <div class="card" style="border-radius:12px; margin:0 16px; padding:0;">
+          <div class="settings-row" style="justify-content:center; border-bottom:none;">
+            <span style="color:var(--danger); font-weight:600;">Çıkış Yap</span>
+          </div>
+        </div>
+
+        <div style="text-align:center; padding:24px 0;">
+          <div class="t-caption">İçinde Ne Var? v1.0.0</div>
+          <div class="t-caption" style="color:var(--muted);">2026</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 11. PAYWALL ========== -->
+  <div class="phone-wrap" id="paywall">
+    <span class="phone-label">11. Paywall</span>
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="status-bar"><span>09:41</span><span></span></div>
+      <div class="screen flex-col" style="padding:16px;">
+        <!-- Close -->
+        <div style="display:flex; justify-content:flex-end; margin-bottom:16px;">
+          <div style="width:32px; height:32px; border-radius:50%; background:var(--surface); display:flex; align-items:center; justify-content:center; font-size:14px; color:var(--text2); cursor:pointer; box-shadow:var(--shadow-sm);">&#10005;</div>
+        </div>
+
+        <!-- Hero -->
+        <div style="text-align:center; margin-bottom:24px;">
+          <div style="width:56px; height:56px; border-radius:50%; background:var(--surface2); display:flex; align-items:center; justify-content:center; font-size:28px; margin:0 auto 16px;">&#9733;</div>
+          <div class="t-display" style="margin-bottom:8px;">Pro'ya Yükselt</div>
+          <div class="t-body" style="color:var(--text2);">Sınırsız tarama, öncelikli analiz ve daha fazlası.</div>
+        </div>
+
+        <!-- Pricing card -->
+        <div class="card" style="text-align:center; margin-bottom:24px;">
+          <div class="price-display">69 <span class="price-period">TL / ay</span></div>
+          <div class="divider"></div>
+          <div style="text-align:left;">
+            <div class="feature-row"><span class="feature-check">&#10003;</span> Sınırsız ürün taraması</div>
+            <div class="feature-row"><span class="feature-check">&#10003;</span> Öncelikli analiz hızı</div>
+            <div class="feature-row"><span class="feature-check">&#10003;</span> Reklamsız deneyim</div>
+            <div class="feature-row"><span class="feature-check">&#10003;</span> Detaylı madde raporları</div>
+          </div>
+        </div>
+
+        <!-- CTA -->
+        <button class="btn btn-primary btn-full btn-lg" style="margin-bottom:12px;">Pro'ya Başla</button>
+
+        <!-- Restore -->
+        <button class="btn btn-ghost btn-full btn-sm" style="margin-bottom:16px;">Satın almaları geri yükle</button>
+
+        <!-- Legal -->
+        <div class="t-caption" style="text-align:center; color:var(--muted); line-height:1.5;">
+          Abonelik her ay otomatik yenilenir. İstediğiniz zaman iptal edebilirsiniz.
+          <br><span style="color:var(--primary); text-decoration:underline;">KVKK</span> &middot; <span style="color:var(--primary); text-decoration:underline;">Kullanım Şartları</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 12. PRIVACY POLICY ========== -->
+  <div class="phone-wrap" id="privacy">
+    <span class="phone-label">12. Privacy Policy</span>
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="status-bar"><span>09:41</span><span></span></div>
+      <div class="header-bar">
+        <span class="back">&#8249;</span>
+        <span class="title" style="font-size:15px;">KVKK Aydınlatma Metni</span>
+        <span class="action"></span>
+      </div>
+      <div class="screen scroll-content">
+        <div class="legal-text">
+          <h3>1. Veri Sorumlusu</h3>
+          <p>6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") uyarınca, kişisel verileriniz veri sorumlusu sıfatıyla İçinde Ne Var? tarafından aşağıda açıklanan amaçlarla işlenebilecektir.</p>
+
+          <h3>2. İşlenen Kişisel Veriler</h3>
+          <p>Uygulamamız aracılığıyla aşağıdaki kişisel veriler işlenmektedir: e-posta adresi, cihaz bilgileri, kullanım istatistikleri, profil tercihleri (kitle seçimi).</p>
+
+          <h3>3. İşleme Amaçları</h3>
+          <p>Kişisel verileriniz; hesap oluşturma ve yönetimi, ürün analiz hizmetinin sunulması, kişiselleştirilmiş uyarı ve önerilerin sağlanması, abonelik işlemlerinin yürütülmesi amaçlarıyla işlenmektedir.</p>
+
+          <h3>4. Aktarım</h3>
+          <p>Verileriniz yasal yükümlülükler kapsamında ve hizmet sağlayıcılarımız (bulut altyapı, ödeme işlemcisi) ile paylaşılabilir.</p>
+
+          <h3>5. Haklarınız</h3>
+          <p>KVKK'nin 11. maddesi uyarınca; verilerinize erişim, düzeltme, silme, aktarıma itiraz ve diğer haklarınızı kullanabilirsiniz.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 13. TERMS OF USE ========== -->
+  <div class="phone-wrap" id="terms">
+    <span class="phone-label">13. Terms of Use</span>
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="status-bar"><span>09:41</span><span></span></div>
+      <div class="header-bar">
+        <span class="back">&#8249;</span>
+        <span class="title" style="font-size:15px;">Kullanım Şartları</span>
+        <span class="action"></span>
+      </div>
+      <div class="screen scroll-content">
+        <div class="legal-text">
+          <h3>1. Hizmet Tanımı</h3>
+          <p>İçinde Ne Var? uygulaması, market ürünlerinin içeriklerini analiz eden bir bilgilendirme aracıdır. Sunulan bilgiler tıbbi tavsiye niteliğinde değildir.</p>
+
+          <h3>2. Kullanım Koşulları</h3>
+          <p>Uygulamayı kullanarak bu şartları kabul etmiş sayılırsınız. Uygulama yalnızca kişisel ve ticari olmayan amaçlarla kullanılabilir.</p>
+
+          <h3>3. Abonelik ve Ödeme</h3>
+          <p>Pro abonelik aylık olarak faturalanır. Abonelik dönem bitiminden en az 24 saat önce iptal edilmedikçe otomatik yenilenir.</p>
+
+          <h3>4. Sorumluluk Sınırlaması</h3>
+          <p>Uygulama içindekiler analizi konusunda bilgilendirme amaçlı hizmet verir. Sağlık kararları için mutlaka uzman görüşü alınmalıdır.</p>
+
+          <h3>5. Değişiklikler</h3>
+          <p>Bu şartlar önceden bildirimde bulunmaksızın güncellenebilir. Güncellemeler yayınlandığı anda yürürlüğe girer.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===== LOGO SECTION ===== -->
+<div style="max-width:1400px; margin:48px auto 24px;">
+  <div class="page-header" style="margin-bottom:0; flex-direction:column; align-items:flex-start; gap:24px;">
+    <h2 style="font-size:18px; font-weight:800; color:var(--text);">Logo — Büyüteç + Yaprak + Skor Noktaları</h2>
+    <p style="font-size:13px; color:var(--text2); margin:0; line-height:1.6;">Büyüteç = araştırma/inceleme · Yaprak motifi = doğallık/organik · 3 skor noktası (yeşil/sarı/kırmızı) = trafik lambası metaforu. Konsept "içinde ne var?" sorusunu tek simgede özetler.</p>
+    <div style="display:flex; flex-wrap:wrap; gap:24px; align-items:center; justify-content:center; width:100%; padding:24px 0;">
+      <!-- Light bg -->
+      <div style="display:flex; flex-direction:column; align-items:center; gap:10px;">
+        <div style="width:120px; height:120px; border-radius:20px; background:var(--surface); border:1px solid var(--border); display:flex; align-items:center; justify-content:center;">
+          <svg width="72" height="72" viewBox="0 0 120 120" fill="none">
+            <circle cx="52" cy="50" r="22" stroke="var(--primary)" stroke-width="3.5" fill="none"/>
+            <circle cx="52" cy="50" r="18" fill="var(--surface2)"/>
+            <line x1="68" y1="66" x2="86" y2="84" stroke="var(--primary)" stroke-width="4" stroke-linecap="round"/>
+            <path d="M42 42 C46 34, 56 33, 58 41" stroke="#2DD4BF" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+            <path d="M38 48 C40 38, 52 36, 56 44" stroke="#2DD4BF" stroke-width="1.8" stroke-linecap="round" fill="none" opacity="0.5"/>
+            <circle cx="44" cy="54" r="3" fill="var(--success)"/>
+            <circle cx="52" cy="54" r="3" fill="var(--warning)"/>
+            <circle cx="60" cy="54" r="3" fill="var(--danger)"/>
+          </svg>
+        </div>
+        <span style="font-size:10px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px;">Tema uyumlu</span>
+      </div>
+      <!-- Primary bg -->
+      <div style="display:flex; flex-direction:column; align-items:center; gap:10px;">
+        <div style="width:120px; height:120px; border-radius:20px; background:#0F766E; display:flex; align-items:center; justify-content:center;">
+          <svg width="72" height="72" viewBox="0 0 120 120" fill="none">
+            <circle cx="52" cy="50" r="22" stroke="#fff" stroke-width="3.5" fill="none"/>
+            <circle cx="52" cy="50" r="18" fill="rgba(255,255,255,0.06)"/>
+            <line x1="68" y1="66" x2="86" y2="84" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+            <path d="M42 42 C46 34, 56 33, 58 41" stroke="#2DD4BF" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+            <path d="M38 48 C40 38, 52 36, 56 44" stroke="#2DD4BF" stroke-width="1.8" stroke-linecap="round" fill="none" opacity="0.5"/>
+            <circle cx="44" cy="54" r="3" fill="#4ADE80"/>
+            <circle cx="52" cy="54" r="3" fill="#FACC15"/>
+            <circle cx="60" cy="54" r="3" fill="#F87171"/>
+          </svg>
+        </div>
+        <span style="font-size:10px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px;">Primary zemin</span>
+      </div>
+      <!-- Dark bg -->
+      <div style="display:flex; flex-direction:column; align-items:center; gap:10px;">
+        <div style="width:120px; height:120px; border-radius:20px; background:#0C0A09; display:flex; align-items:center; justify-content:center;">
+          <svg width="72" height="72" viewBox="0 0 120 120" fill="none">
+            <circle cx="52" cy="50" r="22" stroke="#2DD4BF" stroke-width="3.5" fill="none"/>
+            <circle cx="52" cy="50" r="18" fill="rgba(45,212,191,0.06)"/>
+            <line x1="68" y1="66" x2="86" y2="84" stroke="#2DD4BF" stroke-width="4" stroke-linecap="round"/>
+            <path d="M42 42 C46 34, 56 33, 58 41" stroke="#0F766E" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+            <path d="M38 48 C40 38, 52 36, 56 44" stroke="#0F766E" stroke-width="1.8" stroke-linecap="round" fill="none" opacity="0.5"/>
+            <circle cx="44" cy="54" r="3" fill="#4ADE80"/>
+            <circle cx="52" cy="54" r="3" fill="#FACC15"/>
+            <circle cx="60" cy="54" r="3" fill="#F87171"/>
+          </svg>
+        </div>
+        <span style="font-size:10px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px;">Koyu zemin</span>
+      </div>
+      <!-- App icon -->
+      <div style="display:flex; flex-direction:column; align-items:center; gap:10px;">
+        <div style="width:120px; height:120px; border-radius:26px; background:linear-gradient(145deg, #0F766E 0%, #0A5C56 100%); display:flex; align-items:center; justify-content:center; box-shadow:0 4px 16px rgba(15,118,110,0.3);">
+          <svg width="64" height="64" viewBox="0 0 120 120" fill="none">
+            <circle cx="52" cy="48" r="20" stroke="#fff" stroke-width="3.5" fill="none"/>
+            <circle cx="52" cy="48" r="16" fill="rgba(255,255,255,0.08)"/>
+            <line x1="66" y1="62" x2="82" y2="78" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+            <path d="M43 40 C47 33, 55 32, 57 39" stroke="#2DD4BF" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+            <circle cx="44" cy="52" r="2.8" fill="#4ADE80"/>
+            <circle cx="52" cy="52" r="2.8" fill="#FACC15"/>
+            <circle cx="60" cy="52" r="2.8" fill="#F87171"/>
+          </svg>
+        </div>
+        <span style="font-size:10px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px;">App ikon (Store)</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== COLOR TOKEN TABLE ===== -->
+<div style="max-width:1400px; margin:24px auto 24px;">
+  <div class="page-header" style="margin-bottom:0; flex-direction:column; align-items:flex-start; gap:16px;">
+    <h2 style="font-size:18px; font-weight:800; color:var(--text);">Renk Token'ları</h2>
+    <div style="display:flex; flex-wrap:wrap; gap:8px;">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <div style="width:32px; height:32px; border-radius:8px; background:var(--primary);"></div>
+        <span class="t-caption">primary</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <div style="width:32px; height:32px; border-radius:8px; background:var(--bg); border:1px solid var(--border);"></div>
+        <span class="t-caption">background</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <div style="width:32px; height:32px; border-radius:8px; background:var(--surface); border:1px solid var(--border);"></div>
+        <span class="t-caption">surface</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <div style="width:32px; height:32px; border-radius:8px; background:var(--text);"></div>
+        <span class="t-caption">text</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <div style="width:32px; height:32px; border-radius:8px; background:var(--text2);"></div>
+        <span class="t-caption">textSecondary</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <div style="width:32px; height:32px; border-radius:8px; background:var(--border); border:1px solid var(--border-s);"></div>
+        <span class="t-caption">border</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <div style="width:32px; height:32px; border-radius:8px; background:var(--success);"></div>
+        <span class="t-caption">success</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <div style="width:32px; height:32px; border-radius:8px; background:var(--warning);"></div>
+        <span class="t-caption">warning</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <div style="width:32px; height:32px; border-radius:8px; background:var(--danger);"></div>
+        <span class="t-caption">danger</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function toggleTheme() {
+  document.body.classList.toggle('dark');
+  const isDark = document.body.classList.contains('dark');
+  document.getElementById('themeIcon').textContent = isDark ? '☀' : '☾';
+  document.getElementById('themeLabel').textContent = isDark ? 'Light Mode' : 'Dark Mode';
+}
+</script>
+
+</body>
+</html>
