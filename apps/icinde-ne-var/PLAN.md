@@ -23,7 +23,7 @@
 
 ## Faz 1 — Auth
 
-- [ ] T04 — Supabase Auth altyapısı: auth state listener (`onAuthStateChange`), token'ı expo-secure-store'da sakla, Zustand auth store (session, user, isLoading), auth guard (root layout'ta yönlendirme)
+- [x] T04 — Supabase Auth altyapısı: auth state listener (`onAuthStateChange`), token'ı expo-secure-store'da sakla, Zustand auth store (session, user, isLoading), auth guard (root layout'ta yönlendirme)
   Kabul: Auth store testleri geçer, giriş yapılmadan korunan ekranlara erişim engellenir
   Dosyalar: `src/stores/authStore.ts`, `src/lib/auth.ts`, `src/__tests__/stores/authStore.test.ts`, `app/_layout.tsx` (güncelleme)
 

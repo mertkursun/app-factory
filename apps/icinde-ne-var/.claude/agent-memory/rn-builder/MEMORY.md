@@ -1,0 +1,1 @@
+- [Supabase types need Relationships](project_supabase-relationships.md) -- database.types.ts tables must include Relationships: [] for postgrest-js v2.118+
