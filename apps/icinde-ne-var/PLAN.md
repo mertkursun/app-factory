@@ -119,7 +119,7 @@
 
 ## Faz 7 — Seed Data
 
-- [ ] T22 — Maddeler seed verisi: gıda (~200), kozmetik (~150), temizlik (~100) kategorilerinde en yaygın maddelerin seed.sql dosyasına eklenmesi, eş anlamlılar ve kitle bayrakları ile
+- [x] T22 — Maddeler seed verisi: gıda (~200), kozmetik (~150), temizlik (~100) kategorilerinde en yaygın maddelerin seed.sql dosyasına eklenmesi, eş anlamlılar ve kitle bayrakları ile
   Kabul: `supabase db reset` sonrası `maddeler` tablosunda ~450+ kayıt var, her kategoride en az 50 kayıt; örnek barkod ile analiz hattı uçtan uca çalışır
   Dosyalar: `supabase/seed.sql`
 
