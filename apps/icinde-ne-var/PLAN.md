@@ -99,7 +99,7 @@
   Kabul: Fiyat doğru gösterilir, satın alma akışı başlar (sandbox), geri yükleme çalışır, yasal linkler açılır
   Dosyalar: `app/paywall.tsx`, `src/components/paywall/PricingCard.tsx`, `src/components/paywall/FeatureList.tsx`, `src/components/paywall/PurchaseButton.tsx`, `src/components/paywall/RestoreButton.tsx`
 
-- [ ] T19 — Edge Function: `revenuecat-webhook` — webhook imza doğrulama, abonelik durumu güncelleme
+- [x] T19 — Edge Function: `revenuecat-webhook` — webhook imza doğrulama, abonelik durumu güncelleme
   Kabul: Test webhook'u gönderildiğinde `abonelikler` tablosu doğru güncellenir; geçersiz imza reddedilir
   Dosyalar: `supabase/functions/revenuecat-webhook/index.ts`
 
