@@ -1,5 +1,6 @@
 import { View, Text, ScrollView, Pressable, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useRouter } from "expo-router";
 import { Settings, LogOut, ChevronRight, Mail } from "lucide-react-native";
 import { useAuthStore } from "@/stores/authStore";
 import { useProfile, useUpdateProfile, useCreateProfile } from "@/hooks/useProfile";
@@ -11,6 +12,7 @@ import { ProBadge } from "@/components/profile/ProBadge";
 import { useCallback, useState, useEffect } from "react";
 
 export default function ProfileScreen() {
+  const router = useRouter();
   const user = useAuthStore((s) => s.user);
   const userId = user?.id;
 
@@ -91,9 +93,7 @@ export default function ProfileScreen() {
         <View className="flex-row items-center justify-between py-3">
           <Text className="font-title text-2xl text-text">Profil</Text>
           <Pressable
-            onPress={() => {
-              // T20 settings ekranı yapıldığında router.push("/settings")
-            }}
+            onPress={() => router.push("/settings")}
             accessibilityRole="button"
             accessibilityLabel="Ayarlar"
             className="min-h-[44px] min-w-[44px] items-center justify-center"
@@ -164,9 +164,7 @@ export default function ProfileScreen() {
 
         {/* Ayarlar */}
         <Pressable
-          onPress={() => {
-            // T20 settings ekranı yapıldığında router.push("/settings")
-          }}
+          onPress={() => router.push("/settings")}
           accessibilityRole="button"
           accessibilityLabel="Ayarlar"
           className="mb-4 min-h-[44px] flex-row items-center gap-3 rounded-xl border border-border bg-surface p-4"

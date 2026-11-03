@@ -107,11 +107,11 @@
 
 ## Faz 6 — Settings & Legal
 
-- [P] T20 — Settings ekranı: onboarding tekrar izle, abonelik yönetimi linki, KVKK + kullanım şartları linkleri, uygulama sürümü, çıkış yap
+- [x] T20 — Settings ekranı: onboarding tekrar izle, abonelik yönetimi linki, KVKK + kullanım şartları linkleri, uygulama sürümü, çıkış yap
   Kabul: Her link/buton doğru çalışır, onboarding replay AsyncStorage'ı sıfırlar ve onboarding'e yönlendirir
   Dosyalar: `app/settings.tsx`, `src/components/settings/SettingsItem.tsx`
 
-- [P] T21 — Legal ekranları: KVKK aydınlatma metni taslağı, abonelik kullanım şartları taslağı
+- [x] T21 — Legal ekranları: KVKK aydınlatma metni taslağı, abonelik kullanım şartları taslağı
   Kabul: Her iki ekran Türkçe içerikle render edilir, ScrollView ile kaydırma çalışır
   Dosyalar: `app/legal/_layout.tsx`, `app/legal/privacy.tsx`, `app/legal/terms.tsx`, `docs/kvkk-aydinlatma.md`, `docs/kullanim-sartlari.md`
 
