@@ -39,7 +39,7 @@
 
 ## Faz 2 — Onboarding & Splash
 
-- [ ] T07 — Splash screen: expo-splash-screen yapılandırması, tasarım token'larından logo + arka plan rengi
+- [x] T07 — Splash screen: expo-splash-screen yapılandırması, tasarım token'larından logo + arka plan rengi
   Kabul: Uygulama açıldığında tasarım diline uygun splash gösterilir, SplashScreen.hideAsync doğru zamanda çağrılır
   Dosyalar: `app.json` (splash config), `assets/splash.png`, `app/_layout.tsx` (güncelleme)
 
