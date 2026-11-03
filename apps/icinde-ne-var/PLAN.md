@@ -31,7 +31,7 @@
   Kabul: Email OTP gönderme akışı çalışır; Google/Apple butonları platform bazlı gösterilir; form validasyonu (Zod + react-hook-form) çalışır
   Dosyalar: `app/(auth)/_layout.tsx`, `app/(auth)/login.tsx`, `src/components/auth/EmailOTPForm.tsx`, `src/components/auth/GoogleSignInButton.tsx`, `src/components/auth/AppleSignInButton.tsx`
 
-- [ ] T06 — OTP doğrulama ekranı: 6 haneli kod girişi, geri sayım ile tekrar gönder, doğrulama sonrası yönlendirme (profil yoksa profil, varsa tabs)
+- [x] T06 — OTP doğrulama ekranı: 6 haneli kod girişi, geri sayım ile tekrar gönder, doğrulama sonrası yönlendirme (profil yoksa profil, varsa tabs)
   Kabul: OTP doğrulama akışı çalışır, yanlış kod hata gösterir, süresi dolan kod için tekrar gönder butonu aktif olur
   Dosyalar: `app/(auth)/verify-otp.tsx`, `src/components/auth/OTPInput.tsx`
 
