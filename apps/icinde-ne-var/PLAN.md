@@ -131,6 +131,6 @@
   Kabul: Her ekranda loading, error ve empty state'ler gösterilir; çevrimdışı durumda uygun mesaj çıkar
   Dosyalar: `src/components/ui/LoadingScreen.tsx`, `src/components/ui/ErrorScreen.tsx`, `src/components/ui/EmptyState.tsx`, ilgili ekran dosyaları (güncelleme)
 
-- [ ] T24 — Polish: app.json metadata (ad, slug, icon, splash, version, bundleIdentifier, package), EAS yapılandırması (`eas.json`), `.env.example` güncelleme, README
+- [x] T24 — Polish: app.json metadata (ad, slug, icon, splash, version, bundleIdentifier, package), EAS yapılandırması (`eas.json`), `.env.example` güncelleme, README
   Kabul: `eas build --profile preview --platform ios` ve `android` başarılı başlar; app.json tüm zorunlu alanları içerir
   Dosyalar: `app.json`, `eas.json`, `.env.example`
