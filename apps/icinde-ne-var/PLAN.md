@@ -71,7 +71,7 @@
   Kabul: Analiz verisi doğru render edilir, profil uyarıları en üstte gösterilir, accordion açılıp kapanır, geçmişe kayıt eklenir
   Dosyalar: `app/analysis/[id].tsx`, `src/components/analysis/ScoreCircle.tsx`, `src/components/analysis/ProfileWarnings.tsx`, `src/components/analysis/ExplanationCard.tsx`, `src/components/analysis/IngredientDetails.tsx`, `src/components/analysis/UnknownIngredients.tsx`, `src/components/analysis/DisclaimerNote.tsx`
 
-- [ ] T14 — Scanner → Analiz akış entegrasyonu: barkod okunduğunda veya fotoğraf onaylandığında Edge Function çağrısı, loading durumu, hata yönetimi, sonuç ekranına yönlendirme, auth guard (giriş yoksa login'e yönlendir)
+- [x] T14 — Scanner → Analiz akış entegrasyonu: barkod okunduğunda veya fotoğraf onaylandığında Edge Function çağrısı, loading durumu, hata yönetimi, sonuç ekranına yönlendirme, auth guard (giriş yoksa login'e yönlendir)
   Kabul: Tam akış çalışır — barkod oku → loading → sonuç; fotoğraf çek → confirm → loading → sonuç; giriş yapılmamışsa auth'a yönlendirir; kota doluysa paywall'a yönlendirir
   Dosyalar: `src/hooks/useAnalyzeProduct.ts`, `src/components/scanner/ScannerView.tsx` (güncelleme), `app/(tabs)/index.tsx` (güncelleme)
 
@@ -79,7 +79,7 @@
 
 ## Faz 4 — History & Profile
 
-- [P] T15 — History ekranı: FlashList ile geçmiş taramalar listesi, ürün adı + skor badge + tarih, boş durum, tıklayınca sonuç ekranına git
+- [x] T15 — History ekranı: FlashList ile geçmiş taramalar listesi, ürün adı + skor badge + tarih, boş durum, tıklayınca sonuç ekranına git
   Kabul: Geçmiş taramalar listelenir (pagination), boş durumda uygun mesaj gösterilir, karta tıkla analiz ekranına gider
   Dosyalar: `app/(tabs)/history.tsx`, `src/components/history/HistoryCard.tsx`, `src/components/history/EmptyHistory.tsx`
 
