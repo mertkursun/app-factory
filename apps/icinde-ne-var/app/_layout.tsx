@@ -13,6 +13,7 @@ import {
 } from "@expo-google-fonts/plus-jakarta-sans";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useAuthStore } from "@/stores/authStore";
+import { useAppStore } from "@/stores/appStore";
 
 const STALE_TIME_MS = 1000 * 60 * 5;
 
@@ -31,18 +32,23 @@ function AuthGate() {
   const router = useRouter();
   const segments = useSegments();
   const { session, isInitialized } = useAuthStore();
+  const hasSeenOnboarding = useAppStore((s) => s.hasSeenOnboarding);
+  const isHydrated = useAppStore((s) => s.isHydrated);
 
   useEffect(() => {
-    if (!isInitialized) return;
+    if (!isInitialized || !isHydrated) return;
 
     const inAuthGroup = segments[0] === "(auth)";
+    const inOnboardingGroup = segments[0] === "(onboarding)";
 
-    if (!session && !inAuthGroup) {
+    if (!hasSeenOnboarding && !inOnboardingGroup) {
+      router.replace("/(onboarding)");
+    } else if (hasSeenOnboarding && !session && !inAuthGroup) {
       router.replace("/(auth)/login");
-    } else if (session && inAuthGroup) {
+    } else if (hasSeenOnboarding && session && (inAuthGroup || inOnboardingGroup)) {
       router.replace("/(tabs)");
     }
-  }, [session, isInitialized, segments, router]);
+  }, [session, isInitialized, isHydrated, hasSeenOnboarding, segments, router]);
 
   return <Slot />;
 }
@@ -50,6 +56,7 @@ function AuthGate() {
 export default function RootLayout() {
   const initialize = useAuthStore((s) => s.initialize);
   const isInitialized = useAuthStore((s) => s.isInitialized);
+  const isHydrated = useAppStore((s) => s.isHydrated);
 
   const [fontsLoaded] = useFonts({
     PlusJakartaSans_400Regular,
@@ -65,12 +72,12 @@ export default function RootLayout() {
   }, [initialize]);
 
   useEffect(() => {
-    if (fontsLoaded && isInitialized) {
+    if (fontsLoaded && isInitialized && isHydrated) {
       SplashScreen.hideAsync();
     }
-  }, [fontsLoaded, isInitialized]);
+  }, [fontsLoaded, isInitialized, isHydrated]);
 
-  if (!fontsLoaded || !isInitialized) {
+  if (!fontsLoaded || !isInitialized || !isHydrated) {
     return null;
   }
 

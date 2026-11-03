@@ -43,7 +43,7 @@
   Kabul: Uygulama açıldığında tasarım diline uygun splash gösterilir, SplashScreen.hideAsync doğru zamanda çağrılır
   Dosyalar: `app.json` (splash config), `assets/splash.png`, `app/_layout.tsx` (güncelleme)
 
-- [P] T08 — Onboarding slider: 4 slaytlık FlatList/PagerView slider, Lottie animasyonlu illüstrasyonlar, Atla/Devam/Başla butonları, AsyncStorage'da görüldü bilgisi, root layout'ta yönlendirme mantığı
+- [x] T08 — Onboarding slider: 4 slaytlık FlatList/PagerView slider, Lottie animasyonlu illüstrasyonlar, Atla/Devam/Başla butonları, AsyncStorage'da görüldü bilgisi, root layout'ta yönlendirme mantığı
   Kabul: İlk açılışta onboarding gösterilir, tekrar açılışta gösterilmez, "Atla" ile geçilir, son slaytta "Başla" butonu auth veya tabs'a yönlendirir
   Dosyalar: `app/(onboarding)/_layout.tsx`, `app/(onboarding)/index.tsx`, `src/components/onboarding/OnboardingSlider.tsx`, `src/components/onboarding/SlideItem.tsx`, `src/stores/appStore.ts`, `assets/lottie/`, `src/__tests__/components/OnboardingSlider.test.tsx`
 
