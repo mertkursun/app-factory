@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, Pressable, ActivityIndicator } from "react-native";
+import { View, Text, ScrollView, Pressable } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ArrowLeft } from "lucide-react-native";
@@ -9,6 +9,8 @@ import { ExplanationCard } from "@/components/analysis/ExplanationCard";
 import { IngredientDetails } from "@/components/analysis/IngredientDetails";
 import { UnknownIngredients } from "@/components/analysis/UnknownIngredients";
 import { DisclaimerNote } from "@/components/analysis/DisclaimerNote";
+import { LoadingScreen } from "@/components/ui/LoadingScreen";
+import { ErrorScreen } from "@/components/ui/ErrorScreen";
 import type { SkorRenk } from "@/lib/schemas";
 
 interface AnalysisMadde {
@@ -33,31 +35,16 @@ export default function AnalysisScreen() {
   const { data: analysis, isLoading, error } = useAnalysis(id);
 
   if (isLoading) {
-    return (
-      <SafeAreaView className="flex-1 bg-background items-center justify-center">
-        <ActivityIndicator size="large" color="#0F766E" />
-        <Text className="text-text-secondary font-body mt-3">Yükleniyor...</Text>
-      </SafeAreaView>
-    );
+    return <LoadingScreen message="Analiz yükleniyor..." />;
   }
 
   if (error || !analysis) {
     return (
-      <SafeAreaView className="flex-1 bg-background items-center justify-center px-6">
-        <Text className="text-lg font-title text-text mb-2">Analiz bulunamadı</Text>
-        <Text className="text-sm font-body text-text-secondary mb-4 text-center">
-          Analiz sırasında bir sorun oluştu. Tekrar deneyin.
-        </Text>
-        <Pressable
-          onPress={() => router.back()}
-          accessibilityRole="button"
-          accessibilityLabel="Geri dön"
-          style={{ minHeight: 44, minWidth: 44 }}
-          className="items-center justify-center"
-        >
-          <Text className="text-primary font-label">Geri Dön</Text>
-        </Pressable>
-      </SafeAreaView>
+      <ErrorScreen
+        title="Analiz bulunamadı"
+        message="Analiz sırasında bir sorun oluştu. Tekrar deneyin."
+        onRetry={() => router.back()}
+      />
     );
   }
 

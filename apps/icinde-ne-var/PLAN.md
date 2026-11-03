@@ -127,7 +127,7 @@
 
 ## Faz 8 — Polish
 
-- [ ] T23 — Boş durumlar, loading ve hata ekranları: tüm ekranlar için skeleton/loading state, hata durumu (retry butonu), boş liste durumları, network hatası
+- [x] T23 — Boş durumlar, loading ve hata ekranları: tüm ekranlar için skeleton/loading state, hata durumu (retry butonu), boş liste durumları, network hatası
   Kabul: Her ekranda loading, error ve empty state'ler gösterilir; çevrimdışı durumda uygun mesaj çıkar
   Dosyalar: `src/components/ui/LoadingScreen.tsx`, `src/components/ui/ErrorScreen.tsx`, `src/components/ui/EmptyState.tsx`, ilgili ekran dosyaları (güncelleme)
 

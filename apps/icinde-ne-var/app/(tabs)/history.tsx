@@ -1,10 +1,12 @@
-import { View, Text, Pressable, ActivityIndicator } from "react-native";
+import { View, Text, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { FlashList } from "@shopify/flash-list";
 import { useRouter } from "expo-router";
 import { useHistory } from "@/hooks/useHistory";
 import { HistoryCard } from "@/components/history/HistoryCard";
 import { EmptyHistory } from "@/components/history/EmptyHistory";
+import { LoadingScreen } from "@/components/ui/LoadingScreen";
+import { ErrorScreen } from "@/components/ui/ErrorScreen";
 import { useAuthStore } from "@/stores/authStore";
 import type { HistoryItemWithKategori } from "@/services/history";
 import { useCallback } from "react";
@@ -54,32 +56,16 @@ export default function HistoryScreen() {
   );
 
   if (isLoading) {
-    return (
-      <SafeAreaView className="flex-1 bg-background items-center justify-center">
-        <ActivityIndicator color={PRIMARY_COLOR} />
-      </SafeAreaView>
-    );
+    return <LoadingScreen message="Geçmiş yükleniyor..." />;
   }
 
   if (error) {
     return (
-      <SafeAreaView className="flex-1 bg-background items-center justify-center px-6">
-        <Text className="text-text font-title text-lg mb-2">Bir hata oluştu</Text>
-        <Text className="text-text-secondary font-body text-sm mb-4 text-center">
-          Geçmiş yüklenirken bir sorun oluştu.
-        </Text>
-        <Pressable
-          onPress={() => refetch()}
-          className="bg-primary px-6 h-12 rounded-xl items-center justify-center"
-          style={({ pressed }) => ({
-            transform: [{ scale: pressed ? 0.96 : 1 }],
-          })}
-          accessibilityRole="button"
-          accessibilityLabel="Tekrar dene"
-        >
-          <Text className="text-primary-foreground text-sm font-label">Tekrar Dene</Text>
-        </Pressable>
-      </SafeAreaView>
+      <ErrorScreen
+        title="Bir hata oluştu"
+        message="Geçmiş yüklenirken bir sorun oluştu."
+        onRetry={() => refetch()}
+      />
     );
   }
 

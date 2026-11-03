@@ -9,6 +9,8 @@ import { signOut } from "@/lib/auth";
 import { AudienceSelector } from "@/components/profile/AudienceSelector";
 import { QuotaInfo } from "@/components/profile/QuotaInfo";
 import { ProBadge } from "@/components/profile/ProBadge";
+import { LoadingScreen } from "@/components/ui/LoadingScreen";
+import { ErrorScreen } from "@/components/ui/ErrorScreen";
 import { useCallback, useState, useEffect } from "react";
 
 export default function ProfileScreen() {
@@ -62,19 +64,16 @@ export default function ProfileScreen() {
 
   // Loading durumu
   if (profileLoading || quotaLoading) {
-    return (
-      <SafeAreaView className="flex-1 items-center justify-center bg-background">
-        <ActivityIndicator color="#0F766E" />
-      </SafeAreaView>
-    );
+    return <LoadingScreen message="Profil yükleniyor..." />;
   }
 
   // Hata durumu (user yoksa)
   if (!user) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center bg-background">
-        <Text className="font-body text-base text-text-secondary">Oturum bilgisi bulunamadı.</Text>
-      </SafeAreaView>
+      <ErrorScreen
+        title="Oturum bulunamadı"
+        message="Oturum bilgisi bulunamadı. Lütfen tekrar giriş yapın."
+      />
     );
   }
 
