@@ -31,7 +31,8 @@
           "cameraPermission": "Barkod okumak ve içindekiler etiketini fotoğraflamak için kameraya erişim gerekli."
         }
       ],
-      "expo-font"
+      "expo-font",
+      "react-native-purchases"
     ],
     "experiments": {
       "typedRoutes": true

@@ -14,6 +14,7 @@ import {
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useAuthStore } from "@/stores/authStore";
 import { useAppStore } from "@/stores/appStore";
+import { configureRevenueCat, identifyUser } from "@/lib/revenuecat";
 
 const STALE_TIME_MS = 1000 * 60 * 5;
 
@@ -56,6 +57,7 @@ function AuthGate() {
 export default function RootLayout() {
   const initialize = useAuthStore((s) => s.initialize);
   const isInitialized = useAuthStore((s) => s.isInitialized);
+  const user = useAuthStore((s) => s.user);
   const isHydrated = useAppStore((s) => s.isHydrated);
 
   const [fontsLoaded] = useFonts({
@@ -70,6 +72,16 @@ export default function RootLayout() {
     const cleanup = initialize();
     return cleanup;
   }, [initialize]);
+
+  useEffect(() => {
+    configureRevenueCat();
+  }, []);
+
+  useEffect(() => {
+    if (user?.id) {
+      identifyUser(user.id);
+    }
+  }, [user?.id]);
 
   useEffect(() => {
     if (fontsLoaded && isInitialized && isHydrated) {

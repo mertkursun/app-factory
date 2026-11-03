@@ -91,7 +91,7 @@
 
 ## Faz 5 — Subscription & Paywall
 
-- [ ] T17 — RevenueCat entegrasyonu: SDK kurulumu, config plugin, `src/lib/revenuecat.ts` init, Purchases.configure, offering/package getirme
+- [x] T17 — RevenueCat entegrasyonu: SDK kurulumu, config plugin, `src/lib/revenuecat.ts` init, Purchases.configure, offering/package getirme
   Kabul: RevenueCat SDK başlatılır, test offering'leri çekilir (sandbox); EAS dev-client build'de çalışır
   Dosyalar: `src/lib/revenuecat.ts`, `src/hooks/useSubscription.ts`, `app.json` (plugin config)
 
