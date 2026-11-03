@@ -83,7 +83,7 @@
   Kabul: Geçmiş taramalar listelenir (pagination), boş durumda uygun mesaj gösterilir, karta tıkla analiz ekranına gider
   Dosyalar: `app/(tabs)/history.tsx`, `src/components/history/HistoryCard.tsx`, `src/components/history/EmptyHistory.tsx`
 
-- [P] T16 — Profile ekranı: kitle seçimi (multi-chip selector), kota bilgisi, Pro badge, hesap bilgileri, ayarlar linki, çıkış yap
+- [x] T16 — Profile ekranı: kitle seçimi (multi-chip selector), kota bilgisi, Pro badge, hesap bilgileri, ayarlar linki, çıkış yap
   Kabul: Kitle seçimi kaydedilir ve profil güncellenir, kota bilgisi doğru gösterilir, çıkış yap çalışır
   Dosyalar: `app/(tabs)/profile.tsx`, `src/components/profile/AudienceSelector.tsx`, `src/components/profile/QuotaInfo.tsx`, `src/components/profile/ProBadge.tsx`
 
