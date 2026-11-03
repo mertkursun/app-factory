@@ -1,6 +1,9 @@
-import { View, Text, Pressable } from "react-native";
-import { ShieldCheck, AlertTriangle, ShieldAlert } from "lucide-react-native";
-import { SCORE_COLORS } from "@/lib/constants";
+import { View, Text, Pressable, StyleSheet } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
+import { Utensils, Sparkles, SprayCan, Package } from "lucide-react-native";
+import { useTranslation } from "react-i18next";
+import { useTheme, fonts, radius } from "@/theme/tokens";
+import { Badge } from "@/components/ui/Badge";
 import type { HistoryItemWithKategori } from "@/services/history";
 import type { SkorRenk } from "@/lib/schemas";
 
@@ -9,67 +12,141 @@ interface HistoryCardProps {
   onPress: () => void;
 }
 
-const SKOR_ICONS = {
-  yesil: ShieldCheck,
-  sari: AlertTriangle,
-  kirmizi: ShieldAlert,
+const STATUS_COLOR_MAP = {
+  yesil: { key: "success" as const, label: "Güvenli" },
+  sari: { key: "warning" as const, label: "Dikkat" },
+  kirmizi: { key: "danger" as const, label: "Sakıncalı" },
 } as const;
 
-const KATEGORI_LABELS: Record<string, string> = {
-  gida: "Gıda",
-  kozmetik: "Kozmetik",
-  temizlik: "Temizlik",
-  genel: "Genel",
-} as const;
+const CATEGORY_ICON_MAP: Record<string, typeof Utensils> = {
+  gida: Utensils,
+  kozmetik: Sparkles,
+  temizlik: SprayCan,
+};
+
+const CATEGORY_GRADIENT_MAP: Record<string, readonly [string, string]> = {
+  gida: ["#F2B544", "#E39B07"],
+  kozmetik: ["#F08BC4", "#D95BA3"],
+  temizlik: ["#60A5FA", "#3B82F6"],
+};
+
+const KATEGORI_KEYS: Record<string, string> = {
+  gida: "history.categoryFood",
+  kozmetik: "history.categoryCosmetic",
+  temizlik: "history.categoryCleaning",
+  genel: "history.categoryGeneral",
+};
 
 function formatDate(dateStr: string): string {
   const date = new Date(dateStr);
   return date.toLocaleDateString("tr-TR", {
     day: "numeric",
     month: "short",
-    year: "numeric",
   });
 }
 
 export function HistoryCard({ item, onPress }: HistoryCardProps) {
+  const { t } = useTranslation();
+  const { colors, shadow } = useTheme();
+
   const skor: SkorRenk = item.skor;
-  const color = SCORE_COLORS[skor];
-  const Icon = SKOR_ICONS[skor];
-  const productName = item.urun_adi ?? "Bilinmeyen Ürün";
-  const kategori = item.urun_analizleri?.kategori;
-  const kategoriLabel = kategori ? (KATEGORI_LABELS[kategori] ?? kategori) : null;
+  const statusInfo = STATUS_COLOR_MAP[skor];
+  const productName = item.urun_adi ?? t("common.unknownProduct");
+  const kategori = item.urun_analizleri?.kategori ?? "genel";
+  const kategoriKey = KATEGORI_KEYS[kategori];
+  const kategoriLabel = kategoriKey ? t(kategoriKey) : String(kategori);
   const dateStr = formatDate(item.created_at);
-  const subtitle = kategoriLabel ? `${kategoriLabel} — ${dateStr}` : dateStr;
+  const subtitle = `${kategoriLabel} · ${dateStr}`;
+
+  const statusColorMap: Record<string, string> = {
+    yesil: colors.success,
+    sari: colors.warning,
+    kirmizi: colors.danger,
+  };
+  const stripeColor = statusColorMap[skor] ?? colors.border;
+
+  const CategoryIcon = CATEGORY_ICON_MAP[kategori] ?? Package;
+  const categoryGradient = CATEGORY_GRADIENT_MAP[kategori] ?? ["#A8A29E", "#78716C"];
 
   return (
     <Pressable
       onPress={onPress}
-      className="bg-surface border border-border rounded-xl p-4 flex-row items-center gap-3"
-      style={({ pressed }) => ({
-        transform: [{ scale: pressed ? 0.98 : 1 }],
-      })}
       accessibilityRole="button"
-      accessibilityLabel={`${productName}, ${color.label}, ${subtitle}`}
+      accessibilityLabel={`${productName}, ${statusInfo.label}, ${subtitle}`}
+      style={({ pressed }) => [
+        styles.card,
+        {
+          backgroundColor: colors.surface,
+          borderColor: colors.border,
+        },
+        shadow.low,
+        { transform: [{ scale: pressed ? 0.98 : 1 }] },
+      ]}
     >
-      <View
-        className="w-10 h-10 rounded-full items-center justify-center"
-        style={{ backgroundColor: color.bg }}
-      >
-        <Icon size={20} color={color.text} />
-      </View>
+      {/* Left status stripe */}
+      <View style={[styles.stripe, { backgroundColor: stripeColor }]} />
 
-      <View className="flex-1">
-        <Text className="text-base font-label text-text" numberOfLines={1}>
+      {/* Category icon tile */}
+      <LinearGradient
+        colors={[categoryGradient[0], categoryGradient[1]]}
+        style={styles.categoryTile}
+      >
+        <CategoryIcon size={20} color="#FFFFFF" />
+      </LinearGradient>
+
+      {/* Text content */}
+      <View style={styles.textContent}>
+        <Text style={[styles.productName, { color: colors.text }]} numberOfLines={1}>
           {productName}
         </Text>
-        <Text className="text-xs font-caption text-text-secondary mt-1">{subtitle}</Text>
+        <Text style={[styles.subtitle, { color: colors.muted }]}>{subtitle}</Text>
       </View>
 
-      <View className="rounded-full px-2 py-1" style={{ backgroundColor: color.bg }}>
-        <Text className="text-xs font-label" style={{ color: color.text }}>
-          {color.label}
-        </Text>
+      {/* Score + Badge */}
+      <View style={styles.scoreContainer}>
+        <Badge label={statusInfo.label} status={statusInfo.key} />
       </View>
     </Pressable>
   );
 }
+
+const styles = StyleSheet.create({
+  card: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    overflow: "hidden",
+    paddingRight: 14,
+    paddingVertical: 12,
+    gap: 12,
+  },
+  stripe: {
+    width: 4,
+    alignSelf: "stretch",
+    borderTopLeftRadius: radius.lg,
+    borderBottomLeftRadius: radius.lg,
+  },
+  categoryTile: {
+    width: 44,
+    height: 44,
+    borderRadius: 14,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  textContent: {
+    flex: 1,
+    gap: 3,
+  },
+  productName: {
+    fontFamily: fonts.display700,
+    fontSize: 14,
+  },
+  subtitle: {
+    fontFamily: fonts.body500,
+    fontSize: 11,
+  },
+  scoreContainer: {
+    alignItems: "flex-end",
+  },
+});

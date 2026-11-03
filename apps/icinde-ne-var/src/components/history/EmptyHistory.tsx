@@ -1,33 +1,79 @@
-import { View, Text, Pressable } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
-import { ScanLine } from "lucide-react-native";
+import { useTranslation } from "react-i18next";
+import { useTheme, fonts } from "@/theme/tokens";
+import { Logo } from "@/components/ui/Logo";
+import { PrimaryButton } from "@/components/ui/PrimaryButton";
 
-const ICON_COLOR = "#78716C";
-const ICON_SIZE = 36;
+const HALO_SIZE = 150;
+const DASHED_SIZE = 100;
 
 export function EmptyHistory() {
+  const { t } = useTranslation();
   const router = useRouter();
+  const { colors } = useTheme();
 
   return (
-    <View className="flex-1 items-center justify-center px-8 gap-4">
-      <View className="w-20 h-20 rounded-full bg-surface-secondary items-center justify-center">
-        <ScanLine size={ICON_SIZE} color={ICON_COLOR} />
+    <View style={styles.container}>
+      {/* Halo + dashed circle with logo */}
+      <View style={[styles.halo, { backgroundColor: colors.surfaceTint }]}>
+        <View
+          style={[
+            styles.dashedCircle,
+            {
+              borderColor: colors.border,
+            },
+          ]}
+        >
+          <Logo size={40} />
+        </View>
       </View>
-      <Text className="text-lg font-title text-text text-center">Henüz tarama yapmadınız</Text>
-      <Text className="text-sm font-body text-text-secondary text-center">
-        İlk ürününüzü tarayarak içindekileri öğrenin.
-      </Text>
-      <Pressable
+
+      <Text style={[styles.title, { color: colors.text }]}>{t("history.empty")}</Text>
+      <Text style={[styles.description, { color: colors.muted }]}>{t("history.emptyDesc")}</Text>
+      <PrimaryButton
+        label={t("history.firstScan")}
         onPress={() => router.push("/(tabs)")}
-        className="bg-primary px-6 h-12 rounded-xl items-center justify-center"
-        style={({ pressed }) => ({
-          transform: [{ scale: pressed ? 0.96 : 1 }],
-        })}
-        accessibilityRole="button"
-        accessibilityLabel="Taramaya başla"
-      >
-        <Text className="text-primary-foreground text-sm font-label">Tara</Text>
-      </Pressable>
+        height={48}
+      />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 32,
+    gap: 16,
+  },
+  halo: {
+    width: HALO_SIZE,
+    height: HALO_SIZE,
+    borderRadius: HALO_SIZE / 2,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 8,
+  },
+  dashedCircle: {
+    width: DASHED_SIZE,
+    height: DASHED_SIZE,
+    borderRadius: DASHED_SIZE / 2,
+    borderWidth: 2,
+    borderStyle: "dashed",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  title: {
+    fontFamily: fonts.display800,
+    fontSize: 20,
+    textAlign: "center",
+  },
+  description: {
+    fontFamily: fonts.body400,
+    fontSize: 13,
+    textAlign: "center",
+    lineHeight: 19,
+  },
+});

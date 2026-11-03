@@ -1,20 +1,22 @@
-import { View, Text, Pressable, ActivityIndicator } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { View, Text, StyleSheet, Platform, Pressable, ActivityIndicator } from "react-native";
+import { BlurView } from "expo-blur";
 import { CameraOff, AlertTriangle, X, Crown } from "lucide-react-native";
 import { useRouter } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { useCameraPermission } from "@/hooks/useCameraPermission";
 import { useScanFlow } from "@/hooks/useScanFlow";
 import { ScannerView } from "@/components/scanner/ScannerView";
 import { QuotaBadge } from "@/components/scanner/QuotaBadge";
+import { Logo } from "@/components/ui/Logo";
+import { PrimaryButton } from "@/components/ui/PrimaryButton";
+import { useTheme, fonts, spacing } from "@/theme/tokens";
 
-const CAMERA_OFF_ICON_SIZE = 40;
 const ICON_SIZE = 20;
-const MUTED_COLOR = "#78716C";
-const WHITE = "#FFFFFF";
-const PRESSED_SCALE = 0.96;
 
 export default function ScanScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
+  const { colors } = useTheme();
   const {
     isGranted,
     canAskAgain,
@@ -32,116 +34,112 @@ export default function ScanScreen() {
 
   if (permissionLoading) {
     return (
-      <View className="flex-1 bg-background items-center justify-center">
-        <Text className="text-text-secondary font-body">Yükleniyor...</Text>
+      <View style={[styles.center, { backgroundColor: colors.cameraBg }]}>
+        <ActivityIndicator color={colors.primary} />
       </View>
     );
   }
 
   if (!isGranted) {
     return (
-      <SafeAreaView className="flex-1 bg-background">
-        <View className="flex-1 items-center justify-center px-8 gap-6">
-          <View className="w-24 h-24 rounded-full bg-surface-secondary items-center justify-center">
-            <CameraOff size={CAMERA_OFF_ICON_SIZE} color={MUTED_COLOR} />
+      <View style={[styles.center, { backgroundColor: colors.background }]}>
+        <View style={styles.permissionContent}>
+          <View style={[styles.permissionIcon, { backgroundColor: colors.surfaceTint }]}>
+            <CameraOff size={40} color={colors.muted} />
           </View>
-          <Text className="text-xl font-title text-text text-center">Kamera İzni Gerekli</Text>
-          <Text className="text-base font-body text-text-secondary text-center">
-            Barkod okumak ve içindekiler etiketini fotoğraflamak için kameraya erişim gerekli.
+          <Text style={[styles.permissionTitle, { color: colors.text }]}>
+            {t("scanner.cameraPermissionRequired")}
+          </Text>
+          <Text style={[styles.permissionDesc, { color: colors.textSecondary }]}>
+            {t("scanner.cameraPermissionDesc")}
           </Text>
           {canAskAgain ? (
-            <Pressable
+            <PrimaryButton
+              label={t("scanner.grantPermission")}
               onPress={requestPermission}
-              accessibilityRole="button"
-              accessibilityLabel="Kamera izni ver"
-              className="bg-primary px-8 h-12 rounded-xl items-center justify-center"
-              style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
-            >
-              <Text className="text-white font-label">İzin Ver</Text>
-            </Pressable>
+              height={48}
+            />
           ) : (
-            <Text className="text-sm font-caption text-muted text-center">
-              Ayarlar&apos;dan kamera iznini açmanız gerekiyor.
+            <Text style={[styles.settingsHint, { color: colors.muted }]}>
+              {t("scanner.openSettings")}
             </Text>
           )}
         </View>
-      </SafeAreaView>
+      </View>
     );
   }
 
   return (
-    <View className="flex-1 bg-background">
-      {/* Ust bar: QuotaBadge */}
-      <SafeAreaView edges={["top"]} className="absolute top-0 left-0 right-0 z-10">
-        <View className="flex-row justify-between items-center px-4 py-2">
-          <Text className="text-white text-lg font-title">İçinde Ne Var?</Text>
-          <QuotaBadge />
-        </View>
-      </SafeAreaView>
-
-      {/* Kamera */}
+    <View style={[styles.container, { backgroundColor: colors.cameraBg }]}>
+      {/* Camera + overlays */}
       <ScannerView
         onBarcodeScanned={handleBarcodeScanned}
         onPhotoTaken={handlePhotoTaken}
         isProcessing={isAnalyzing}
       />
 
-      {/* Kota doldu banner */}
+      {/* Top bar */}
+      <View style={styles.topBar}>
+        {/* Brand pill */}
+        <BrandPill />
+        {/* Quota pill */}
+        <QuotaBadge />
+      </View>
+
+      {/* Quota exhausted banner */}
       {isQuotaExhausted && !isAnalyzing && (
-        <View className="absolute bottom-44 left-4 right-4 bg-danger-light rounded-xl p-4 gap-3">
-          <View className="flex-row items-center gap-2">
-            <AlertTriangle size={ICON_SIZE} color="#991B1B" />
-            <Text className="text-danger-text font-label flex-1">Tarama Kotanız Doldu</Text>
+        <View style={[styles.banner, { backgroundColor: colors.dangerBg }]}>
+          <View style={styles.bannerRow}>
+            <AlertTriangle size={ICON_SIZE} color={colors.dangerText} />
+            <Text style={[styles.bannerTitle, { color: colors.dangerText }]}>
+              {t("scanner.quotaExhausted")}
+            </Text>
           </View>
-          <Text className="text-sm font-body text-danger-text/80">
-            Bu ay için ücretsiz tarama hakkınız kalmadı.
+          <Text style={[styles.bannerDesc, { color: colors.dangerText, opacity: 0.8 }]}>
+            {t("scanner.quotaExhaustedDesc")}
           </Text>
-          <Pressable
+          <PrimaryButton
+            label={t("scanner.upgradePro")}
             onPress={() => router.push("/paywall")}
-            accessibilityRole="button"
-            accessibilityLabel="Pro'ya yükselt"
-            className="bg-primary h-11 rounded-lg items-center justify-center flex-row gap-2"
-            style={({ pressed }) => ({
-              transform: [{ scale: pressed ? PRESSED_SCALE : 1 }],
-            })}
-          >
-            <Crown size={ICON_SIZE} color={WHITE} />
-            <Text className="text-white font-label">Pro&apos;ya Yükselt</Text>
-          </Pressable>
+            height={44}
+            icon={<Crown size={18} color={colors.primaryFg} />}
+          />
         </View>
       )}
 
-      {/* Hata mesaji */}
+      {/* Error banner */}
       {error && !isAnalyzing && (
-        <View className="absolute bottom-44 left-4 right-4 bg-surface rounded-xl p-4 gap-2 shadow-lg">
-          <View className="flex-row items-center justify-between">
-            <View className="flex-row items-center gap-2 flex-1">
-              <AlertTriangle size={ICON_SIZE} color="#991B1B" />
-              <Text className="text-text font-label flex-1" numberOfLines={1}>
-                Hata
+        <View style={[styles.banner, { backgroundColor: colors.surface }]}>
+          <View style={styles.bannerRowBetween}>
+            <View style={styles.bannerRow}>
+              <AlertTriangle size={ICON_SIZE} color={colors.dangerText} />
+              <Text style={[styles.bannerTitle, { color: colors.text }]} numberOfLines={1}>
+                {t("common.error")}
               </Text>
             </View>
             <Pressable
               onPress={clearError}
               accessibilityRole="button"
-              accessibilityLabel="Hatayı kapat"
-              className="w-8 h-8 items-center justify-center"
+              accessibilityLabel={t("scanner.closeError")}
+              style={styles.closeButton}
             >
-              <X size={ICON_SIZE} color={MUTED_COLOR} />
+              <X size={ICON_SIZE} color={colors.muted} />
             </Pressable>
           </View>
-          <Text className="text-sm font-body text-text-secondary">{error}</Text>
+          <Text style={[styles.bannerDesc, { color: colors.textSecondary }]}>{error}</Text>
         </View>
       )}
 
-      {/* Analiz loading overlay */}
+      {/* Analyzing overlay */}
       {isAnalyzing && (
-        <View className="absolute inset-0 bg-white/60 items-center justify-center z-20">
-          <View className="bg-surface rounded-2xl p-8 items-center gap-4 shadow-lg">
-            <ActivityIndicator size="large" color="#0F766E" />
-            <Text className="text-base font-label text-text">Analiz ediliyor...</Text>
-            <Text className="text-sm font-caption text-text-secondary text-center">
-              Ürün içeriği inceleniyor
+        <View style={styles.analyzingOverlay}>
+          <View style={[styles.analyzingCard, { backgroundColor: colors.surface }]}>
+            <ActivityIndicator size="large" color={colors.primary} />
+            <Text style={[styles.analyzingTitle, { color: colors.text }]}>
+              {t("common.analyzing")}
+            </Text>
+            <Text style={[styles.analyzingDesc, { color: colors.textSecondary }]}>
+              {t("scanner.analyzingSubtitle")}
             </Text>
           </View>
         </View>
@@ -149,3 +147,160 @@ export default function ScanScreen() {
     </View>
   );
 }
+
+function BrandPill() {
+  if (Platform.OS === "ios") {
+    return (
+      <BlurView intensity={16} tint="dark" style={styles.brandPillBlur}>
+        <BrandPillContent />
+      </BlurView>
+    );
+  }
+
+  return (
+    <View style={[styles.brandPillBlur, styles.brandPillAndroid]}>
+      <BrandPillContent />
+    </View>
+  );
+}
+
+function BrandPillContent() {
+  return (
+    <View style={styles.brandPillInner}>
+      <Logo size={22} variant="white" />
+      <Text style={styles.brandText}>{"İçinde Ne Var?"}</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  center: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  permissionContent: {
+    alignItems: "center",
+    paddingHorizontal: 32,
+    gap: 16,
+  },
+  permissionIcon: {
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  permissionTitle: {
+    fontFamily: fonts.display700,
+    fontSize: 20,
+    textAlign: "center",
+  },
+  permissionDesc: {
+    fontFamily: fonts.body400,
+    fontSize: 14,
+    textAlign: "center",
+    lineHeight: 21,
+  },
+  settingsHint: {
+    fontFamily: fonts.body500,
+    fontSize: 13,
+    textAlign: "center",
+  },
+  topBar: {
+    position: "absolute",
+    top: spacing.topInset,
+    left: spacing.screenX,
+    right: spacing.screenX,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    zIndex: 10,
+  },
+  brandPillBlur: {
+    borderRadius: 999,
+    overflow: "hidden",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.14)",
+  },
+  brandPillAndroid: {
+    backgroundColor: "rgba(255,255,255,0.10)",
+  },
+  brandPillInner: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  brandText: {
+    fontFamily: fonts.display700,
+    fontSize: 13,
+    color: "#FFFFFF",
+  },
+  banner: {
+    position: "absolute",
+    bottom: 110,
+    left: 16,
+    right: 16,
+    borderRadius: 16,
+    padding: 16,
+    gap: 10,
+    zIndex: 20,
+  },
+  bannerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  bannerRowBetween: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  bannerTitle: {
+    fontFamily: fonts.body700,
+    fontSize: 14,
+    flex: 1,
+  },
+  bannerDesc: {
+    fontFamily: fonts.body400,
+    fontSize: 13,
+    lineHeight: 19,
+  },
+  closeButton: {
+    width: 32,
+    height: 32,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  analyzingOverlay: {
+    position: "absolute" as const,
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0,0,0,0.6)",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 30,
+  },
+  analyzingCard: {
+    borderRadius: 20,
+    padding: 32,
+    alignItems: "center",
+    gap: 12,
+  },
+  analyzingTitle: {
+    fontFamily: fonts.body700,
+    fontSize: 16,
+  },
+  analyzingDesc: {
+    fontFamily: fonts.body500,
+    fontSize: 13,
+    textAlign: "center",
+  },
+});

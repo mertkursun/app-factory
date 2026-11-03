@@ -1,4 +1,9 @@
-import { View, Text } from "react-native";
+import { View, Text, Pressable, StyleSheet } from "react-native";
+import Svg, { Circle } from "react-native-svg";
+import { Crown } from "lucide-react-native";
+import { useRouter } from "expo-router";
+import { useTranslation } from "react-i18next";
+import { useTheme, fonts } from "@/theme/tokens";
 import { FREE_MONTHLY_QUOTA } from "@/lib/constants";
 
 interface QuotaInfoProps {
@@ -7,50 +12,185 @@ interface QuotaInfoProps {
   isPro: boolean;
 }
 
+const RING_SIZE = 64;
+const RING_STROKE = 5;
+const RING_RADIUS = (RING_SIZE - RING_STROKE) / 2;
+const CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
+
 export function QuotaInfo({ used, remaining, isPro }: QuotaInfoProps) {
+  const { t } = useTranslation();
+  const { colors, shadow } = useTheme();
+  const router = useRouter();
+
   if (isPro) {
     return (
-      <View className="rounded-xl border border-border bg-surface p-4">
-        <Text className="mb-1 font-label text-sm text-text">Aylık Kota</Text>
-        <Text className="font-title text-2xl text-primary">Sınırsız</Text>
-        <Text className="mt-1 font-caption text-xs text-text-secondary">Pro üyelik aktif</Text>
+      <View
+        style={[
+          styles.card,
+          { backgroundColor: colors.surface, borderColor: colors.border },
+          shadow.low,
+        ]}
+      >
+        <View style={styles.proContent}>
+          <Crown size={22} color={colors.primary} />
+          <Text style={[styles.proTitle, { color: colors.text }]}>{t("profile.unlimited")}</Text>
+          <Text style={[styles.proDesc, { color: colors.muted }]}>{t("profile.proActive")}</Text>
+        </View>
       </View>
     );
   }
 
   const total = FREE_MONTHLY_QUOTA;
   const progress = total > 0 ? Math.min(used / total, 1) : 0;
-  const progressPercent = Math.round(progress * 100);
+  const dashOffset = CIRCUMFERENCE * (1 - progress);
 
   return (
-    <View className="rounded-xl border border-border bg-surface p-4">
-      <View className="mb-2 flex-row items-center justify-between">
-        <Text className="font-label text-sm text-text">Aylık Kota</Text>
-        <Text className="font-label text-sm text-text">
-          {remaining}/{total} kalan
-        </Text>
+    <View
+      style={[
+        styles.card,
+        { backgroundColor: colors.surface, borderColor: colors.border },
+        shadow.low,
+      ]}
+    >
+      <View style={styles.row}>
+        {/* Conic ring */}
+        <View style={styles.ringContainer}>
+          <Svg width={RING_SIZE} height={RING_SIZE}>
+            {/* Track */}
+            <Circle
+              cx={RING_SIZE / 2}
+              cy={RING_SIZE / 2}
+              r={RING_RADIUS}
+              stroke={colors.border}
+              strokeWidth={RING_STROKE}
+              fill="none"
+            />
+            {/* Progress */}
+            <Circle
+              cx={RING_SIZE / 2}
+              cy={RING_SIZE / 2}
+              r={RING_RADIUS}
+              stroke={remaining <= 1 ? colors.danger : colors.primary}
+              strokeWidth={RING_STROKE}
+              fill="none"
+              strokeDasharray={CIRCUMFERENCE}
+              strokeDashoffset={dashOffset}
+              strokeLinecap="round"
+              rotation={-90}
+              origin={`${RING_SIZE / 2}, ${RING_SIZE / 2}`}
+            />
+          </Svg>
+          <View style={styles.ringText}>
+            <Text style={[styles.ringUsed, { color: colors.text }]}>{used}</Text>
+            <Text style={[styles.ringSep, { color: colors.muted }]}>/</Text>
+            <Text style={[styles.ringTotal, { color: colors.muted }]}>{total}</Text>
+          </View>
+        </View>
+
+        {/* Info */}
+        <View style={styles.infoContent}>
+          <Text style={[styles.infoTitle, { color: colors.text }]}>
+            {t("profile.monthlyQuota")}
+          </Text>
+          <Text style={[styles.infoDesc, { color: colors.muted }]}>{t("profile.quotaDesc")}</Text>
+        </View>
+
+        {/* Pro pill */}
+        <Pressable
+          onPress={() => router.push("/paywall")}
+          accessibilityRole="button"
+          accessibilityLabel={t("profile.goToPro")}
+          style={({ pressed }) => [
+            styles.proPill,
+            { backgroundColor: colors.surfaceTint, opacity: pressed ? 0.7 : 1 },
+          ]}
+        >
+          <Crown size={12} color={colors.primary} />
+          <Text style={[styles.proPillText, { color: colors.primary }]}>
+            {t("profile.goToPro")}
+          </Text>
+        </Pressable>
       </View>
-      {/* Progress bar */}
-      <View
-        className="h-2 overflow-hidden rounded-full bg-surface-secondary"
-        accessibilityRole="progressbar"
-        accessibilityValue={{
-          min: 0,
-          max: total,
-          now: used,
-          text: `${used} / ${total} kullanıldı`,
-        }}
-      >
-        <View
-          className={`h-full rounded-full ${remaining <= 1 ? "bg-danger" : "bg-primary"}`}
-          style={{ width: `${progressPercent}%` }}
-        />
-      </View>
-      {remaining === 0 && (
-        <Text className="mt-2 font-caption text-xs text-danger">
-          Aylık kotanız doldu. Pro&apos;ya geçerek sınırsız tarama yapabilirsiniz.
-        </Text>
-      )}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  card: {
+    borderRadius: 20,
+    borderWidth: 1,
+    padding: 18,
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 14,
+  },
+  ringContainer: {
+    width: RING_SIZE,
+    height: RING_SIZE,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  ringText: {
+    position: "absolute" as const,
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+  },
+  ringUsed: {
+    fontFamily: fonts.display800,
+    fontSize: 16,
+  },
+  ringSep: {
+    fontFamily: fonts.body400,
+    fontSize: 12,
+    marginHorizontal: 1,
+  },
+  ringTotal: {
+    fontFamily: fonts.body400,
+    fontSize: 12,
+  },
+  infoContent: {
+    flex: 1,
+    gap: 4,
+  },
+  infoTitle: {
+    fontFamily: fonts.display700,
+    fontSize: 14,
+  },
+  infoDesc: {
+    fontFamily: fonts.body400,
+    fontSize: 12,
+    lineHeight: 17,
+  },
+  proPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 999,
+    minHeight: 32,
+  },
+  proPillText: {
+    fontFamily: fonts.body700,
+    fontSize: 12,
+  },
+  proContent: {
+    alignItems: "center",
+    gap: 8,
+  },
+  proTitle: {
+    fontFamily: fonts.display800,
+    fontSize: 22,
+  },
+  proDesc: {
+    fontFamily: fonts.body500,
+    fontSize: 12,
+  },
+});

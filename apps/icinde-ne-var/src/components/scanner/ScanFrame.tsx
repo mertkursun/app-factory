@@ -1,4 +1,5 @@
-import { View } from "react-native";
+import { View, StyleSheet } from "react-native";
+import Svg, { Path } from "react-native-svg";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -8,89 +9,114 @@ import Animated, {
 } from "react-native-reanimated";
 import { useEffect } from "react";
 
-const CORNER_SIZE = 24;
-const CORNER_WIDTH = 3;
-const PRIMARY_COLOR = "#0F766E";
-const PULSE_DURATION_MS = 1500;
-const OPACITY_MIN = 0.6;
-const OPACITY_MAX = 1.0;
+const FRAME_SIZE = 220;
+const BRACKET_LENGTH = 18;
+const STROKE_WIDTH = 5;
+const BRACKET_COLOR = "#5EEAD4";
+const SCAN_LINE_DURATION_MS = 2600;
 
-interface CornerProps {
-  position: "top-left" | "top-right" | "bottom-left" | "bottom-right";
-  animatedOpacity: Animated.SharedValue<number>;
-}
+function CornerBracket({ position }: { position: "tl" | "tr" | "bl" | "br" }) {
+  const size = BRACKET_LENGTH + STROKE_WIDTH;
+  const half = STROKE_WIDTH / 2;
 
-function Corner({ position, animatedOpacity }: CornerProps) {
-  const animatedStyle = useAnimatedStyle(() => ({
-    opacity: animatedOpacity.value,
-  }));
-
-  const positionStyles = {
-    "top-left": { top: 0, left: 0, borderTopWidth: CORNER_WIDTH, borderLeftWidth: CORNER_WIDTH },
-    "top-right": {
-      top: 0,
-      right: 0,
-      borderTopWidth: CORNER_WIDTH,
-      borderRightWidth: CORNER_WIDTH,
-    },
-    "bottom-left": {
-      bottom: 0,
-      left: 0,
-      borderBottomWidth: CORNER_WIDTH,
-      borderLeftWidth: CORNER_WIDTH,
-    },
-    "bottom-right": {
-      bottom: 0,
-      right: 0,
-      borderBottomWidth: CORNER_WIDTH,
-      borderRightWidth: CORNER_WIDTH,
-    },
+  const pathMap: Record<string, string> = {
+    tl: `M ${half} ${BRACKET_LENGTH + half} L ${half} ${half} L ${BRACKET_LENGTH + half} ${half}`,
+    tr: `M ${size - BRACKET_LENGTH - half} ${half} L ${size - half} ${half} L ${size - half} ${BRACKET_LENGTH + half}`,
+    bl: `M ${half} ${size - BRACKET_LENGTH - half} L ${half} ${size - half} L ${BRACKET_LENGTH + half} ${size - half}`,
+    br: `M ${size - BRACKET_LENGTH - half} ${size - half} L ${size - half} ${size - half} L ${size - half} ${size - BRACKET_LENGTH - half}`,
   };
 
-  const borderRadii = {
-    "top-left": { borderTopLeftRadius: 12 },
-    "top-right": { borderTopRightRadius: 12 },
-    "bottom-left": { borderBottomLeftRadius: 12 },
-    "bottom-right": { borderBottomRightRadius: 12 },
+  const positionStyle = {
+    tl: { top: -STROKE_WIDTH / 2, left: -STROKE_WIDTH / 2 },
+    tr: { top: -STROKE_WIDTH / 2, right: -STROKE_WIDTH / 2 },
+    bl: { bottom: -STROKE_WIDTH / 2, left: -STROKE_WIDTH / 2 },
+    br: { bottom: -STROKE_WIDTH / 2, right: -STROKE_WIDTH / 2 },
   };
 
   return (
-    <Animated.View
-      style={[
-        {
-          position: "absolute",
-          width: CORNER_SIZE,
-          height: CORNER_SIZE,
-          borderColor: PRIMARY_COLOR,
-        },
-        positionStyles[position],
-        borderRadii[position],
-        animatedStyle,
-      ]}
-    />
+    <View style={[styles.bracketContainer, positionStyle[position]]}>
+      <Svg width={size} height={size}>
+        <Path
+          d={pathMap[position]}
+          stroke={BRACKET_COLOR}
+          strokeWidth={STROKE_WIDTH}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          fill="none"
+        />
+      </Svg>
+    </View>
   );
 }
 
 export function ScanFrame() {
-  const opacity = useSharedValue(OPACITY_MIN);
+  const translateY = useSharedValue(0);
 
   useEffect(() => {
-    opacity.value = withRepeat(
-      withTiming(OPACITY_MAX, {
-        duration: PULSE_DURATION_MS,
+    translateY.value = withRepeat(
+      withTiming(FRAME_SIZE - 4, {
+        duration: SCAN_LINE_DURATION_MS,
         easing: Easing.inOut(Easing.ease),
       }),
       -1,
       true,
     );
-  }, [opacity]);
+  }, [translateY]);
+
+  const scanLineStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: translateY.value }],
+  }));
 
   return (
-    <View className="w-64 h-64">
-      <Corner position="top-left" animatedOpacity={opacity} />
-      <Corner position="top-right" animatedOpacity={opacity} />
-      <Corner position="bottom-left" animatedOpacity={opacity} />
-      <Corner position="bottom-right" animatedOpacity={opacity} />
+    <View style={styles.frame}>
+      {/* Radial teal glow */}
+      <View style={styles.glow} />
+
+      {/* Corner brackets */}
+      <CornerBracket position="tl" />
+      <CornerBracket position="tr" />
+      <CornerBracket position="bl" />
+      <CornerBracket position="br" />
+
+      {/* Scan line */}
+      <Animated.View style={[styles.scanLine, scanLineStyle]} />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  frame: {
+    width: FRAME_SIZE,
+    height: FRAME_SIZE,
+    position: "relative",
+  },
+  bracketContainer: {
+    position: "absolute",
+  },
+  glow: {
+    position: "absolute",
+    top: -20,
+    left: -20,
+    right: -20,
+    bottom: -20,
+    borderRadius: 30,
+    backgroundColor: "rgba(94,234,212,0.06)",
+    shadowColor: "#5EEAD4",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.3,
+    shadowRadius: 40,
+  },
+  scanLine: {
+    position: "absolute",
+    top: 0,
+    left: 8,
+    right: 8,
+    height: 2,
+    backgroundColor: BRACKET_COLOR,
+    borderRadius: 1,
+    shadowColor: BRACKET_COLOR,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.8,
+    shadowRadius: 6,
+  },
+});

@@ -1,4 +1,5 @@
-import { View, Text, Pressable } from "react-native";
+import { View, StyleSheet } from "react-native";
+import { Chip } from "@/components/ui/Chip";
 import { AUDIENCE_LABELS } from "@/lib/constants";
 
 const CHIP_EMOJIS: Record<string, string> = {
@@ -29,38 +30,35 @@ export function AudienceSelector({ selected, onChange, disabled }: AudienceSelec
   };
 
   return (
-    <View className="flex-row flex-wrap gap-2">
+    <View style={styles.grid}>
       {allAudiences.map((audience) => {
         const isSelected = selected.includes(audience);
         const emoji = CHIP_EMOJIS[audience] ?? "";
         const label = AUDIENCE_LABELS[audience] ?? audience;
 
         return (
-          <Pressable
-            key={audience}
-            onPress={() => handleToggle(audience)}
-            disabled={disabled}
-            accessibilityRole="checkbox"
-            accessibilityState={{ checked: isSelected, disabled }}
-            accessibilityLabel={label}
-            className={`min-h-[44px] flex-row items-center rounded-full border px-4 py-2 ${
-              isSelected ? "border-primary bg-primary" : "border-border bg-surface"
-            }`}
-            style={({ pressed }) => ({
-              opacity: pressed || disabled ? 0.6 : 1,
-            })}
-          >
-            <Text className="mr-1.5 text-sm">{emoji}</Text>
-            <Text
-              className={`font-label text-sm ${
-                isSelected ? "text-primary-foreground" : "text-text"
-              }`}
-            >
-              {label}
-            </Text>
-          </Pressable>
+          <View key={audience} style={styles.chipWrapper}>
+            <Chip
+              emoji={emoji}
+              label={label}
+              isSelected={isSelected}
+              onToggle={() => handleToggle(audience)}
+            />
+          </View>
         );
       })}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  grid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+  },
+  chipWrapper: {
+    width: "48%",
+    flexGrow: 1,
+  },
+});
