@@ -30,6 +30,8 @@ Akışın her aşaması `/new-app`, `/add-feature`, `/ship` skill'leri ile tetik
 | Hassas veri | expo-secure-store | token/PII asla AsyncStorage'da |
 | Resim | expo-image | |
 | Liste | FlatList / @shopify/flash-list | ScrollView+map yasak |
+| İkon | lucide-react-native | Tutarlı, tree-shakeable ikon seti; başka ikon kütüphanesi kullanma |
+| Animasyon | lottie-react-native + @lottiefiles/dotlottie-react-native | Onboarding, micro-interaction, illüstrasyon animasyonları |
 | Font | @expo-google-fonts/* | DESIGN.md'deki aile |
 | Test | Jest (jest-expo) + React Native Testing Library | |
 | Lint/format | ESLint (eslint-config-expo) + Prettier | PostToolUse hook ile otomatik |
@@ -55,6 +57,7 @@ Her app görsel olarak **özgün, modern ve akılda kalıcı** olmalı. Varsayı
 - `git push`, `eas submit`, `npm publish` gibi dışa etkili komutlar sadece kullanıcı açıkça isterse.
 - Commit mesajı: `feat(scope): …`, `fix(scope): …`, `chore: …` (Conventional Commits).
 - Türkçe konuş, kod ve commit mesajları İngilizce.
+- **Türkçe karakter zorunluluğu:** Tüm Türkçe metinlerde (docs, kod içi stringler, seed data, UI metinleri) doğru Türkçe karakterler kullanılmalı: ç, ş, ğ, ı, ö, ü, İ, Ş, Ç, Ğ, Ö, Ü. ASCII yaklaşık karşılıkları (c, s, g, i, o, u) YASAK. HTML dosyalarında `<meta charset="UTF-8">` zorunlu. Bu kural agent'lar dahil herkes için geçerli.
 - Bir şeyi iki kez yanlış yaparsan, kuralı bu dosyaya veya `rn-conventions` skill'ine ekle.
 
 ## Ajanlara delegasyon

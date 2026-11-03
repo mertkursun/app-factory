@@ -1,0 +1,1 @@
+- [icinde-ne-var SDK setup](project_icinde-ne-var-sdk.md) — Expo SDK 52, NativeWind 4.2.7, Tailwind 3.4, ESLint 8 required for eslint-config-expo

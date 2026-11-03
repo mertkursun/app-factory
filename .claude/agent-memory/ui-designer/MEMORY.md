@@ -1,0 +1,1 @@
+- [Icinde Ne Var Design](icinde-ne-var-design.md) -- Teal + ivory organic pill design, Plus Jakarta Sans, score traffic light system

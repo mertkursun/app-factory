@@ -55,7 +55,7 @@
   Kabul: Kamera açılır, barkod okunduğunda callback tetiklenir, fotoğraf çekilebilir, izin reddedilince uygun mesaj gösterilir
   Dosyalar: `app/(tabs)/index.tsx`, `src/components/scanner/ScannerView.tsx`, `src/components/scanner/PhotoCaptureButton.tsx`, `src/components/scanner/FlashToggle.tsx`, `src/components/scanner/QuotaBadge.tsx`, `src/hooks/useCameraPermission.ts`
 
-- [ ] T10 — Ingredient Confirm ekranı: fotoğraftan çıkarılan içerik listesini gösterme, düzenlenebilir liste (ekleme/çıkarma), onay butonu ile analiz tetikleme
+- [x] T10 — Ingredient Confirm ekranı: fotoğraftan çıkarılan içerik listesini gösterme, düzenlenebilir liste (ekleme/çıkarma), onay butonu ile analiz tetikleme
   Kabul: Fotoğraf önizlemesi gösterilir, içerik listesi düzenlenebilir, onay ile analyze-product Edge Function'a istek gider
   Dosyalar: `app/ingredient-confirm.tsx`, `src/components/ingredients/IngredientList.tsx`, `src/components/ingredients/IngredientItem.tsx`
 
