@@ -51,7 +51,7 @@
 
 ## Faz 3 — Core Features
 
-- [ ] T09 — Scanner (Home) ekranı: CameraView ile barkod tarama, fotoğraf çekme butonu, flash toggle, kamera izin isteme, kalan kota badge
+- [x] T09 — Scanner (Home) ekranı: CameraView ile barkod tarama, fotoğraf çekme butonu, flash toggle, kamera izin isteme, kalan kota badge
   Kabul: Kamera açılır, barkod okunduğunda callback tetiklenir, fotoğraf çekilebilir, izin reddedilince uygun mesaj gösterilir
   Dosyalar: `app/(tabs)/index.tsx`, `src/components/scanner/ScannerView.tsx`, `src/components/scanner/PhotoCaptureButton.tsx`, `src/components/scanner/FlashToggle.tsx`, `src/components/scanner/QuotaBadge.tsx`, `src/hooks/useCameraPermission.ts`
 
@@ -59,7 +59,7 @@
   Kabul: Fotoğraf önizlemesi gösterilir, içerik listesi düzenlenebilir, onay ile analyze-product Edge Function'a istek gider
   Dosyalar: `app/ingredient-confirm.tsx`, `src/components/ingredients/IngredientList.tsx`, `src/components/ingredients/IngredientItem.tsx`
 
-- [ ] T11 — Edge Function: `analyze-product` — 4 adımlı analiz hattı (OKU, EŞLEŞTİR, KURALLAR, ANLAT), kota kontrolü, önbellek yazma
+- [x] T11 — Edge Function: `analyze-product` — 4 adımlı analiz hattı (OKU, EŞLEŞTİR, KURALLAR, ANLAT), kota kontrolü, önbellek yazma
   Kabul: Barkodlu ürün için Open Food Facts'ten veri çekilir, maddeler eşleştirilir, skor hesaplanır, açıklama üretilir; kota aşımında 402 döner; önbellekteki ürün için kota artmaz
   Dosyalar: `supabase/functions/analyze-product/index.ts`, `supabase/functions/analyze-product/steps/read.ts`, `supabase/functions/analyze-product/steps/match.ts`, `supabase/functions/analyze-product/steps/rules.ts`, `supabase/functions/analyze-product/steps/explain.ts`, `supabase/functions/analyze-product/lib/quota.ts`, `supabase/functions/analyze-product/lib/cache.ts`
 
