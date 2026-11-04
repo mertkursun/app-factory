@@ -4,6 +4,7 @@ import {
   Text,
   TextInput,
   ScrollView,
+  FlatList,
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
@@ -212,14 +213,12 @@ export default function IngredientConfirmScreen() {
 
           {/* Ingredient list card */}
           <Card style={styles.listCard} borderRadius={radius.lg}>
-            <ScrollView
-              style={styles.listScroll}
-              nestedScrollEnabled
-              showsVerticalScrollIndicator={false}
-            >
-              {items.map((item, index) => (
+            <FlatList
+              data={items}
+              scrollEnabled={false}
+              keyExtractor={(item, index) => `${item}-${index}`}
+              renderItem={({ item, index }) => (
                 <View
-                  key={`${item}-${index}`}
                   style={[
                     styles.ingredientRow,
                     index < items.length - 1 && {
@@ -248,19 +247,22 @@ export default function IngredientConfirmScreen() {
                     <X size={14} color={colors.muted} strokeWidth={2.2} />
                   </Pressable>
                 </View>
-              ))}
-              {/* Add ingredient button */}
-              <Pressable
-                onPress={handleAddPress}
-                disabled={isSubmitting}
-                accessibilityRole="button"
-                accessibilityLabel={t("ingredients.addButton")}
-                style={styles.addButton}
-              >
-                <Plus size={14} color={colors.primary} strokeWidth={2.5} />
-                <Text style={[styles.addButtonText, { color: colors.primary }]}>Madde ekle</Text>
-              </Pressable>
-            </ScrollView>
+              )}
+              ListFooterComponent={
+                <Pressable
+                  onPress={handleAddPress}
+                  disabled={isSubmitting}
+                  accessibilityRole="button"
+                  accessibilityLabel={t("ingredients.addButton")}
+                  style={styles.addButton}
+                >
+                  <Plus size={14} color={colors.primary} strokeWidth={2.5} />
+                  <Text style={[styles.addButtonText, { color: colors.primary }]}>
+                    {t("ingredients.addButton")}
+                  </Text>
+                </Pressable>
+              }
+            />
           </Card>
 
           {/* Inline add input */}
@@ -410,9 +412,6 @@ const styles = StyleSheet.create({
     flex: 1,
     overflow: "hidden",
     marginTop: 10,
-  },
-  listScroll: {
-    flex: 1,
   },
   ingredientRow: {
     flexDirection: "row",

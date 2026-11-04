@@ -1,8 +1,9 @@
 import { View, Text, ScrollView, StyleSheet } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ChevronLeft, Share } from "lucide-react-native";
+import { ChevronLeft } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
+import { z } from "zod";
 import { useAnalysis } from "@/hooks/useAnalysis";
 import { ScoreCircle } from "@/components/ui/ScoreCircle";
 import { ProfileWarnings } from "@/components/analysis/ProfileWarnings";
@@ -18,20 +19,33 @@ import type { SkorRenk } from "@/lib/schemas";
 
 type StatusKey = "success" | "warning" | "danger";
 
-interface AnalysisMadde {
-  maddeId: string | null;
-  ad: string;
-  riskSeviyesi: string;
-  islev: string | null;
-  kaynak: string | null;
-  aiTahmini: boolean;
+const analysisMaddeSchema = z.object({
+  maddeId: z.string().nullable(),
+  ad: z.string(),
+  riskSeviyesi: z.string(),
+  islev: z.string().nullable(),
+  kaynak: z.string().nullable(),
+  aiTahmini: z.boolean(),
+});
+
+const profilUyarisiSchema = z.object({
+  kitle: z.string(),
+  maddeAd: z.string(),
+  riskSeviyesi: z.string(),
+  aciklama: z.string(),
+});
+
+type AnalysisMadde = z.infer<typeof analysisMaddeSchema>;
+type ProfilUyarisi = z.infer<typeof profilUyarisiSchema>;
+
+function parseAnalysisMaddeler(data: unknown): AnalysisMadde[] {
+  const result = z.array(analysisMaddeSchema).safeParse(data);
+  return result.success ? result.data : [];
 }
 
-interface ProfilUyarisi {
-  kitle: string;
-  maddeAd: string;
-  riskSeviyesi: string;
-  aciklama: string;
+function parseProfilUyarilari(data: unknown): ProfilUyarisi[] {
+  const result = z.array(profilUyarisiSchema).safeParse(data);
+  return result.success ? result.data : [];
 }
 
 const SKOR_TO_STATUS: Record<SkorRenk, StatusKey> = {
@@ -71,8 +85,8 @@ export default function AnalysisScreen() {
     );
   }
 
-  const maddeler = (analysis.maddeler as AnalysisMadde[] | null) ?? [];
-  const profilUyarilari = (analysis.profil_uyarilari as ProfilUyarisi[] | null) ?? [];
+  const maddeler = parseAnalysisMaddeler(analysis.maddeler);
+  const profilUyarilari = parseProfilUyarilari(analysis.profil_uyarilari);
   const skor = analysis.skor as SkorRenk;
   const status = SKOR_TO_STATUS[skor];
   const numericScore = SKOR_NUMERIC[skor];
@@ -105,15 +119,8 @@ export default function AnalysisScreen() {
         <Text style={[styles.headerTitle, { color: colors.text }]} numberOfLines={1}>
           {t("analysis.result")}
         </Text>
-        <IconButton
-          icon={<Share size={17} color={colors.text} />}
-          onPress={() => {}}
-          accessibilityLabel={t("analysis.share")}
-          style={{
-            backgroundColor: colors.glass,
-            borderColor: colors.glassBorder,
-          }}
-        />
+        {/* TODO: Share functionality - add when implemented */}
+        <View style={styles.headerSpacer} />
       </View>
 
       <ScrollView
@@ -153,7 +160,7 @@ export default function AnalysisScreen() {
         <IngredientDetails maddeler={maddeler} />
 
         {/* Unknown ingredients */}
-        {analysis.bilinmeyenler.length > 0 ? (
+        {analysis.bilinmeyenler?.length > 0 ? (
           <UnknownIngredients items={analysis.bilinmeyenler} />
         ) : null}
 
@@ -191,6 +198,9 @@ const styles = StyleSheet.create({
     fontSize: 17,
     letterSpacing: -0.3,
     textAlign: "center",
+  },
+  headerSpacer: {
+    width: 40,
   },
   scroll: {
     flex: 1,

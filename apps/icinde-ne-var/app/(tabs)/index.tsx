@@ -1,15 +1,19 @@
+import { useCallback } from "react";
 import { View, Text, StyleSheet, Platform, Pressable, ActivityIndicator } from "react-native";
 import { BlurView } from "expo-blur";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { CameraOff, AlertTriangle, X, Crown } from "lucide-react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
+import * as ImagePicker from "expo-image-picker";
 import { useCameraPermission } from "@/hooks/useCameraPermission";
+import { useMediaLibraryPermission } from "@/hooks/useMediaLibraryPermission";
 import { useScanFlow } from "@/hooks/useScanFlow";
 import { ScannerView } from "@/components/scanner/ScannerView";
 import { QuotaBadge } from "@/components/scanner/QuotaBadge";
 import { Logo } from "@/components/ui/Logo";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
-import { useTheme, fonts, spacing } from "@/theme/tokens";
+import { useTheme, fonts } from "@/theme/tokens";
 
 const ICON_SIZE = 20;
 
@@ -17,12 +21,14 @@ export default function ScanScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
   const {
     isGranted,
     canAskAgain,
     isLoading: permissionLoading,
     requestPermission,
   } = useCameraPermission();
+  const mediaLib = useMediaLibraryPermission();
   const {
     isAnalyzing,
     error,
@@ -31,6 +37,26 @@ export default function ScanScreen() {
     handlePhotoTaken,
     clearError,
   } = useScanFlow();
+
+  const handleGalleryPress = useCallback(async () => {
+    let hasAccess = mediaLib.isGranted;
+
+    if (!hasAccess) {
+      hasAccess = await mediaLib.requestPermission();
+    }
+
+    if (!hasAccess) return;
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 0.8,
+      allowsEditing: false,
+    });
+
+    if (!result.canceled && result.assets[0]) {
+      handlePhotoTaken(result.assets[0].uri);
+    }
+  }, [mediaLib, handlePhotoTaken]);
 
   if (permissionLoading) {
     return (
@@ -71,18 +97,17 @@ export default function ScanScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.cameraBg }]}>
-      {/* Camera + overlays */}
       <ScannerView
         onBarcodeScanned={handleBarcodeScanned}
         onPhotoTaken={handlePhotoTaken}
         isProcessing={isAnalyzing}
+        onGalleryPress={handleGalleryPress}
+        isGalleryDisabled={mediaLib.isDenied}
       />
 
       {/* Top bar */}
-      <View style={styles.topBar}>
-        {/* Brand pill */}
+      <View style={[styles.topBar, { top: insets.top + 12 }]}>
         <BrandPill />
-        {/* Quota pill */}
         <QuotaBadge />
       </View>
 
@@ -174,9 +199,7 @@ function BrandPillContent() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+  container: { flex: 1 },
   center: {
     flex: 1,
     alignItems: "center",
@@ -212,9 +235,8 @@ const styles = StyleSheet.create({
   },
   topBar: {
     position: "absolute",
-    top: spacing.topInset,
-    left: spacing.screenX,
-    right: spacing.screenX,
+    left: 18,
+    right: 18,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -232,14 +254,16 @@ const styles = StyleSheet.create({
   brandPillInner: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    gap: 8,
+    paddingLeft: 8,
+    paddingRight: 12,
+    paddingVertical: 7,
   },
   brandText: {
     fontFamily: fonts.display700,
     fontSize: 13,
     color: "#FFFFFF",
+    letterSpacing: -0.2,
   },
   banner: {
     position: "absolute",

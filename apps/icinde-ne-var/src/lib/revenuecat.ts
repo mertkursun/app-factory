@@ -19,7 +19,7 @@ export function configureRevenueCat(userId?: string): void {
 
   const apiKey = Platform.OS === "ios" ? REVENUECAT_API_KEY_IOS : REVENUECAT_API_KEY_ANDROID;
   if (!apiKey) {
-    console.warn("RevenueCat API key not set");
+    if (__DEV__) console.warn("RevenueCat API key not set");
     return;
   }
 
@@ -31,7 +31,7 @@ export function configureRevenueCat(userId?: string): void {
     });
     isConfigured = true;
   } catch (err) {
-    console.warn("RevenueCat configuration failed:", err);
+    if (__DEV__) console.warn("RevenueCat configuration failed:", err);
   }
 }
 

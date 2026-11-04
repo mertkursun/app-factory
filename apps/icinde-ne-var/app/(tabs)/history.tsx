@@ -8,7 +8,6 @@ import {
   FlatList,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Search } from "lucide-react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useHistory } from "@/hooks/useHistory";
@@ -16,7 +15,6 @@ import { HistoryCard } from "@/components/history/HistoryCard";
 import { EmptyHistory } from "@/components/history/EmptyHistory";
 import { LoadingScreen } from "@/components/ui/LoadingScreen";
 import { ErrorScreen } from "@/components/ui/ErrorScreen";
-import { IconButton } from "@/components/ui/IconButton";
 import { useAuthStore } from "@/stores/authStore";
 import { useTheme, fonts, spacing, typography } from "@/theme/tokens";
 import type { HistoryItemWithKategori } from "@/services/history";
@@ -148,11 +146,8 @@ export default function HistoryScreen() {
             </Text>
           )}
         </View>
-        <IconButton
-          icon={<Search size={17} color={colors.text} />}
-          onPress={() => {}}
-          accessibilityLabel={t("history.search")}
-        />
+        {/* TODO: Search functionality - add when implemented */}
+        <View style={styles.headerSpacer} />
       </View>
 
       {/* Filter chips */}
@@ -222,6 +217,9 @@ const styles = StyleSheet.create({
   headerLeft: {
     flex: 1,
     gap: 2,
+  },
+  headerSpacer: {
+    width: 40,
   },
   subtitle: {
     fontFamily: fonts.body500,

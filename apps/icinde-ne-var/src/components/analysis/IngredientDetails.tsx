@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { View, Text, Pressable, StyleSheet } from "react-native";
+import { View, Text, Pressable, FlatList, StyleSheet } from "react-native";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { useTranslation } from "react-i18next";
 import { useTheme, fonts, radius } from "@/theme/tokens";
@@ -76,69 +76,78 @@ export function IngredientDetails({ maddeler }: IngredientDetailsProps) {
 
       {/* Ingredient list */}
       <Card style={styles.listCard} borderRadius={radius.lg}>
-        {maddeler.map((madde, index) => {
-          const isExpanded = expandedIndex === index;
-          const statusKey = RISK_STATUS_MAP[madde.riskSeviyesi] ?? "warning";
-          const hasDetail = madde.islev || madde.kaynak || madde.aiTahmini;
+        <FlatList
+          data={maddeler}
+          scrollEnabled={false}
+          keyExtractor={(item, index) => `${item.ad}-${index}`}
+          ItemSeparatorComponent={() => (
+            <View style={[styles.separator, { backgroundColor: colors.border }]} />
+          )}
+          renderItem={({ item: madde, index }) => {
+            const isExpanded = expandedIndex === index;
+            const statusKey = RISK_STATUS_MAP[madde.riskSeviyesi] ?? "warning";
+            const hasDetail = madde.islev || madde.kaynak || madde.aiTahmini;
 
-          return (
-            <View key={`${madde.ad}-${index}`}>
-              {index > 0 && <View style={[styles.separator, { backgroundColor: colors.border }]} />}
-              <Pressable
-                onPress={() => hasDetail && toggle(index)}
-                disabled={!hasDetail}
-                accessibilityRole="button"
-                accessibilityLabel={`${madde.ad}, ${STATUS_LABEL[statusKey]}`}
-                accessibilityState={{ expanded: isExpanded }}
-                style={styles.row}
-              >
-                <StatusDot status={statusKey} size={30} />
-                <View style={styles.textBlock}>
-                  <Text style={[styles.ingredientName, { color: colors.text }]} numberOfLines={1}>
-                    {madde.ad}
-                  </Text>
-                  {madde.islev ? (
-                    <Text
-                      style={[styles.ingredientDesc, { color: colors.muted }]}
-                      numberOfLines={1}
-                    >
-                      {madde.islev}
-                    </Text>
-                  ) : null}
-                </View>
-                <Badge label={STATUS_LABEL[statusKey]} status={statusKey} />
-              </Pressable>
-
-              {/* Expanded detail */}
-              {isExpanded && hasDetail ? (
-                <Animated.View
-                  entering={FadeIn.duration(200)}
-                  exiting={FadeOut.duration(150)}
-                  style={[styles.detailBox, { backgroundColor: colors.background }]}
+            return (
+              <View>
+                <Pressable
+                  onPress={() => hasDetail && toggle(index)}
+                  disabled={!hasDetail}
+                  accessibilityRole="button"
+                  accessibilityLabel={`${madde.ad}, ${STATUS_LABEL[statusKey]}`}
+                  accessibilityState={{ expanded: isExpanded }}
+                  style={styles.row}
                 >
-                  {madde.islev ? (
-                    <Text style={[styles.detailText, { color: colors.textSecondary }]}>
-                      <Text style={{ color: colors.text, fontFamily: fonts.body700 }}>
-                        Hamile:{" "}
+                  <StatusDot status={statusKey} size={30} />
+                  <View style={styles.textBlock}>
+                    <Text style={[styles.ingredientName, { color: colors.text }]} numberOfLines={1}>
+                      {madde.ad}
+                    </Text>
+                    {madde.islev ? (
+                      <Text
+                        style={[styles.ingredientDesc, { color: colors.muted }]}
+                        numberOfLines={1}
+                      >
+                        {madde.islev}
                       </Text>
-                      {madde.islev}
-                    </Text>
-                  ) : null}
-                  {madde.kaynak ? (
-                    <Text style={[styles.detailText, { color: colors.muted }]}>
-                      {t("analysis.source", { source: madde.kaynak })}
-                    </Text>
-                  ) : null}
-                  {madde.aiTahmini ? (
-                    <Text style={[styles.detailText, { color: colors.muted, fontStyle: "italic" }]}>
-                      AI tahmini
-                    </Text>
-                  ) : null}
-                </Animated.View>
-              ) : null}
-            </View>
-          );
-        })}
+                    ) : null}
+                  </View>
+                  <Badge label={STATUS_LABEL[statusKey]} status={statusKey} />
+                </Pressable>
+
+                {/* Expanded detail */}
+                {isExpanded && hasDetail ? (
+                  <Animated.View
+                    entering={FadeIn.duration(200)}
+                    exiting={FadeOut.duration(150)}
+                    style={[styles.detailBox, { backgroundColor: colors.background }]}
+                  >
+                    {madde.islev ? (
+                      <Text style={[styles.detailText, { color: colors.textSecondary }]}>
+                        <Text style={{ color: colors.text, fontFamily: fonts.body700 }}>
+                          {t("analysis.ingredients")}:{" "}
+                        </Text>
+                        {madde.islev}
+                      </Text>
+                    ) : null}
+                    {madde.kaynak ? (
+                      <Text style={[styles.detailText, { color: colors.muted }]}>
+                        {t("analysis.source", { source: madde.kaynak })}
+                      </Text>
+                    ) : null}
+                    {madde.aiTahmini ? (
+                      <Text
+                        style={[styles.detailText, { color: colors.muted, fontStyle: "italic" }]}
+                      >
+                        AI tahmini
+                      </Text>
+                    ) : null}
+                  </Animated.View>
+                ) : null}
+              </View>
+            );
+          }}
+        />
       </Card>
     </View>
   );
