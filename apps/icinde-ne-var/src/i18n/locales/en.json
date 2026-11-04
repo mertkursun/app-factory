@@ -75,8 +75,25 @@
   },
   "tabs": {
     "scan": "Scan",
+    "search": "Discover",
     "history": "History",
+    "favorites": "Favorites",
     "profile": "Profile"
+  },
+  "search": {
+    "title": "Discover",
+    "placeholder": "Search product name or barcode...",
+    "popular": "Popular Products",
+    "noResults": "No results found",
+    "noResultsHint": "Try a different search term.",
+    "categoryAll": "All",
+    "categoryFood": "Food",
+    "categoryCosmetics": "Cosmetics",
+    "categoryCleaning": "Cleaning",
+    "categoryGeneral": "General",
+    "loading": "Searching...",
+    "error": "An error occurred during search",
+    "errorMessage": "Something went wrong while loading products."
   },
   "scanner": {
     "cameraPermissionRequired": "Camera Permission Required",
@@ -88,14 +105,15 @@
     "takePhoto": "Take photo",
     "quotaExhausted": "Scan Quota Exhausted",
     "quotaExhaustedError": "Your monthly scan quota is full. Upgrade to Pro for unlimited scanning.",
+    "photoError": "An error occurred while processing the photo. Please try again.",
     "upgradePro": "Upgrade to Pro",
     "closeError": "Close error",
     "analyzingSubtitle": "Analyzing product contents",
     "cameraPermissionDesc": "Camera access is required to scan barcodes and photograph ingredient labels.",
     "quotaExhaustedDesc": "Your free monthly scan quota has been reached. Upgrade to Pro for unlimited scans.",
     "openSettings": "Open Settings",
-    "hintPrimary": "Align barcode or label in the frame",
-    "hintSecondary": "We auto-detect what it is",
+    "hintPrimary": "Point at the product or scan its barcode",
+    "hintSecondary": "Front, back or label — doesn't matter",
     "gallery": "Gallery",
     "shutter": "Scan"
   },
@@ -120,7 +138,22 @@
     "profileWarningDetail": "{{count}} harmful ingredients · tap to see",
     "source": "Source: {{source}}",
     "aiEstimate": "AI estimate",
-    "function": "Function"
+    "aiEstimateNote": "This assessment is based on an AI estimation.",
+    "function": "Function",
+    "riskLevel": "Risk level",
+    "shareTitle": "Share Product Analysis",
+    "shareFooter": "Analyzed with İçinde Ne Var?",
+    "shareScoreSafe": "Safe Product ✓",
+    "shareScoreCaution": "Use with Caution ⚠",
+    "shareScoreDanger": "Harmful Product ✗",
+    "sharing": "Sharing...",
+    "riskDescription": {
+      "guvenli": "This ingredient is generally considered safe.",
+      "dikkat": "This ingredient may require caution for some people.",
+      "sakincali": "This ingredient may pose potential health risks."
+    },
+    "alternatives": "Cleaner Alternatives",
+    "alternativesHint": "Options you can try instead of this product"
   },
   "ingredients": {
     "confirm": "Confirm Ingredients",
@@ -135,6 +168,9 @@
     "noContent": "No ingredients extracted",
     "noContentHint": "You can add them manually using the field below.",
     "extracted": "Extracted Ingredients",
+    "estimated": "Estimated Ingredients",
+    "estimatedByAi": "Estimated by AI",
+    "estimationWarning": "Ingredients could not be read from the label and were estimated by identifying the product. Scan the ingredients label for accurate results.",
     "retake": "Retake",
     "readByAi": "Read by AI",
     "removeIngredient": "Remove {{name}}"
@@ -266,6 +302,17 @@
     "termsS5Title": "Changes",
     "termsS5Body": "Terms may be updated; updates take effect immediately upon publication."
   },
+  "favorites": {
+    "title": "Favorites",
+    "empty": "No favorites yet",
+    "emptyDesc": "Tap the heart icon on products you like to save them.",
+    "removed": "Removed from favorites",
+    "added": "Added to favorites",
+    "delete": "Remove favorite",
+    "loading": "Loading favorites...",
+    "error": "An error occurred",
+    "errorMessage": "Something went wrong while loading favorites."
+  },
   "notifications": {
     "welcomeTitle": "Welcome!",
     "welcomeBody": "Scan your first product and discover what's inside!",
@@ -273,5 +320,16 @@
     "quotaWarningBody": "You have 1 scan left. Go Pro for unlimited scans.",
     "weeklyReminderTitle": "We miss you!",
     "weeklyReminderBody": "What did you eat this week? Let us join your grocery run."
+  },
+  "compare": {
+    "title": "Compare",
+    "selectProduct": "Select a product to compare",
+    "result": "Result",
+    "better": "{{name}} is the cleaner choice",
+    "equal": "Both products have similar scores",
+    "safeCount": "{{count}} safe",
+    "cautionCount": "{{count}} caution",
+    "dangerCount": "{{count}} harmful",
+    "vsLabel": "vs"
   }
 }

@@ -75,8 +75,25 @@
   },
   "tabs": {
     "scan": "Tara",
+    "search": "Keşfet",
     "history": "Geçmiş",
+    "favorites": "Favoriler",
     "profile": "Profil"
+  },
+  "search": {
+    "title": "Keşfet",
+    "placeholder": "Ürün adı veya barkod ara...",
+    "popular": "Popüler Ürünler",
+    "noResults": "Sonuç bulunamadı",
+    "noResultsHint": "Farklı bir arama terimi deneyin.",
+    "categoryAll": "Tümü",
+    "categoryFood": "Gıda",
+    "categoryCosmetics": "Kozmetik",
+    "categoryCleaning": "Temizlik",
+    "categoryGeneral": "Genel",
+    "loading": "Aranıyor...",
+    "error": "Arama sırasında bir hata oluştu",
+    "errorMessage": "Ürünler yüklenirken bir sorun oluştu."
   },
   "scanner": {
     "cameraPermissionRequired": "Kamera İzni Gerekli",
@@ -88,14 +105,15 @@
     "takePhoto": "Fotoğraf çek",
     "quotaExhausted": "Tarama Kotanız Doldu",
     "quotaExhaustedError": "Aylık tarama kotanız doldu. Pro'ya yükselterek sınırsız tarama yapabilirsiniz.",
+    "photoError": "Fotoğraf işlenirken bir hata oluştu. Lütfen tekrar deneyin.",
     "upgradePro": "Pro'ya yükselt",
     "closeError": "Hatayı kapat",
     "analyzingSubtitle": "Ürün içeriği inceleniyor",
     "cameraPermissionDesc": "Barkod okumak ve içindekiler etiketini fotoğraflamak için kameraya erişim gerekli.",
     "quotaExhaustedDesc": "Aylık ücretsiz tarama hakkınız doldu. Sınırsız tarama için Pro'ya geçin.",
     "openSettings": "Ayarları Aç",
-    "hintPrimary": "Barkodu ya da etiketi çerçeveye al",
-    "hintSecondary": "Ne olduğunu otomatik algılarız",
+    "hintPrimary": "Ürünü çerçeveye al veya barkodunu okut",
+    "hintSecondary": "Ön yüz, arka yüz veya etiket — fark etmez",
     "gallery": "Galeri",
     "shutter": "Tarama yap"
   },
@@ -120,7 +138,22 @@
     "profileWarningDetail": "{{count}} sakıncalı madde · dokun ve gör",
     "source": "Kaynak: {{source}}",
     "aiEstimate": "AI tahmini",
-    "function": "İşlev"
+    "aiEstimateNote": "Bu değerlendirme yapay zekâ tahminine dayanmaktadır.",
+    "function": "İşlev",
+    "riskLevel": "Risk seviyesi",
+    "shareTitle": "Ürün Analizi Paylaş",
+    "shareFooter": "İçinde Ne Var? uygulamasıyla analiz edildi",
+    "shareScoreSafe": "Güvenli Ürün ✓",
+    "shareScoreCaution": "Dikkatli Tüketim ⚠",
+    "shareScoreDanger": "Sakıncalı Ürün ✗",
+    "sharing": "Paylaşılıyor...",
+    "riskDescription": {
+      "guvenli": "Bu madde genel olarak güvenli kabul edilmektedir.",
+      "dikkat": "Bu madde bazı kişiler için dikkat gerektirebilir.",
+      "sakincali": "Bu madde potansiyel sağlık riski taşıyabilir."
+    },
+    "alternatives": "Daha Temiz Alternatifler",
+    "alternativesHint": "Bu ürün yerine deneyebileceğiniz seçenekler"
   },
   "ingredients": {
     "confirm": "İçeriği Onayla",
@@ -135,6 +168,9 @@
     "noContent": "İçerik çıkarılmadı",
     "noContentHint": "Aşağıdaki alandan elle ekleyebilirsiniz.",
     "extracted": "Çıkarılan maddeler",
+    "estimated": "Tahmini maddeler",
+    "estimatedByAi": "AI tarafından tahmin edildi",
+    "estimationWarning": "İçindekiler etiketten okunamadı, ürün tanınarak tahmin edildi. Kesin sonuç için içindekiler etiketini tarayın.",
     "retake": "Yeniden çek",
     "readByAi": "AI tarafından okundu",
     "removeIngredient": "{{name}} maddesini sil"
@@ -267,6 +303,17 @@
     "termsS5Title": "Değişiklikler",
     "termsS5Body": "Şartlar güncellenebilir; güncellemeler yayınlandığı anda yürürlüğe girer."
   },
+  "favorites": {
+    "title": "Favoriler",
+    "empty": "Henüz favori yok",
+    "emptyDesc": "Beğendiğin ürünleri kalp simgesine dokunarak kaydet.",
+    "removed": "Favorilerden çıkarıldı",
+    "added": "Favorilere eklendi",
+    "delete": "Favoriyi sil",
+    "loading": "Favoriler yükleniyor...",
+    "error": "Bir hata oluştu",
+    "errorMessage": "Favoriler yüklenirken bir sorun oluştu."
+  },
   "notifications": {
     "welcomeTitle": "Hoş geldin!",
     "welcomeBody": "İlk ürününü tara ve içeriğini öğren!",
@@ -274,5 +321,16 @@
     "quotaWarningBody": "Son 1 tarama hakkın kaldı. Pro'ya geçerek sınırsız taraya devam et.",
     "weeklyReminderTitle": "Seni özledik!",
     "weeklyReminderBody": "Bu hafta ne yedin? Market alışverişinde yanında ol."
+  },
+  "compare": {
+    "title": "Karşılaştır",
+    "selectProduct": "Karşılaştırmak için ürün seç",
+    "result": "Sonuç",
+    "better": "{{name}} daha temiz bir seçim",
+    "equal": "Her iki ürün de benzer skorlara sahip",
+    "safeCount": "{{count}} güvenli",
+    "cautionCount": "{{count}} dikkat",
+    "dangerCount": "{{count}} sakıncalı",
+    "vsLabel": "vs"
   }
 }
