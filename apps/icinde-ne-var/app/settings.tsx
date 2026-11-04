@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, Pressable, Alert, Switch } from "react-native";
+import { View, Text, ScrollView, Pressable, Alert, Switch, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
@@ -21,6 +21,10 @@ import { useAppStore } from "@/stores/appStore";
 import { useTheme, fonts } from "@/theme/tokens";
 import { signOut } from "@/lib/auth";
 import { restorePurchases } from "@/lib/revenuecat";
+import {
+  registerForPushNotificationsAsync,
+  cancelAllScheduledNotifications,
+} from "@/lib/notifications";
 import { useCameraPermission } from "@/hooks/useCameraPermission";
 import { useMediaLibraryPermission } from "@/hooks/useMediaLibraryPermission";
 import type { ThemeMode } from "@/theme/tokens";
@@ -56,38 +60,11 @@ function SettingsRow({
   return (
     <Pressable onPress={onPress} accessibilityRole="button" accessibilityLabel={label}>
       {({ pressed }) => (
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            paddingVertical: 13,
-            paddingHorizontal: 14,
-            gap: 12,
-            opacity: pressed ? 0.7 : 1,
-          }}
-        >
-          <View
-            style={{
-              width: 34,
-              height: 34,
-              borderRadius: 11,
-              backgroundColor: iconBg ?? colors.surfaceTint,
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
+        <View style={[s.row, { opacity: pressed ? 0.7 : 1 }]}>
+          <View style={[s.iconTile, { backgroundColor: iconBg ?? colors.surfaceTint }]}>
             <Icon size={16} color={iconColor ?? colors.primaryDeep} />
           </View>
-          <Text
-            numberOfLines={1}
-            style={{
-              flex: 1,
-              fontFamily: fonts.body600,
-              fontSize: 14,
-              lineHeight: 20,
-              color: colors.text,
-            }}
-          >
+          <Text numberOfLines={1} style={[s.rowLabel, { color: colors.text }]}>
             {label}
           </Text>
           {rightElement ?? (showChevron ? <ChevronRight size={16} color={colors.muted} /> : null)}
@@ -108,6 +85,21 @@ export default function SettingsScreen() {
   const setNotifOn = useAppStore((s) => s.setNotificationsEnabled);
   const cameraPerm = useCameraPermission();
   const mediaLibPerm = useMediaLibraryPermission();
+
+  const handleNotificationToggle = async (value: boolean) => {
+    if (value) {
+      // Request permission when enabling
+      const token = await registerForPushNotificationsAsync();
+      if (!token) {
+        // Permission denied or not available — don't enable
+        return;
+      }
+      setNotifOn(true);
+    } else {
+      setNotifOn(false);
+      await cancelAllScheduledNotifications();
+    }
+  };
 
   const handleCameraPermission = () => {
     if (cameraPerm.isGranted) return;
@@ -155,21 +147,14 @@ export default function SettingsScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+    <SafeAreaView style={[s.flex1, { backgroundColor: colors.background }]}>
       <ScrollView
-        style={{ flex: 1 }}
-        contentContainerStyle={{ paddingHorizontal: 18, paddingBottom: 28 }}
+        style={s.flex1}
+        contentContainerStyle={s.scrollContent}
         showsVerticalScrollIndicator={false}
       >
         {/* Header */}
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-            paddingVertical: 8,
-          }}
-        >
+        <View style={s.header}>
           <Pressable
             onPress={() => router.back()}
             accessibilityRole="button"
@@ -178,15 +163,10 @@ export default function SettingsScreen() {
             {({ pressed }) => (
               <View
                 style={[
+                  s.backButton,
                   {
-                    width: 40,
-                    height: 40,
-                    borderRadius: 14,
-                    borderWidth: 1,
                     backgroundColor: colors.surface,
                     borderColor: colors.border,
-                    alignItems: "center",
-                    justifyContent: "center",
                     opacity: pressed ? 0.7 : 1,
                   },
                   shadow.low,
@@ -196,52 +176,26 @@ export default function SettingsScreen() {
               </View>
             )}
           </Pressable>
-          <Text
-            style={{
-              fontFamily: fonts.display700,
-              fontSize: 17,
-              letterSpacing: -0.3,
-              color: colors.text,
-              textAlign: "center",
-            }}
-          >
-            {t("settings.title")}
-          </Text>
-          <View style={{ width: 40 }} />
+          <Text style={[s.headerTitle, { color: colors.text }]}>{t("settings.title")}</Text>
+          <View style={s.headerSpacer} />
         </View>
 
         {/* GÖRÜNÜM */}
-        <Text
-          style={{
-            fontFamily: fonts.body800,
-            fontSize: 11,
-            letterSpacing: 1,
-            textTransform: "uppercase",
-            color: colors.muted,
-            marginTop: 18,
-            marginBottom: 8,
-            paddingHorizontal: 6,
-          }}
-        >
+        <Text style={[s.sectionLabel, { color: colors.muted, marginTop: 18 }]}>
           {t("settings.sectionAppearance")}
         </Text>
         <View
           style={[
-            {
-              padding: 6,
-              borderRadius: 18,
-              borderWidth: 1,
-              backgroundColor: colors.surface,
-              borderColor: colors.border,
-            },
+            s.themeCard,
+            { backgroundColor: colors.surface, borderColor: colors.border },
             shadow.low,
           ]}
         >
-          <View style={{ flexDirection: "row", gap: 4 }}>
+          <View style={s.themeRow}>
             {THEME_OPTIONS.map((opt) => {
               const active = themeMode === opt.key;
               return (
-                <View key={opt.key} style={{ flex: 1 }}>
+                <View key={opt.key} style={s.themeOptionWrap}>
                   <Pressable
                     onPress={() => setThemeMode(opt.key)}
                     accessibilityRole="radio"
@@ -253,39 +207,15 @@ export default function SettingsScreen() {
                         locations={[...gradient.primaryLocations]}
                         start={{ x: 0, y: 0 }}
                         end={{ x: 1, y: 1 }}
-                        style={{
-                          height: 38,
-                          borderRadius: 12,
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
+                        style={s.themePill}
                       >
-                        <Text
-                          style={{
-                            fontFamily: fonts.body700,
-                            fontSize: 12,
-                            color: colors.primaryFg,
-                          }}
-                        >
+                        <Text style={[s.themePillTextActive, { color: colors.primaryFg }]}>
                           {t(opt.labelKey)}
                         </Text>
                       </LinearGradient>
                     ) : (
-                      <View
-                        style={{
-                          height: 38,
-                          borderRadius: 12,
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <Text
-                          style={{
-                            fontFamily: fonts.body600,
-                            fontSize: 12,
-                            color: colors.textSecondary,
-                          }}
-                        >
+                      <View style={s.themePill}>
+                        <Text style={[s.themePillText, { color: colors.textSecondary }]}>
                           {t(opt.labelKey)}
                         </Text>
                       </View>
@@ -298,29 +228,13 @@ export default function SettingsScreen() {
         </View>
 
         {/* GENEL */}
-        <Text
-          style={{
-            fontFamily: fonts.body800,
-            fontSize: 11,
-            letterSpacing: 1,
-            textTransform: "uppercase",
-            color: colors.muted,
-            marginTop: 22,
-            marginBottom: 8,
-            paddingHorizontal: 6,
-          }}
-        >
+        <Text style={[s.sectionLabel, { color: colors.muted }]}>
           {t("settings.sectionGeneral")}
         </Text>
         <View
           style={[
-            {
-              borderRadius: 20,
-              borderWidth: 1,
-              overflow: "hidden",
-              backgroundColor: colors.surface,
-              borderColor: colors.border,
-            },
+            s.sectionCard,
+            { backgroundColor: colors.surface, borderColor: colors.border },
             shadow.low,
           ]}
         >
@@ -329,48 +243,32 @@ export default function SettingsScreen() {
             label={t("settings.replayOnboarding")}
             onPress={handleReplayOnboarding}
           />
-          <View style={{ height: 1, backgroundColor: colors.border }} />
+          <View style={[s.divider, { backgroundColor: colors.border }]} />
           <SettingsRow
             icon={Bell}
             label={t("settings.notifications")}
-            onPress={() => setNotifOn(!notifOn)}
+            onPress={() => handleNotificationToggle(!notifOn)}
             showChevron={false}
             rightElement={
               <Switch
                 value={notifOn}
-                onValueChange={setNotifOn}
+                onValueChange={handleNotificationToggle}
                 trackColor={{ false: colors.border, true: colors.primary }}
                 thumbColor="#FFFFFF"
-                style={{ transform: [{ scaleX: 0.85 }, { scaleY: 0.85 }] }}
+                style={s.switch}
               />
             }
           />
         </View>
 
         {/* İZİNLER */}
-        <Text
-          style={{
-            fontFamily: fonts.body800,
-            fontSize: 11,
-            letterSpacing: 1,
-            textTransform: "uppercase",
-            color: colors.muted,
-            marginTop: 22,
-            marginBottom: 8,
-            paddingHorizontal: 6,
-          }}
-        >
+        <Text style={[s.sectionLabel, { color: colors.muted }]}>
           {t("settings.sectionPermissions")}
         </Text>
         <View
           style={[
-            {
-              borderRadius: 20,
-              borderWidth: 1,
-              overflow: "hidden",
-              backgroundColor: colors.surface,
-              borderColor: colors.border,
-            },
+            s.sectionCard,
+            { backgroundColor: colors.surface, borderColor: colors.border },
             shadow.low,
           ]}
         >
@@ -381,26 +279,25 @@ export default function SettingsScreen() {
             showChevron={false}
             rightElement={
               <View
-                style={{
-                  paddingHorizontal: 10,
-                  paddingVertical: 4,
-                  borderRadius: 999,
-                  backgroundColor: cameraPerm.isGranted ? colors.successBg : colors.dangerBg,
-                }}
+                style={[
+                  s.permBadge,
+                  {
+                    backgroundColor: cameraPerm.isGranted ? colors.successBg : colors.dangerBg,
+                  },
+                ]}
               >
                 <Text
-                  style={{
-                    fontFamily: fonts.body700,
-                    fontSize: 11,
-                    color: cameraPerm.isGranted ? colors.successText : colors.dangerText,
-                  }}
+                  style={[
+                    s.permBadgeText,
+                    { color: cameraPerm.isGranted ? colors.successText : colors.dangerText },
+                  ]}
                 >
                   {cameraPerm.isGranted ? t("settings.permGranted") : t("settings.permDenied")}
                 </Text>
               </View>
             }
           />
-          <View style={{ height: 1, backgroundColor: colors.border }} />
+          <View style={[s.divider, { backgroundColor: colors.border }]} />
           <SettingsRow
             icon={ImageIcon}
             label={t("settings.photoPermission")}
@@ -408,19 +305,18 @@ export default function SettingsScreen() {
             showChevron={false}
             rightElement={
               <View
-                style={{
-                  paddingHorizontal: 10,
-                  paddingVertical: 4,
-                  borderRadius: 999,
-                  backgroundColor: mediaLibPerm.isGranted ? colors.successBg : colors.dangerBg,
-                }}
+                style={[
+                  s.permBadge,
+                  {
+                    backgroundColor: mediaLibPerm.isGranted ? colors.successBg : colors.dangerBg,
+                  },
+                ]}
               >
                 <Text
-                  style={{
-                    fontFamily: fonts.body700,
-                    fontSize: 11,
-                    color: mediaLibPerm.isGranted ? colors.successText : colors.dangerText,
-                  }}
+                  style={[
+                    s.permBadgeText,
+                    { color: mediaLibPerm.isGranted ? colors.successText : colors.dangerText },
+                  ]}
                 >
                   {mediaLibPerm.isGranted ? t("settings.permGranted") : t("settings.permDenied")}
                 </Text>
@@ -430,29 +326,13 @@ export default function SettingsScreen() {
         </View>
 
         {/* ABONELİK */}
-        <Text
-          style={{
-            fontFamily: fonts.body800,
-            fontSize: 11,
-            letterSpacing: 1,
-            textTransform: "uppercase",
-            color: colors.muted,
-            marginTop: 22,
-            marginBottom: 8,
-            paddingHorizontal: 6,
-          }}
-        >
+        <Text style={[s.sectionLabel, { color: colors.muted }]}>
           {t("settings.sectionSubscription")}
         </Text>
         <View
           style={[
-            {
-              borderRadius: 20,
-              borderWidth: 1,
-              overflow: "hidden",
-              backgroundColor: colors.surface,
-              borderColor: colors.border,
-            },
+            s.sectionCard,
+            { backgroundColor: colors.surface, borderColor: colors.border },
             shadow.low,
           ]}
         >
@@ -464,14 +344,7 @@ export default function SettingsScreen() {
             iconColor={colors.warningText}
             showChevron={false}
             rightElement={
-              <View
-                style={{
-                  paddingHorizontal: 10,
-                  paddingVertical: 4,
-                  borderRadius: 999,
-                  backgroundColor: colors.surfaceTint,
-                }}
-              >
+              <View style={[s.permBadge, { backgroundColor: colors.surfaceTint }]}>
                 <Text
                   style={{
                     fontFamily: fonts.body800,
@@ -485,7 +358,7 @@ export default function SettingsScreen() {
               </View>
             }
           />
-          <View style={{ height: 1, backgroundColor: colors.border }} />
+          <View style={[s.divider, { backgroundColor: colors.border }]} />
           <SettingsRow
             icon={RotateCcw}
             label={t("settings.restorePurchases")}
@@ -494,29 +367,11 @@ export default function SettingsScreen() {
         </View>
 
         {/* YASAL */}
-        <Text
-          style={{
-            fontFamily: fonts.body800,
-            fontSize: 11,
-            letterSpacing: 1,
-            textTransform: "uppercase",
-            color: colors.muted,
-            marginTop: 22,
-            marginBottom: 8,
-            paddingHorizontal: 6,
-          }}
-        >
-          {t("settings.sectionLegal")}
-        </Text>
+        <Text style={[s.sectionLabel, { color: colors.muted }]}>{t("settings.sectionLegal")}</Text>
         <View
           style={[
-            {
-              borderRadius: 20,
-              borderWidth: 1,
-              overflow: "hidden",
-              backgroundColor: colors.surface,
-              borderColor: colors.border,
-            },
+            s.sectionCard,
+            { backgroundColor: colors.surface, borderColor: colors.border },
             shadow.low,
           ]}
         >
@@ -525,7 +380,7 @@ export default function SettingsScreen() {
             label={t("legal.privacy")}
             onPress={() => router.push("/legal/privacy")}
           />
-          <View style={{ height: 1, backgroundColor: colors.border }} />
+          <View style={[s.divider, { backgroundColor: colors.border }]} />
           <SettingsRow
             icon={FileText}
             label={t("legal.terms")}
@@ -541,26 +396,13 @@ export default function SettingsScreen() {
         >
           {({ pressed }) => (
             <View
-              style={{
-                marginTop: 22,
-                height: 50,
-                borderRadius: 18,
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 8,
-                backgroundColor: colors.dangerBg,
-                opacity: pressed ? 0.8 : 1,
-              }}
+              style={[
+                s.signOutButton,
+                { backgroundColor: colors.dangerBg, opacity: pressed ? 0.8 : 1 },
+              ]}
             >
               <LogOut size={16} color={colors.dangerText} />
-              <Text
-                style={{
-                  fontFamily: fonts.body700,
-                  fontSize: 14,
-                  color: colors.dangerText,
-                }}
-              >
+              <Text style={[s.signOutText, { color: colors.dangerText }]}>
                 {t("settings.signOut")}
               </Text>
             </View>
@@ -568,20 +410,127 @@ export default function SettingsScreen() {
         </Pressable>
 
         {/* Sürüm */}
-        <Text
-          style={{
-            textAlign: "center",
-            marginTop: 18,
-            fontFamily: fonts.body500,
-            fontSize: 11,
-            color: colors.muted,
-          }}
-        >
+        <Text style={[s.versionText, { color: colors.muted }]}>
           {t("settings.versionLine", { version: APP_VERSION })}
         </Text>
 
-        <View style={{ height: 28 }} />
+        <View style={s.bottomSpacer} />
       </ScrollView>
     </SafeAreaView>
   );
 }
+
+const s = StyleSheet.create({
+  flex1: { flex: 1 },
+  scrollContent: { paddingHorizontal: 18, paddingBottom: 28 },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 8,
+  },
+  backButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 14,
+    borderWidth: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  headerTitle: {
+    fontFamily: fonts.display700,
+    fontSize: 17,
+    letterSpacing: -0.3,
+    textAlign: "center",
+  },
+  headerSpacer: { width: 40 },
+  sectionLabel: {
+    fontFamily: fonts.body800,
+    fontSize: 11,
+    letterSpacing: 1,
+    textTransform: "uppercase",
+    marginTop: 22,
+    marginBottom: 8,
+    paddingHorizontal: 6,
+  },
+  themeCard: {
+    padding: 6,
+    borderRadius: 18,
+    borderWidth: 1,
+  },
+  themeRow: {
+    flexDirection: "row",
+    gap: 4,
+  },
+  themeOptionWrap: { flex: 1 },
+  themePill: {
+    height: 38,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  themePillTextActive: {
+    fontFamily: fonts.body700,
+    fontSize: 12,
+  },
+  themePillText: {
+    fontFamily: fonts.body600,
+    fontSize: 12,
+  },
+  sectionCard: {
+    borderRadius: 20,
+    borderWidth: 1,
+    overflow: "hidden",
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 13,
+    paddingHorizontal: 14,
+    gap: 12,
+  },
+  iconTile: {
+    width: 34,
+    height: 34,
+    borderRadius: 11,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  rowLabel: {
+    flex: 1,
+    fontFamily: fonts.body600,
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  divider: { height: 1 },
+  switch: { transform: [{ scaleX: 0.85 }, { scaleY: 0.85 }] },
+  permBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 999,
+  },
+  permBadgeText: {
+    fontFamily: fonts.body700,
+    fontSize: 11,
+  },
+  signOutButton: {
+    marginTop: 22,
+    height: 50,
+    borderRadius: 18,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+  },
+  signOutText: {
+    fontFamily: fonts.body700,
+    fontSize: 14,
+  },
+  versionText: {
+    textAlign: "center",
+    marginTop: 18,
+    fontFamily: fonts.body500,
+    fontSize: 11,
+  },
+  bottomSpacer: { height: 28 },
+});

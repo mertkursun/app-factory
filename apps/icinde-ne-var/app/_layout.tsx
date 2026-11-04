@@ -1,8 +1,9 @@
 import "../global.css";
-import { useEffect } from "react";
-import { Slot, useRouter, useSegments } from "expo-router";
+import "@/i18n";
+import { useCallback, useEffect, useState } from "react";
+import { Stack, useRouter, useSegments } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import * as SplashScreen from "expo-splash-screen";
+import * as NativeSplash from "expo-splash-screen";
 import {
   useFonts,
   PlusJakartaSans_400Regular,
@@ -11,14 +12,20 @@ import {
   PlusJakartaSans_700Bold,
   PlusJakartaSans_800ExtraBold,
 } from "@expo-google-fonts/plus-jakarta-sans";
+import {
+  BricolageGrotesque_700Bold,
+  BricolageGrotesque_800ExtraBold,
+} from "@expo-google-fonts/bricolage-grotesque";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useAuthStore } from "@/stores/authStore";
 import { useAppStore } from "@/stores/appStore";
 import { configureRevenueCat, identifyUser } from "@/lib/revenuecat";
+import { SplashAnimation } from "@/components/splash/SplashAnimation";
+import { useNotifications } from "@/hooks/useNotifications";
 
 const STALE_TIME_MS = 1000 * 60 * 5;
 
-SplashScreen.preventAutoHideAsync();
+NativeSplash.preventAutoHideAsync();
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -51,7 +58,18 @@ function AuthGate() {
     }
   }, [session, isInitialized, isHydrated, hasSeenOnboarding, segments, router]);
 
-  return <Slot />;
+  return (
+    <Stack screenOptions={{ headerShown: false, gestureEnabled: true }}>
+      <Stack.Screen name="(onboarding)" options={{ gestureEnabled: false }} />
+      <Stack.Screen name="(auth)" options={{ gestureEnabled: false }} />
+      <Stack.Screen name="(tabs)" options={{ gestureEnabled: false }} />
+      <Stack.Screen name="analysis/[id]" />
+      <Stack.Screen name="ingredient-confirm" />
+      <Stack.Screen name="paywall" />
+      <Stack.Screen name="settings" />
+      <Stack.Screen name="legal" />
+    </Stack>
+  );
 }
 
 export default function RootLayout() {
@@ -59,6 +77,7 @@ export default function RootLayout() {
   const isInitialized = useAuthStore((s) => s.isInitialized);
   const user = useAuthStore((s) => s.user);
   const isHydrated = useAppStore((s) => s.isHydrated);
+  const [showSplash, setShowSplash] = useState(true);
 
   const [fontsLoaded] = useFonts({
     PlusJakartaSans_400Regular,
@@ -66,6 +85,8 @@ export default function RootLayout() {
     PlusJakartaSans_600SemiBold,
     PlusJakartaSans_700Bold,
     PlusJakartaSans_800ExtraBold,
+    BricolageGrotesque_700Bold,
+    BricolageGrotesque_800ExtraBold,
   });
 
   useEffect(() => {
@@ -83,14 +104,30 @@ export default function RootLayout() {
     }
   }, [user?.id]);
 
+  // Push notification lifecycle (token registration, listeners, local scheduling)
+  useNotifications();
+
   useEffect(() => {
     if (fontsLoaded && isInitialized && isHydrated) {
-      SplashScreen.hideAsync();
+      NativeSplash.hideAsync();
     }
   }, [fontsLoaded, isInitialized, isHydrated]);
 
+  const handleSplashFinish = useCallback(() => {
+    setShowSplash(false);
+  }, []);
+
   if (!fontsLoaded || !isInitialized || !isHydrated) {
     return null;
+  }
+
+  if (showSplash) {
+    return (
+      <>
+        <StatusBar style="light" />
+        <SplashAnimation onFinish={handleSplashFinish} />
+      </>
+    );
   }
 
   return (

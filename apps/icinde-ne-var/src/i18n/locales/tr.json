@@ -266,5 +266,13 @@
     "termsS4Body": "Sağlık kararları için mutlaka uzman görüşü alınmalıdır.",
     "termsS5Title": "Değişiklikler",
     "termsS5Body": "Şartlar güncellenebilir; güncellemeler yayınlandığı anda yürürlüğe girer."
+  },
+  "notifications": {
+    "welcomeTitle": "Hoş geldin!",
+    "welcomeBody": "İlk ürününü tara ve içeriğini öğren!",
+    "quotaWarningTitle": "Kota Uyarısı",
+    "quotaWarningBody": "Son 1 tarama hakkın kaldı. Pro'ya geçerek sınırsız taraya devam et.",
+    "weeklyReminderTitle": "Seni özledik!",
+    "weeklyReminderBody": "Bu hafta ne yedin? Market alışverişinde yanında ol."
   }
 }

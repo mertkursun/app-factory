@@ -265,5 +265,13 @@
     "termsS4Body": "Expert opinion must be sought for health decisions.",
     "termsS5Title": "Changes",
     "termsS5Body": "Terms may be updated; updates take effect immediately upon publication."
+  },
+  "notifications": {
+    "welcomeTitle": "Welcome!",
+    "welcomeBody": "Scan your first product and discover what's inside!",
+    "quotaWarningTitle": "Quota Warning",
+    "quotaWarningBody": "You have 1 scan left. Go Pro for unlimited scans.",
+    "weeklyReminderTitle": "We miss you!",
+    "weeklyReminderBody": "What did you eat this week? Let us join your grocery run."
   }
 }
