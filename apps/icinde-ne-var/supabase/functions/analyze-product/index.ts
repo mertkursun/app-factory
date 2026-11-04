@@ -3,6 +3,7 @@ import { readProduct } from "./steps/read.ts";
 import { matchIngredients } from "./steps/match.ts";
 import { applyRules } from "./steps/rules.ts";
 import { generateExplanation } from "./steps/explain.ts";
+import { generateAlternatives } from "./steps/alternatives.ts";
 import { checkAndIncrementQuota } from "./lib/quota.ts";
 import { getCachedAnalysis } from "./lib/cache.ts";
 import type { AnalyzeRequest } from "./lib/types.ts";
@@ -52,10 +53,20 @@ Deno.serve(async (req: Request) => {
     }
 
     const body: AnalyzeRequest = await req.json();
-    const { barcode, photoUri, audiences } = body;
+    const {
+      barcode,
+      storagePath,
+      ingredients: bodyIngredients,
+      productName: bodyProductName,
+      category: bodyCategory,
+      brand: bodyBrand,
+      countryOfOrigin: bodyCountryOfOrigin,
+      audiences,
+      lang,
+    } = body;
 
-    if (!barcode && !photoUri) {
-      return jsonResponse({ error: "Barkod veya fotoğraf gerekli" }, 400);
+    if (!barcode && !storagePath && (!bodyIngredients || bodyIngredients.length === 0)) {
+      return jsonResponse({ error: "Barkod, fotoğraf veya içerik listesi gerekli" }, 400);
     }
 
     // 1. Önbellek kontrolü (sadece barkodlu ürünler)
@@ -73,7 +84,19 @@ Deno.serve(async (req: Request) => {
     }
 
     // 3. OKU — Ürün bilgilerini al
-    const readResult = await readProduct({ barcode, photoUri });
+    let readResult;
+    if (bodyIngredients && bodyIngredients.length > 0) {
+      readResult = {
+        productName: bodyProductName ?? null,
+        ingredients: bodyIngredients,
+        category: bodyCategory ?? ("genel" as const),
+        sourceUrl: null as string | null,
+        brand: bodyBrand ?? null,
+        countryOfOrigin: bodyCountryOfOrigin ?? null,
+      };
+    } else {
+      readResult = await readProduct({ barcode, photoUri: storagePath });
+    }
 
     // 4. EŞLEŞTİR — Maddeleri veritabanıyla eşleştir
     const matched = await matchIngredients(serviceClient, readResult.ingredients);
@@ -82,9 +105,22 @@ Deno.serve(async (req: Request) => {
     const rulesResult = applyRules(matched, audiences);
 
     // 6. ANLAT — Claude ile açıklama üret
-    const explanation = await generateExplanation(readResult.productName, rulesResult, audiences);
+    const explanation = await generateExplanation(
+      readResult.productName,
+      rulesResult,
+      audiences,
+      lang,
+    );
 
-    // 7. Sonucu kaydet
+    // 7. Alternatif öneriler üret (sadece sarı/kırmızı skor için)
+    const alternatives = await generateAlternatives(
+      readResult.productName,
+      readResult.category,
+      rulesResult.skor,
+      lang,
+    );
+
+    // 8. Sonucu kaydet
     const analysisData = {
       barkod: barcode ?? null,
       urun_adi: readResult.productName,
@@ -95,6 +131,9 @@ Deno.serve(async (req: Request) => {
       profil_uyarilari: rulesResult.profilUyarilari,
       bilinmeyenler: rulesResult.bilinmeyenler,
       kaynak_url: readResult.sourceUrl,
+      marka: readResult.brand,
+      uretim_ulkesi: readResult.countryOfOrigin,
+      alternatifler: alternatives,
     };
 
     const { data: saved, error: saveError } = await serviceClient
@@ -107,7 +146,8 @@ Deno.serve(async (req: Request) => {
 
     return jsonResponse({ analysis: saved, fromCache: false });
   } catch (err) {
-    console.error("analyze-product error:", err);
-    return jsonResponse({ error: "Analiz sırasında bir hata oluştu" }, 500);
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.error("analyze-product error:", errMsg);
+    return jsonResponse({ error: `Analiz hatası: ${errMsg.slice(0, 300)}` }, 500);
   }
 });

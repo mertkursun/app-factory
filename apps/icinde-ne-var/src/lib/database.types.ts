@@ -78,6 +78,9 @@ export interface Database {
           profil_uyarilari: Json;
           bilinmeyenler: string[];
           kaynak_url: string | null;
+          marka: string | null;
+          uretim_ulkesi: string | null;
+          alternatifler: Json | null;
           created_at: string;
         };
         Insert: {
@@ -91,6 +94,9 @@ export interface Database {
           profil_uyarilari: Json;
           bilinmeyenler?: string[];
           kaynak_url?: string | null;
+          marka?: string | null;
+          uretim_ulkesi?: string | null;
+          alternatifler?: Json | null;
           created_at?: string;
         };
         Update: {
@@ -104,6 +110,9 @@ export interface Database {
           profil_uyarilari?: Json;
           bilinmeyenler?: string[];
           kaynak_url?: string | null;
+          marka?: string | null;
+          uretim_ulkesi?: string | null;
+          alternatifler?: Json | null;
           created_at?: string;
         };
         Relationships: [];
@@ -189,6 +198,36 @@ export interface Database {
           revenuecat_id?: string;
           created_at?: string;
           updated_at?: string;
+        };
+        Relationships: [];
+      };
+      favoriler: {
+        Row: {
+          id: string;
+          user_id: string;
+          analiz_id: string;
+          urun_adi: string | null;
+          barkod: string | null;
+          skor: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          analiz_id: string;
+          urun_adi?: string | null;
+          barkod?: string | null;
+          skor: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          analiz_id?: string;
+          urun_adi?: string | null;
+          barkod?: string | null;
+          skor?: string;
+          created_at?: string;
         };
         Relationships: [];
       };

@@ -1,7 +1,13 @@
 export interface AnalyzeRequest {
   barcode?: string;
-  photoUri?: string;
+  storagePath?: string;
+  ingredients?: string[];
+  productName?: string;
+  category?: "gida" | "kozmetik" | "temizlik" | "genel";
+  brand?: string;
+  countryOfOrigin?: string;
   audiences: string[];
+  lang?: string;
 }
 
 export interface ReadResult {
@@ -9,6 +15,8 @@ export interface ReadResult {
   ingredients: string[];
   category: "gida" | "kozmetik" | "temizlik" | "genel";
   sourceUrl: string | null;
+  brand: string | null;
+  countryOfOrigin: string | null;
 }
 
 export interface MatchedIngredient {
@@ -47,6 +55,7 @@ export interface AnalyzeResponse {
     profil_uyarilari: unknown;
     bilinmeyenler: string[];
     kaynak_url: string | null;
+    alternatifler: unknown;
     created_at: string;
   };
   fromCache: boolean;

@@ -44,185 +44,174 @@ const SKOR_NUMERIC: Record<SkorRenk, number> = {
 
 // ── Component ──────────────────────────────────────────────────────
 
-export const ShareCard = forwardRef<ViewShotRef, ShareCardProps>(
-  function ShareCard({ productName, brand, skor, maddeSummary }, ref) {
-    const { colors } = useTheme();
-    const { t } = useTranslation();
+export const ShareCard = forwardRef<ViewShotRef, ShareCardProps>(function ShareCard(
+  { productName, brand, skor, maddeSummary },
+  ref,
+) {
+  const { colors } = useTheme();
+  const { t } = useTranslation();
 
-    const status = SKOR_TO_STATUS[skor];
-    const numericScore = SKOR_NUMERIC[skor];
+  const status = SKOR_TO_STATUS[skor];
+  const numericScore = SKOR_NUMERIC[skor];
 
-    const statusColorMap: Record<StatusKey, string> = {
-      success: colors.success,
-      warning: colors.warning,
-      danger: colors.danger,
-    };
+  const statusColorMap: Record<StatusKey, string> = {
+    success: colors.success,
+    warning: colors.warning,
+    danger: colors.danger,
+  };
 
-    const statusBgMap: Record<StatusKey, string> = {
-      success: colors.successBg,
-      warning: colors.warningBg,
-      danger: colors.dangerBg,
-    };
+  const statusBgMap: Record<StatusKey, string> = {
+    success: colors.successBg,
+    warning: colors.warningBg,
+    danger: colors.dangerBg,
+  };
 
-    const scoreLabelMap: Record<StatusKey, string> = {
-      success: t("analysis.shareScoreSafe"),
-      warning: t("analysis.shareScoreCaution"),
-      danger: t("analysis.shareScoreDanger"),
-    };
+  const scoreLabelMap: Record<StatusKey, string> = {
+    success: t("analysis.shareScoreSafe"),
+    warning: t("analysis.shareScoreCaution"),
+    danger: t("analysis.shareScoreDanger"),
+  };
 
-    const statusColor = statusColorMap[status];
-    const statusBg = statusBgMap[status];
-    const scoreLabel = scoreLabelMap[status];
+  const statusColor = statusColorMap[status];
+  const statusBg = statusBgMap[status];
+  const scoreLabel = scoreLabelMap[status];
 
-    const ringRadius = (SCORE_SIZE - RING_WIDTH) / 2;
-    const circumference = 2 * Math.PI * ringRadius;
-    const strokeDashoffset = circumference * (1 - numericScore / 100);
-    const innerSize = SCORE_SIZE - RING_WIDTH * 2;
+  const ringRadius = (SCORE_SIZE - RING_WIDTH) / 2;
+  const circumference = 2 * Math.PI * ringRadius;
+  const strokeDashoffset = circumference * (1 - numericScore / 100);
+  const innerSize = SCORE_SIZE - RING_WIDTH * 2;
 
-    const summaryParts: string[] = [];
-    if (maddeSummary.safe > 0) {
-      summaryParts.push(t("analysis.safeCount", { count: maddeSummary.safe }));
-    }
-    if (maddeSummary.caution > 0) {
-      summaryParts.push(t("analysis.cautionCount", { count: maddeSummary.caution }));
-    }
-    if (maddeSummary.danger > 0) {
-      summaryParts.push(t("analysis.dangerCount", { count: maddeSummary.danger }));
-    }
-    const summaryText = summaryParts.join(" · ");
+  const summaryParts: string[] = [];
+  if (maddeSummary.safe > 0) {
+    summaryParts.push(t("analysis.safeCount", { count: maddeSummary.safe }));
+  }
+  if (maddeSummary.caution > 0) {
+    summaryParts.push(t("analysis.cautionCount", { count: maddeSummary.caution }));
+  }
+  if (maddeSummary.danger > 0) {
+    summaryParts.push(t("analysis.dangerCount", { count: maddeSummary.danger }));
+  }
+  const summaryText = summaryParts.join(" · ");
 
-    return (
-      <ViewShot
-        ref={ref}
-        options={{ format: "png", quality: 1, width: CARD_WIDTH, height: CARD_HEIGHT }}
-        style={styles.offscreen}
-      >
-        <View style={[styles.card, { backgroundColor: colors.background }]}>
-          {/* Status glow background */}
-          <View style={[styles.glowBg, { backgroundColor: statusColor, opacity: 0.12 }]} />
+  return (
+    <ViewShot
+      ref={ref}
+      options={{ format: "png", quality: 1, width: CARD_WIDTH, height: CARD_HEIGHT }}
+      style={styles.offscreen}
+    >
+      <View style={[styles.card, { backgroundColor: colors.background }]}>
+        {/* Status glow background */}
+        <View style={[styles.glowBg, { backgroundColor: statusColor, opacity: 0.12 }]} />
 
-          {/* App name header */}
-          <View style={styles.headerRow}>
-            <View style={[styles.appBadge, { backgroundColor: colors.surfaceTint }]}>
-              <Text style={[styles.appName, { color: colors.primary }]}>
-                {t("common.appName")}
+        {/* App name header */}
+        <View style={styles.headerRow}>
+          <View style={[styles.appBadge, { backgroundColor: colors.surfaceTint }]}>
+            <Text style={[styles.appName, { color: colors.primary }]}>{t("common.appName")}</Text>
+          </View>
+        </View>
+
+        {/* Product info */}
+        <View style={styles.productSection}>
+          <Text style={[styles.productName, { color: colors.text }]} numberOfLines={2}>
+            {productName}
+          </Text>
+          {brand ? <Text style={[styles.brand, { color: colors.muted }]}>{brand}</Text> : null}
+        </View>
+
+        {/* Score circle */}
+        <View style={styles.scoreSection}>
+          <View
+            style={[styles.scoreContainer, { backgroundColor: statusBg, borderColor: statusColor }]}
+          >
+            <View style={styles.scoreCircleWrapper}>
+              <Svg width={SCORE_SIZE} height={SCORE_SIZE}>
+                <Defs>
+                  <LinearGradient id="shareGloss" x1="0" y1="0" x2="0" y2="1">
+                    <Stop offset="0" stopColor="rgba(255,255,255,0.3)" />
+                    <Stop offset="1" stopColor="rgba(0,0,0,0.08)" />
+                  </LinearGradient>
+                </Defs>
+
+                {/* Track */}
+                <Circle
+                  cx={SCORE_SIZE / 2}
+                  cy={SCORE_SIZE / 2}
+                  r={ringRadius}
+                  stroke={colors.border}
+                  strokeWidth={RING_WIDTH}
+                  fill="none"
+                  opacity={0.5}
+                />
+
+                {/* Score arc */}
+                <Circle
+                  cx={SCORE_SIZE / 2}
+                  cy={SCORE_SIZE / 2}
+                  r={ringRadius}
+                  stroke={statusColor}
+                  strokeWidth={RING_WIDTH}
+                  fill="none"
+                  strokeDasharray={circumference}
+                  strokeDashoffset={strokeDashoffset}
+                  strokeLinecap="round"
+                  rotation={-90}
+                  origin={`${SCORE_SIZE / 2}, ${SCORE_SIZE / 2}`}
+                />
+
+                {/* Gloss overlay */}
+                <Circle
+                  cx={SCORE_SIZE / 2}
+                  cy={SCORE_SIZE / 2}
+                  r={ringRadius}
+                  stroke="url(#shareGloss)"
+                  strokeWidth={RING_WIDTH}
+                  fill="none"
+                />
+              </Svg>
+
+              {/* Inner content */}
+              <View
+                style={[
+                  styles.scoreInner,
+                  {
+                    width: innerSize,
+                    height: innerSize,
+                    borderRadius: innerSize / 2,
+                    backgroundColor: colors.surface,
+                  },
+                ]}
+              >
+                <Text style={[styles.scoreNumber, { color: statusColor }]}>{numericScore}</Text>
+              </View>
+            </View>
+
+            {/* Score label */}
+            <Text style={[styles.scoreLabel, { color: statusColor }]}>{scoreLabel}</Text>
+          </View>
+        </View>
+
+        {/* Summary */}
+        {summaryText.length > 0 ? (
+          <View style={styles.summarySection}>
+            <View style={[styles.summaryBadge, { backgroundColor: colors.surface }]}>
+              <Text style={[styles.summaryText, { color: colors.textSecondary }]}>
+                {summaryText}
               </Text>
             </View>
           </View>
+        ) : null}
 
-          {/* Product info */}
-          <View style={styles.productSection}>
-            <Text
-              style={[styles.productName, { color: colors.text }]}
-              numberOfLines={2}
-            >
-              {productName}
-            </Text>
-            {brand ? (
-              <Text style={[styles.brand, { color: colors.muted }]}>{brand}</Text>
-            ) : null}
-          </View>
-
-          {/* Score circle */}
-          <View style={styles.scoreSection}>
-            <View
-              style={[
-                styles.scoreContainer,
-                { backgroundColor: statusBg, borderColor: statusColor },
-              ]}
-            >
-              <View style={styles.scoreCircleWrapper}>
-                <Svg width={SCORE_SIZE} height={SCORE_SIZE}>
-                  <Defs>
-                    <LinearGradient id="shareGloss" x1="0" y1="0" x2="0" y2="1">
-                      <Stop offset="0" stopColor="rgba(255,255,255,0.3)" />
-                      <Stop offset="1" stopColor="rgba(0,0,0,0.08)" />
-                    </LinearGradient>
-                  </Defs>
-
-                  {/* Track */}
-                  <Circle
-                    cx={SCORE_SIZE / 2}
-                    cy={SCORE_SIZE / 2}
-                    r={ringRadius}
-                    stroke={colors.border}
-                    strokeWidth={RING_WIDTH}
-                    fill="none"
-                    opacity={0.5}
-                  />
-
-                  {/* Score arc */}
-                  <Circle
-                    cx={SCORE_SIZE / 2}
-                    cy={SCORE_SIZE / 2}
-                    r={ringRadius}
-                    stroke={statusColor}
-                    strokeWidth={RING_WIDTH}
-                    fill="none"
-                    strokeDasharray={circumference}
-                    strokeDashoffset={strokeDashoffset}
-                    strokeLinecap="round"
-                    rotation={-90}
-                    origin={`${SCORE_SIZE / 2}, ${SCORE_SIZE / 2}`}
-                  />
-
-                  {/* Gloss overlay */}
-                  <Circle
-                    cx={SCORE_SIZE / 2}
-                    cy={SCORE_SIZE / 2}
-                    r={ringRadius}
-                    stroke="url(#shareGloss)"
-                    strokeWidth={RING_WIDTH}
-                    fill="none"
-                  />
-                </Svg>
-
-                {/* Inner content */}
-                <View
-                  style={[
-                    styles.scoreInner,
-                    {
-                      width: innerSize,
-                      height: innerSize,
-                      borderRadius: innerSize / 2,
-                      backgroundColor: colors.surface,
-                    },
-                  ]}
-                >
-                  <Text style={[styles.scoreNumber, { color: statusColor }]}>
-                    {numericScore}
-                  </Text>
-                </View>
-              </View>
-
-              {/* Score label */}
-              <Text style={[styles.scoreLabel, { color: statusColor }]}>{scoreLabel}</Text>
-            </View>
-          </View>
-
-          {/* Summary */}
-          {summaryText.length > 0 ? (
-            <View style={styles.summarySection}>
-              <View style={[styles.summaryBadge, { backgroundColor: colors.surface }]}>
-                <Text style={[styles.summaryText, { color: colors.textSecondary }]}>
-                  {summaryText}
-                </Text>
-              </View>
-            </View>
-          ) : null}
-
-          {/* Footer */}
-          <View style={styles.footer}>
-            <View style={[styles.footerDivider, { backgroundColor: colors.border }]} />
-            <Text style={[styles.footerText, { color: colors.muted }]}>
-              {t("analysis.shareFooter")}
-            </Text>
-          </View>
+        {/* Footer */}
+        <View style={styles.footer}>
+          <View style={[styles.footerDivider, { backgroundColor: colors.border }]} />
+          <Text style={[styles.footerText, { color: colors.muted }]}>
+            {t("analysis.shareFooter")}
+          </Text>
         </View>
-      </ViewShot>
-    );
-  },
-);
+      </View>
+    </ViewShot>
+  );
+});
 
 // ── Styles ─────────────────────────────────────────────────────────
 
