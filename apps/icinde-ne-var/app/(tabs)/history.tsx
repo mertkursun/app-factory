@@ -138,16 +138,12 @@ export default function HistoryScreen() {
     <SafeAreaView style={[styles.safe, { backgroundColor: colors.background }]} edges={["top"]}>
       {/* Header */}
       <View style={styles.header}>
-        <View style={styles.headerLeft}>
-          <Text style={[typography.screenTitle, { color: colors.text }]}>{t("history.title")}</Text>
-          {allItems.length > 0 && (
-            <Text style={[styles.subtitle, { color: colors.muted }]}>
-              {t("history.subtitle", { count: allItems.length, safe: safeCount })}
-            </Text>
-          )}
-        </View>
-        {/* TODO: Search functionality - add when implemented */}
-        <View style={styles.headerSpacer} />
+        <Text style={[typography.screenTitle, { color: colors.text }]}>{t("history.title")}</Text>
+        {allItems.length > 0 && (
+          <Text style={[styles.subtitle, { color: colors.muted }]}>
+            {t("history.subtitle", { count: allItems.length, safe: safeCount })}
+          </Text>
+        )}
       </View>
 
       {/* Filter chips */}
@@ -213,19 +209,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    justifyContent: "space-between",
     paddingHorizontal: spacing.screenX,
     paddingTop: 6,
-    paddingBottom: 0,
-  },
-  headerLeft: {
-    flex: 1,
-    gap: 2,
-  },
-  headerSpacer: {
-    width: 40,
+    gap: 4,
   },
   subtitle: {
     fontFamily: fonts.body500,

@@ -1,13 +1,12 @@
 import { View, Text, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
-import { Scan } from "lucide-react-native";
+import { ScanLine } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
-import { useTheme, fonts } from "@/theme/tokens";
-import { Logo } from "@/components/ui/Logo";
+import { useTheme, fonts, spacing } from "@/theme/tokens";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 
-const HALO_SIZE = 150;
-const DASHED_SIZE = 114;
+const HALO_SIZE = 120;
+const ICON_CIRCLE_SIZE = 64;
 
 export function EmptyHistory() {
   const { t } = useTranslation();
@@ -16,14 +15,14 @@ export function EmptyHistory() {
 
   return (
     <View style={styles.container}>
-      {/* Halo + dashed circle with logo */}
+      {/* Halo + icon circle */}
       <View style={styles.illustrationWrap}>
         {/* Radial halo */}
         <View style={[styles.halo, { backgroundColor: colors.surfaceTint }]} />
-        {/* Dashed border circle */}
-        <View style={[styles.dashedCircle, { borderColor: colors.border }]} />
-        {/* Logo inside */}
-        <Logo size={76} />
+        {/* Icon circle */}
+        <View style={[styles.iconCircle, { borderColor: colors.border }]}>
+          <ScanLine size={28} color={colors.primary} strokeWidth={2} />
+        </View>
       </View>
 
       <Text style={[styles.title, { color: colors.text }]}>{t("history.empty")}</Text>
@@ -35,7 +34,7 @@ export function EmptyHistory() {
           label={t("history.firstScan")}
           onPress={() => router.push("/(tabs)")}
           height={48}
-          icon={<Scan size={16} color={colors.primaryFg} strokeWidth={2.4} />}
+          icon={<ScanLine size={16} color={colors.primaryFg} strokeWidth={2.4} />}
         />
       </View>
     </View>
@@ -47,30 +46,31 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: 32,
-    paddingBottom: 90,
+    paddingHorizontal: spacing.screenX + 12,
+    paddingBottom: 100,
   },
   illustrationWrap: {
     width: HALO_SIZE,
     height: HALO_SIZE,
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 8,
+    marginBottom: 16,
   },
   halo: {
     position: "absolute",
     width: HALO_SIZE,
     height: HALO_SIZE,
     borderRadius: HALO_SIZE / 2,
-    opacity: 0.8,
+    opacity: 0.7,
   },
-  dashedCircle: {
-    position: "absolute",
-    width: DASHED_SIZE,
-    height: DASHED_SIZE,
-    borderRadius: DASHED_SIZE / 2,
+  iconCircle: {
+    width: ICON_CIRCLE_SIZE,
+    height: ICON_CIRCLE_SIZE,
+    borderRadius: ICON_CIRCLE_SIZE / 2,
     borderWidth: 1.5,
     borderStyle: "dashed",
+    alignItems: "center",
+    justifyContent: "center",
   },
   title: {
     fontFamily: fonts.display800,
@@ -78,7 +78,6 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     letterSpacing: -0.4,
     textAlign: "center",
-    marginTop: 8,
   },
   description: {
     fontFamily: fonts.body400,
@@ -86,11 +85,11 @@ const styles = StyleSheet.create({
     textAlign: "center",
     lineHeight: 20,
     marginTop: 8,
-    maxWidth: 230,
+    maxWidth: 240,
   },
   buttonWrap: {
-    marginTop: 22,
+    marginTop: 24,
     alignSelf: "center",
-    paddingHorizontal: 24,
+    minWidth: 200,
   },
 });
