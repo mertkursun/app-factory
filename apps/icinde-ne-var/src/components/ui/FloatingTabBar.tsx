@@ -2,7 +2,7 @@ import { View, Text, Pressable, Platform } from "react-native";
 import { BlurView } from "expo-blur";
 import { LinearGradient } from "expo-linear-gradient";
 import Animated, { useAnimatedStyle, withTiming, LinearTransition } from "react-native-reanimated";
-import { ScanLine, History, User } from "lucide-react-native";
+import { ScanLine, Search, History, Heart, User } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import { useTheme, fonts } from "@/theme/tokens";
 
@@ -21,7 +21,7 @@ interface FloatingTabBarProps {
   navigateToTab: (key: string) => void;
 }
 
-const TAB_ICONS = [ScanLine, History, User] as const;
+const TAB_ICONS = [ScanLine, Search, History, Heart, User] as const;
 const ICON_SIZE = 20;
 const BAR_HEIGHT = 66;
 const ITEM_HEIGHT = 54;
@@ -106,7 +106,13 @@ function TabItem({
 export function FloatingTabBar({ state, navigateToTab }: FloatingTabBarProps) {
   const { t } = useTranslation();
   const { colors, shadow, isDark } = useTheme();
-  const tabLabels = [t("tabs.scan"), t("tabs.history"), t("tabs.profile")];
+  const tabLabels = [
+    t("tabs.scan"),
+    t("tabs.search"),
+    t("tabs.history"),
+    t("tabs.favorites"),
+    t("tabs.profile"),
+  ];
 
   const content = (
     <View
