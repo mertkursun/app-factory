@@ -92,6 +92,43 @@ export default function AnalysisScreen() {
     [id, router],
   );
 
+  const handleToggleFavorite = useCallback(() => {
+    if (!user || !id || !analysis) return;
+    if (isFavorite) {
+      removeFavorite.mutate({ userId: user.id, analizId: id });
+    } else {
+      addFavorite.mutate({
+        user_id: user.id,
+        analiz_id: id,
+        urun_adi: analysis.urun_adi,
+        barkod: analysis.barkod,
+        skor: analysis.skor,
+      });
+    }
+  }, [user, id, analysis, isFavorite, addFavorite, removeFavorite]);
+
+  const maddeler = useMemo(
+    () => (analysis ? parseAnalysisMaddeler(analysis.maddeler) : []),
+    [analysis],
+  );
+
+  const profilUyarilari = useMemo(
+    () => (analysis ? parseProfilUyarilari(analysis.profil_uyarilari) : []),
+    [analysis],
+  );
+
+  const maddeSummary = useMemo(() => {
+    let safe = 0;
+    let caution = 0;
+    let danger = 0;
+    for (const m of maddeler) {
+      if (m.riskSeviyesi === "guvenli") safe++;
+      else if (m.riskSeviyesi === "dikkat") caution++;
+      else if (m.riskSeviyesi === "sakincali") danger++;
+    }
+    return { safe, caution, danger };
+  }, [maddeler]);
+
   if (isLoading) {
     return <LoadingScreen message={t("analysis.loading")} />;
   }
@@ -106,8 +143,6 @@ export default function AnalysisScreen() {
     );
   }
 
-  const maddeler = parseAnalysisMaddeler(analysis.maddeler);
-  const profilUyarilari = parseProfilUyarilari(analysis.profil_uyarilari);
   const skor = analysis.skor as SkorRenk;
   const status = SKOR_TO_STATUS[skor];
   const numericScore = SKOR_NUMERIC[skor];
@@ -120,18 +155,6 @@ export default function AnalysisScreen() {
   const haloColor = statusColorMap[status];
 
   const categoryBadgeLabel = capitalize(analysis.kategori);
-
-  const maddeSummary = useMemo(() => {
-    let safe = 0;
-    let caution = 0;
-    let danger = 0;
-    for (const m of maddeler) {
-      if (m.riskSeviyesi === "guvenli") safe++;
-      else if (m.riskSeviyesi === "dikkat") caution++;
-      else if (m.riskSeviyesi === "sakincali") danger++;
-    }
-    return { safe, caution, danger };
-  }, [maddeler]);
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
@@ -153,6 +176,21 @@ export default function AnalysisScreen() {
           {t("analysis.result")}
         </Text>
         <View style={styles.headerActions}>
+          <IconButton
+            icon={
+              <Heart
+                size={18}
+                color={isFavorite ? colors.danger : colors.text}
+                fill={isFavorite ? colors.danger : "transparent"}
+              />
+            }
+            onPress={handleToggleFavorite}
+            accessibilityLabel={isFavorite ? t("favorites.removed") : t("favorites.added")}
+            style={{
+              backgroundColor: colors.glass,
+              borderColor: colors.glassBorder,
+            }}
+          />
           <IconButton
             icon={<Scale size={18} color={colors.text} />}
             onPress={() => setPickerVisible(true)}
@@ -210,7 +248,7 @@ export default function AnalysisScreen() {
           </View>
 
           {/* Brand & Country */}
-          {(analysis.marka || analysis.uretim_ulkesi) ? (
+          {analysis.marka || analysis.uretim_ulkesi ? (
             <View style={styles.metaRow}>
               {analysis.marka ? (
                 <View style={styles.metaItem}>
@@ -236,7 +274,7 @@ export default function AnalysisScreen() {
         <ExplanationCard text={analysis.aciklama} />
 
         {/* Alternatives (only for sari/kirmizi) */}
-        {(skor === "sari" || skor === "kirmizi") ? (
+        {skor === "sari" || skor === "kirmizi" ? (
           <AlternativesList data={analysis.alternatifler} />
         ) : null}
 
