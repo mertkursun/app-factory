@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { useRouter } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { useAuthStore } from "@/stores/authStore";
 import { useAnalyzeProduct } from "@/hooks/useAnalysis";
 import { useAddToHistory } from "@/hooks/useHistory";
@@ -20,6 +21,7 @@ const INITIAL_STATE: ScanFlowState = {
 
 export function useScanFlow() {
   const router = useRouter();
+  const { t } = useTranslation();
   const user = useAuthStore((s) => s.user);
   const userId = user?.id;
 
@@ -61,7 +63,7 @@ export function useScanFlow() {
       if (isQuotaExhausted) {
         setState({
           isAnalyzing: false,
-          error: "Aylık tarama kotanız doldu. Pro'ya yükselterek sınırsız tarama yapabilirsiniz.",
+          error: t("scanner.quotaExhaustedError"),
         });
         return;
       }
@@ -78,12 +80,11 @@ export function useScanFlow() {
         setState(INITIAL_STATE);
         await navigateToResult(result);
       } catch (err: unknown) {
-        const message =
-          err instanceof Error ? err.message : "Analiz sırasında bir hata oluştu. Tekrar deneyin.";
+        const message = err instanceof Error ? err.message : t("analysis.errorMessage");
         setState({ isAnalyzing: false, error: message });
       }
     },
-    [user, isQuotaExhausted, profile, analyzeMutation, navigateToResult, router],
+    [user, isQuotaExhausted, profile, analyzeMutation, navigateToResult, router, t],
   );
 
   const handlePhotoTaken = useCallback(
@@ -96,7 +97,7 @@ export function useScanFlow() {
       if (isQuotaExhausted) {
         setState({
           isAnalyzing: false,
-          error: "Aylık tarama kotanız doldu. Pro'ya yükselterek sınırsız tarama yapabilirsiniz.",
+          error: t("scanner.quotaExhaustedError"),
         });
         return;
       }
@@ -107,7 +108,7 @@ export function useScanFlow() {
         params: { photoUri: uri, ingredients: JSON.stringify([]) },
       });
     },
-    [user, isQuotaExhausted, router],
+    [user, isQuotaExhausted, router, t],
   );
 
   const clearError = useCallback(() => {

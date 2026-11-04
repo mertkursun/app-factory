@@ -24,7 +24,7 @@ export function configureRevenueCat(userId?: string): void {
   }
 
   try {
-    Purchases.setLogLevel(LOG_LEVEL.DEBUG);
+    Purchases.setLogLevel(__DEV__ ? LOG_LEVEL.DEBUG : LOG_LEVEL.ERROR);
     Purchases.configure({
       apiKey,
       appUserID: userId ?? null,

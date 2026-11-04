@@ -87,6 +87,7 @@
     "flashOn": "Flaşı aç",
     "takePhoto": "Fotoğraf çek",
     "quotaExhausted": "Tarama Kotanız Doldu",
+    "quotaExhaustedError": "Aylık tarama kotanız doldu. Pro'ya yükselterek sınırsız tarama yapabilirsiniz.",
     "upgradePro": "Pro'ya yükselt",
     "closeError": "Hatayı kapat",
     "analyzingSubtitle": "Ürün içeriği inceleniyor",
@@ -117,7 +118,9 @@
     "disclaimer": "Bu analiz bilgilendirme amaçlıdır, tıbbi tavsiye niteliği taşımaz. Sağlık kararlarınız için mutlaka bir uzmana danışın.",
     "profileWarningTitle": "{{audience}} profili için",
     "profileWarningDetail": "{{count}} sakıncalı madde · dokun ve gör",
-    "source": "Kaynak: {{source}}"
+    "source": "Kaynak: {{source}}",
+    "aiEstimate": "AI tahmini",
+    "function": "İşlev"
   },
   "ingredients": {
     "confirm": "İçeriği Onayla",
@@ -125,7 +128,7 @@
     "extractedInfo": "Fotoğraftan çıkarılan maddeler aşağıda. Eksik veya yanlış olanları düzenleyebilirsiniz.",
     "addPlaceholder": "Madde ekle...",
     "addInput": "Yeni madde gir",
-    "addButton": "+ Madde ekle",
+    "addButton": "Madde ekle",
     "analyzing": "Analiz ediliyor",
     "analyzeButton": "Analiz Et",
     "analyzeError": "Analiz sırasında bir hata oluştu. Tekrar deneyin.",
@@ -133,7 +136,7 @@
     "noContentHint": "Aşağıdaki alandan elle ekleyebilirsiniz.",
     "extracted": "Çıkarılan maddeler",
     "retake": "Yeniden çek",
-    "ocrConfidence": "OCR güveni %{{percent}}",
+    "readByAi": "AI tarafından okundu",
     "removeIngredient": "{{name}} maddesini sil"
   },
   "history": {
@@ -153,7 +156,8 @@
     "categoryCosmetic": "Kozmetik",
     "categoryCleaning": "Temizlik",
     "categoryGeneral": "Genel",
-    "search": "Ara"
+    "search": "Ara",
+    "noFilterResults": "Bu kategoride sonuç bulunamadı"
   },
   "profile": {
     "loading": "Profil yükleniyor...",
@@ -195,7 +199,12 @@
     "signOut": "Çıkış Yap",
     "cancel": "Vazgeç",
     "sectionAccount": "Hesap",
-    "versionLine": "İçinde Ne Var? v{{version}} · 2026"
+    "versionLine": "İçinde Ne Var? v{{version}} · 2026",
+    "sectionPermissions": "İzinler",
+    "cameraPermission": "Kamera",
+    "photoPermission": "Fotoğraflar",
+    "permGranted": "İzin verildi",
+    "permDenied": "İzin ver"
   },
   "paywall": {
     "error": "Hata",

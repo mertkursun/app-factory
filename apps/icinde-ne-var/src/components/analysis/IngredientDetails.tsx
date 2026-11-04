@@ -28,16 +28,18 @@ const RISK_STATUS_MAP: Record<string, StatusKey> = {
   sakincali: "danger",
 };
 
-const STATUS_LABEL: Record<StatusKey, string> = {
-  success: "Güvenli",
-  warning: "Dikkat",
-  danger: "Sakıncalı",
+const STATUS_I18N_KEY: Record<StatusKey, string> = {
+  success: "analysis.safe",
+  warning: "analysis.caution",
+  danger: "analysis.danger",
 };
 
 export function IngredientDetails({ maddeler }: IngredientDetailsProps) {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   const { colors } = useTheme();
   const { t } = useTranslation();
+
+  const getStatusLabel = (key: StatusKey): string => t(STATUS_I18N_KEY[key]);
 
   const toggle = useCallback((index: number) => {
     setExpandedIndex((prev) => (prev === index ? null : index));
@@ -94,7 +96,7 @@ export function IngredientDetails({ maddeler }: IngredientDetailsProps) {
                   onPress={() => hasDetail && toggle(index)}
                   disabled={!hasDetail}
                   accessibilityRole="button"
-                  accessibilityLabel={`${madde.ad}, ${STATUS_LABEL[statusKey]}`}
+                  accessibilityLabel={`${madde.ad}, ${getStatusLabel(statusKey)}`}
                   accessibilityState={{ expanded: isExpanded }}
                   style={styles.row}
                 >
@@ -112,7 +114,7 @@ export function IngredientDetails({ maddeler }: IngredientDetailsProps) {
                       </Text>
                     ) : null}
                   </View>
-                  <Badge label={STATUS_LABEL[statusKey]} status={statusKey} />
+                  <Badge label={getStatusLabel(statusKey)} status={statusKey} />
                 </Pressable>
 
                 {/* Expanded detail */}
@@ -125,7 +127,7 @@ export function IngredientDetails({ maddeler }: IngredientDetailsProps) {
                     {madde.islev ? (
                       <Text style={[styles.detailText, { color: colors.textSecondary }]}>
                         <Text style={{ color: colors.text, fontFamily: fonts.body700 }}>
-                          {t("analysis.ingredients")}:{" "}
+                          {t("analysis.function")}:{" "}
                         </Text>
                         {madde.islev}
                       </Text>
@@ -139,7 +141,7 @@ export function IngredientDetails({ maddeler }: IngredientDetailsProps) {
                       <Text
                         style={[styles.detailText, { color: colors.muted, fontStyle: "italic" }]}
                       >
-                        AI tahmini
+                        {t("analysis.aiEstimate")}
                       </Text>
                     ) : null}
                   </Animated.View>

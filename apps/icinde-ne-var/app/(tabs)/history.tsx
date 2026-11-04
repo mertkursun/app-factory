@@ -183,8 +183,14 @@ export default function HistoryScreen() {
       </ScrollView>
 
       {/* List */}
-      {filteredItems.length === 0 && allItems.length === 0 ? (
+      {allItems.length === 0 ? (
         <EmptyHistory />
+      ) : filteredItems.length === 0 ? (
+        <View style={styles.noFilterResults}>
+          <Text style={[styles.noFilterResultsText, { color: colors.muted }]}>
+            {t("history.noFilterResults")}
+          </Text>
+        </View>
       ) : (
         <FlatList
           data={filteredItems}
@@ -264,5 +270,16 @@ const styles = StyleSheet.create({
   footer: {
     paddingVertical: 16,
     alignItems: "center",
+  },
+  noFilterResults: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 32,
+  },
+  noFilterResultsText: {
+    fontFamily: fonts.body500,
+    fontSize: 14,
+    textAlign: "center",
   },
 });

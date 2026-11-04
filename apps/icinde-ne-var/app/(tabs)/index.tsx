@@ -190,10 +190,11 @@ function BrandPill() {
 }
 
 function BrandPillContent() {
+  const { t } = useTranslation();
   return (
     <View style={styles.brandPillInner}>
       <Logo size={22} variant="white" />
-      <Text style={styles.brandText}>{"İçinde Ne Var?"}</Text>
+      <Text style={styles.brandText}>{t("common.appName")}</Text>
     </View>
   );
 }

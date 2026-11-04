@@ -27,7 +27,12 @@ export function useUpdateProfile(userId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (updates: ProfileUpdate) => updateProfile(userId, updates),
+    mutationFn: (updates: ProfileUpdate) => {
+      if (!userId) {
+        return Promise.reject(new Error("userId is required for profile update"));
+      }
+      return updateProfile(userId, updates);
+    },
     onSuccess: (data) => {
       queryClient.setQueryData(["profile", userId], data);
     },

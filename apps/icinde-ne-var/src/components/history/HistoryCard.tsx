@@ -13,9 +13,9 @@ interface HistoryCardProps {
 }
 
 const STATUS_COLOR_MAP = {
-  yesil: { key: "success" as const, label: "Güvenli" },
-  sari: { key: "warning" as const, label: "Dikkat" },
-  kirmizi: { key: "danger" as const, label: "Sakıncalı" },
+  yesil: { key: "success" as const, i18nKey: "analysis.safe" },
+  sari: { key: "warning" as const, i18nKey: "analysis.caution" },
+  kirmizi: { key: "danger" as const, i18nKey: "analysis.danger" },
 } as const;
 
 const CATEGORY_ICON_MAP: Record<string, typeof Utensils> = {
@@ -80,7 +80,7 @@ export function HistoryCard({ item, onPress }: HistoryCardProps) {
     <Pressable
       onPress={onPress}
       accessibilityRole="button"
-      accessibilityLabel={`${productName}, ${statusInfo.label}, ${subtitle}`}
+      accessibilityLabel={`${productName}, ${t(statusInfo.i18nKey)}, ${subtitle}`}
       style={({ pressed }) => [
         styles.card,
         {
@@ -113,7 +113,7 @@ export function HistoryCard({ item, onPress }: HistoryCardProps) {
       {/* Score + Badge */}
       <View style={styles.scoreContainer}>
         <Text style={[styles.scoreNumber, { color: scoreColor }]}>{numericScore}</Text>
-        <Badge label={statusInfo.label} status={statusInfo.key} />
+        <Badge label={t(statusInfo.i18nKey)} status={statusInfo.key} />
       </View>
     </Pressable>
   );

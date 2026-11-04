@@ -26,7 +26,6 @@ import { useTheme, fonts, radius, spacing } from "@/theme/tokens";
 import type { SkorRenk } from "@/lib/schemas";
 
 const PHOTO_CARD_HEIGHT = 92;
-const OCR_CONFIDENCE = 94;
 
 export default function IngredientConfirmScreen() {
   const router = useRouter();
@@ -174,12 +173,10 @@ export default function IngredientConfirmScreen() {
                 <Text style={styles.retakeText}>{t("ingredients.retake")}</Text>
               </Pressable>
 
-              {/* OCR confidence */}
+              {/* AI read indicator */}
               <View style={styles.ocrConfidenceRow}>
                 <Sparkles size={12} color="#9BF0E3" strokeWidth={2.5} />
-                <Text style={styles.ocrConfidence}>
-                  {t("ingredients.ocrConfidence", { percent: OCR_CONFIDENCE })}
-                </Text>
+                <Text style={styles.ocrConfidence}>{t("ingredients.readByAi")}</Text>
               </View>
             </LinearGradient>
           </View>
