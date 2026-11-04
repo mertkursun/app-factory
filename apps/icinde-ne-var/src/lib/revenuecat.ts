@@ -1,9 +1,12 @@
 import Purchases, {
   type CustomerInfo,
   type PurchasesOffering,
+  PACKAGE_TYPE,
   LOG_LEVEL,
 } from "react-native-purchases";
 import { Platform } from "react-native";
+
+export type PlanType = "monthly" | "yearly";
 
 const REVENUECAT_API_KEY_IOS = process.env.EXPO_PUBLIC_REVENUECAT_API_KEY_IOS ?? "";
 const REVENUECAT_API_KEY_ANDROID = process.env.EXPO_PUBLIC_REVENUECAT_API_KEY_ANDROID ?? "";
@@ -41,13 +44,23 @@ export async function getOfferings(): Promise<PurchasesOffering | null> {
   }
 }
 
-export async function purchaseProPackage(): Promise<CustomerInfo | null> {
+const PLAN_TO_PACKAGE_TYPE: Record<PlanType, PACKAGE_TYPE> = {
+  monthly: PACKAGE_TYPE.MONTHLY,
+  yearly: PACKAGE_TYPE.ANNUAL,
+};
+
+export async function purchaseProPackage(
+  planType: PlanType = "yearly",
+): Promise<CustomerInfo | null> {
   try {
     const offerings = await Purchases.getOfferings();
-    const proPackage = offerings.current?.availablePackages[0];
-    if (!proPackage) return null;
+    const packages = offerings.current?.availablePackages;
+    if (!packages || packages.length === 0) return null;
 
-    const { customerInfo } = await Purchases.purchasePackage(proPackage);
+    const targetType = PLAN_TO_PACKAGE_TYPE[planType];
+    const targetPackage = packages.find((pkg) => pkg.packageType === targetType) ?? packages[0];
+
+    const { customerInfo } = await Purchases.purchasePackage(targetPackage);
     return customerInfo;
   } catch (err: unknown) {
     const purchaseErr = err as { userCancelled?: boolean };

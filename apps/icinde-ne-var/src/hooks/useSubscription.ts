@@ -6,6 +6,7 @@ import {
   restorePurchases,
   getCustomerInfo,
   isProFromCustomerInfo,
+  type PlanType,
 } from "@/lib/revenuecat";
 
 interface SubscriptionState {
@@ -36,10 +37,10 @@ export function useSubscription() {
     load();
   }, []);
 
-  const purchase = useCallback(async () => {
+  const purchase = useCallback(async (planType: PlanType = "yearly") => {
     setState((prev) => ({ ...prev, isLoading: true }));
     try {
-      const info = await purchaseProPackage();
+      const info = await purchaseProPackage(planType);
       if (info) {
         setState((prev) => ({
           ...prev,

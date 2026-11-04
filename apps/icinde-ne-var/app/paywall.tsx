@@ -8,8 +8,7 @@ import { useTranslation } from "react-i18next";
 import { useSubscription } from "@/hooks/useSubscription";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { useTheme, radius, fonts } from "@/theme/tokens";
-
-type PlanType = "yearly" | "monthly";
+import type { PlanType } from "@/lib/revenuecat";
 
 const HERO_HEIGHT = 300;
 const HERO_GRADIENT_COLORS = ["#0F2E2B", "#0B4F4A", "#0F9B8E"] as const;
@@ -40,13 +39,13 @@ export default function PaywallScreen() {
   const handlePurchase = useCallback(async () => {
     setIsPurchasing(true);
     try {
-      await purchase();
+      await purchase(selectedPlan);
     } catch {
       Alert.alert(t("paywall.error"), t("paywall.purchaseError"));
     } finally {
       setIsPurchasing(false);
     }
-  }, [purchase, t]);
+  }, [purchase, selectedPlan, t]);
 
   const handleRestore = useCallback(async () => {
     try {

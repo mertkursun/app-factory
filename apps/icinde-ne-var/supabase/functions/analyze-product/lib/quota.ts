@@ -24,29 +24,21 @@ export async function checkAndIncrementQuota(
     return { allowed: true, remaining: Infinity };
   }
 
-  // Mevcut kullanimi kontrol et
-  const { data: usage } = await client
-    .from("kullanim")
-    .select("id, sorgu_sayisi")
-    .eq("user_id", userId)
-    .eq("donem", donem)
-    .single();
+  // Atomik kota kontrolü ve artırımı — race condition önlenir
+  const { data, error } = await client.rpc("increment_quota_atomic", {
+    p_user_id: userId,
+    p_donem: donem,
+    p_limit: FREE_MONTHLY_QUOTA,
+  });
 
-  const currentCount = usage?.sorgu_sayisi ?? 0;
-
-  if (currentCount >= FREE_MONTHLY_QUOTA) {
-    return { allowed: false, remaining: 0 };
+  if (error) {
+    throw new Error(`Kota kontrolü başarısız: ${error.message}`);
   }
 
-  // Kotayi artir
-  if (usage) {
-    await client
-      .from("kullanim")
-      .update({ sorgu_sayisi: currentCount + 1 })
-      .eq("id", usage.id);
-  } else {
-    await client.from("kullanim").insert({ user_id: userId, donem, sorgu_sayisi: 1 });
-  }
+  const result = Array.isArray(data) ? data[0] : data;
 
-  return { allowed: true, remaining: FREE_MONTHLY_QUOTA - currentCount - 1 };
+  return {
+    allowed: result?.allowed ?? false,
+    remaining: result?.remaining ?? 0,
+  };
 }

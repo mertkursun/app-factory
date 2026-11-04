@@ -41,7 +41,18 @@ export default function IngredientConfirmScreen() {
     ingredients: string;
   }>();
 
-  const initialIngredients: string[] = rawIngredients ? JSON.parse(rawIngredients) : [];
+  const initialIngredients: string[] = (() => {
+    if (!rawIngredients) return [];
+    try {
+      const parsed: unknown = JSON.parse(rawIngredients);
+      if (Array.isArray(parsed) && parsed.every((item) => typeof item === "string")) {
+        return parsed as string[];
+      }
+      return [];
+    } catch {
+      return [];
+    }
+  })();
   const [items, setItems] = useState<string[]>(initialIngredients);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
