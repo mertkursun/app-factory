@@ -24,6 +24,7 @@ import {
   LogOut,
   Camera,
   ImageIcon,
+  BookOpen,
 } from "lucide-react-native";
 import Constants from "expo-constants";
 import { useTranslation } from "react-i18next";
@@ -284,6 +285,12 @@ export default function SettingsScreen() {
             icon={PlayCircle}
             label={t("settings.replayOnboarding")}
             onPress={handleReplayOnboarding}
+          />
+          <View style={[s.divider, { backgroundColor: colors.border }]} />
+          <SettingsRow
+            icon={BookOpen}
+            label={t("encyclopedia.title")}
+            onPress={() => router.push("/encyclopedia")}
           />
         </View>
 
