@@ -181,7 +181,9 @@
     "estimationWarning": "İçindekiler etiketten okunamadı, ürün tanınarak tahmin edildi. Kesin sonuç için içindekiler etiketini tarayın.",
     "retake": "Yeniden çek",
     "readByAi": "AI tarafından okundu",
-    "removeIngredient": "{{name}} maddesini sil"
+    "removeIngredient": "{{name}} maddesini sil",
+    "scanLabel": "İçindekileri Tara",
+    "scanning": "Taranıyor..."
   },
   "history": {
     "loading": "Geçmiş yükleniyor...",
@@ -349,11 +351,13 @@
     "icon": "İkon",
     "audiences": "Kitle Bayrakları",
     "maxReached": "En fazla 5 profil ekleyebilirsin",
+    "remainingSlots": "{{count}} profil daha ekleyebilirsin",
     "active": "Aktif",
     "setActive": "Aktif Yap",
     "cancel": "İptal",
     "save": "Kaydet",
     "delete": "Sil",
+    "deactivate": "Pasif Yap",
     "empty": "Henüz aile profili yok",
     "emptyHint": "Her aile üyesi için farklı kitle bayrakları belirle, kişiye özel uyarılar al."
   },

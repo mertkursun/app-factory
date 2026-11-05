@@ -181,7 +181,9 @@
     "estimationWarning": "Ingredients could not be read from the label and were estimated by identifying the product. Scan the ingredients label for accurate results.",
     "retake": "Retake",
     "readByAi": "Read by AI",
-    "removeIngredient": "Remove {{name}}"
+    "removeIngredient": "Remove {{name}}",
+    "scanLabel": "Scan Ingredients",
+    "scanning": "Scanning..."
   },
   "history": {
     "loading": "Loading history...",
@@ -348,11 +350,13 @@
     "icon": "Icon",
     "audiences": "Audience Flags",
     "maxReached": "You can add up to 5 profiles",
+    "remainingSlots": "{{count}} more profiles available",
     "active": "Active",
     "setActive": "Set Active",
     "cancel": "Cancel",
     "save": "Save",
     "delete": "Delete",
+    "deactivate": "Deactivate",
     "empty": "No family profiles yet",
     "emptyHint": "Set different audience flags for each family member and get personalized warnings."
   },

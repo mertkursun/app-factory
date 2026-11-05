@@ -81,6 +81,10 @@ export default function FamilyProfilesScreen() {
     [setActiveFamilyProfileId],
   );
 
+  const handleDeactivate = useCallback(() => {
+    setActiveFamilyProfileId(null);
+  }, [setActiveFamilyProfileId]);
+
   const handleSave = useCallback(
     async (data: { isim: string; ikon: string; audiences: string[] }) => {
       if (!userId) return;
@@ -130,6 +134,7 @@ export default function FamilyProfilesScreen() {
       onEdit={() => handleEdit(item)}
       onDelete={() => handleDelete(item)}
       onSetActive={() => handleSetActive(item)}
+      onDeactivate={handleDeactivate}
     />
   );
 
@@ -175,25 +180,33 @@ export default function FamilyProfilesScreen() {
 
       {/* Add button */}
       {canAdd && (
-        <View style={[styles.addBtnContainer, { borderTopColor: colors.border }]}>
+        <View style={styles.addBtnContainer}>
           <Pressable
             onPress={handleAdd}
             accessibilityRole="button"
             accessibilityLabel={t("family.addProfile")}
-            style={({ pressed }) => [
-              styles.addBtn,
-              {
-                backgroundColor: colors.primary,
-                opacity: pressed ? 0.9 : 1,
-                transform: [{ scale: pressed ? 0.96 : 1 }],
-              },
-              shadow.primaryButton,
-            ]}
+            style={[styles.addBtn, { backgroundColor: colors.primary }, shadow.primaryButton]}
           >
-            <Plus size={18} color={colors.primaryFg} />
-            <Text style={[styles.addBtnText, { color: colors.primaryFg }]}>
-              {t("family.addProfile")}
-            </Text>
+            {({ pressed }: { pressed: boolean }) => (
+              <View
+                style={[
+                  styles.addBtnInner,
+                  { opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.97 : 1 }] },
+                ]}
+              >
+                <View style={[styles.addIconCircle, { backgroundColor: "rgba(255,255,255,0.2)" }]}>
+                  <Plus size={18} color={colors.primaryFg} strokeWidth={2.5} />
+                </View>
+                <View>
+                  <Text style={[styles.addBtnText, { color: colors.primaryFg }]}>
+                    {t("family.addProfile")}
+                  </Text>
+                  <Text style={[styles.addBtnHint, { color: "rgba(255,255,255,0.7)" }]}>
+                    {t("family.remainingSlots", { count: MAX_PROFILES - (profiles?.length ?? 0) })}
+                  </Text>
+                </View>
+              </View>
+            )}
           </Pressable>
         </View>
       )}
@@ -266,19 +279,34 @@ const styles = StyleSheet.create({
   },
   addBtnContainer: {
     paddingHorizontal: spacing.screenX,
-    paddingVertical: 16,
-    borderTopWidth: 1,
+    paddingBottom: 20,
+    paddingTop: 8,
   },
   addBtn: {
-    height: 52,
     borderRadius: radius.lg,
+    overflow: "hidden",
+  },
+  addBtnInner: {
     flexDirection: "row",
     alignItems: "center",
+    gap: 14,
+    paddingVertical: 14,
+    paddingHorizontal: 18,
+  },
+  addIconCircle: {
+    width: 36,
+    height: 36,
+    borderRadius: 12,
+    alignItems: "center",
     justifyContent: "center",
-    gap: 8,
   },
   addBtnText: {
     fontFamily: fonts.body700,
     fontSize: 15,
+  },
+  addBtnHint: {
+    fontFamily: fonts.body500,
+    fontSize: 11,
+    marginTop: 2,
   },
 });

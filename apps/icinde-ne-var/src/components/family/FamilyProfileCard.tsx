@@ -1,5 +1,8 @@
+import { useRef, useCallback } from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
-import { Pencil, Trash2, Check } from "lucide-react-native";
+import Swipeable from "react-native-gesture-handler/ReanimatedSwipeable";
+import type { SwipeableMethods } from "react-native-gesture-handler/ReanimatedSwipeable";
+import { Pencil, Trash2, Check, UserMinus } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import { useTheme, fonts, radius } from "@/theme/tokens";
 import { FAMILY_ICON_MAP } from "@/lib/familyIcons";
@@ -14,12 +17,15 @@ function FamilyIcon({ iconKey, size, color }: { iconKey: string; size: number; c
   return <Icon size={size} color={color} />;
 }
 
+const ACTION_WIDTH = 72;
+
 interface FamilyProfileCardProps {
   profile: FamilyProfileRow;
   isActive: boolean;
   onEdit: () => void;
   onDelete: () => void;
   onSetActive: () => void;
+  onDeactivate: () => void;
 }
 
 export function FamilyProfileCard({
@@ -28,111 +34,156 @@ export function FamilyProfileCard({
   onEdit,
   onDelete,
   onSetActive,
+  onDeactivate,
 }: FamilyProfileCardProps) {
   const { t } = useTranslation();
   const { colors, shadow } = useTheme();
+  const swipeableRef = useRef<SwipeableMethods>(null);
 
-  return (
-    <View
-      style={[
-        styles.card,
-        {
-          backgroundColor: colors.surface,
-          borderColor: isActive ? colors.primary : colors.border,
-          borderWidth: isActive ? 1.5 : 1,
-        },
-        shadow.low,
-      ]}
-    >
-      <View style={styles.row}>
-        {/* Icon */}
-        <View
+  const closeSwipeable = useCallback(() => {
+    swipeableRef.current?.close();
+  }, []);
+
+  const handleSetActive = useCallback(() => {
+    closeSwipeable();
+    onSetActive();
+  }, [closeSwipeable, onSetActive]);
+
+  const handleDeactivate = useCallback(() => {
+    closeSwipeable();
+    onDeactivate();
+  }, [closeSwipeable, onDeactivate]);
+
+  const handleEdit = useCallback(() => {
+    closeSwipeable();
+    onEdit();
+  }, [closeSwipeable, onEdit]);
+
+  const handleDelete = useCallback(() => {
+    closeSwipeable();
+    onDelete();
+  }, [closeSwipeable, onDelete]);
+
+  const renderRightActions = useCallback(() => {
+    return (
+      <View style={[styles.rightActions, { width: ACTION_WIDTH * 3 }]}>
+        {isActive ? (
+          <Pressable
+            onPress={handleDeactivate}
+            accessibilityRole="button"
+            accessibilityLabel={t("family.deactivate")}
+            style={[styles.swipeAction, { backgroundColor: colors.warning }]}
+          >
+            <UserMinus size={18} color="#FFFFFF" strokeWidth={2.5} />
+            <Text style={styles.swipeActionText}>{t("family.deactivate")}</Text>
+          </Pressable>
+        ) : (
+          <Pressable
+            onPress={handleSetActive}
+            accessibilityRole="button"
+            accessibilityLabel={t("family.setActive")}
+            style={[styles.swipeAction, { backgroundColor: colors.success }]}
+          >
+            <Check size={18} color="#FFFFFF" strokeWidth={2.5} />
+            <Text style={styles.swipeActionText}>{t("family.setActive")}</Text>
+          </Pressable>
+        )}
+        <Pressable
+          onPress={handleEdit}
+          accessibilityRole="button"
+          accessibilityLabel={t("family.editProfile")}
+          style={[styles.swipeAction, { backgroundColor: colors.primary }]}
+        >
+          <Pencil size={18} color="#FFFFFF" strokeWidth={2.5} />
+          <Text style={styles.swipeActionText}>{t("family.editProfile")}</Text>
+        </Pressable>
+        <Pressable
+          onPress={handleDelete}
+          accessibilityRole="button"
+          accessibilityLabel={t("family.delete")}
           style={[
-            styles.iconBox,
-            {
-              backgroundColor: isActive ? colors.surfaceTint : colors.background,
-            },
+            styles.swipeAction,
+            styles.swipeActionLast,
+            { backgroundColor: colors.danger },
           ]}
         >
-          <FamilyIcon
-            iconKey={profile.ikon}
-            size={22}
-            color={isActive ? colors.primary : colors.textSecondary}
-          />
-        </View>
+          <Trash2 size={18} color="#FFFFFF" strokeWidth={2.5} />
+          <Text style={styles.swipeActionText}>{t("family.delete")}</Text>
+        </Pressable>
+      </View>
+    );
+  }, [isActive, colors, t, handleSetActive, handleDeactivate, handleEdit, handleDelete]);
 
-        {/* Info */}
-        <View style={styles.info}>
-          <View style={styles.nameRow}>
-            <Text style={[styles.name, { color: colors.text }]} numberOfLines={1}>
-              {profile.isim}
-            </Text>
-            {isActive && (
-              <View style={[styles.activeBadge, { backgroundColor: colors.successBg }]}>
-                <Text style={[styles.activeBadgeText, { color: colors.successText }]}>
-                  {t("family.active")}
-                </Text>
+  return (
+    <Swipeable
+      ref={swipeableRef}
+      renderRightActions={renderRightActions}
+      overshootRight={false}
+      friction={2}
+      rightThreshold={40}
+    >
+      <View
+        style={[
+          styles.card,
+          {
+            backgroundColor: colors.surface,
+            borderColor: isActive ? colors.primary : colors.border,
+            borderWidth: isActive ? 1.5 : 1,
+          },
+          shadow.low,
+        ]}
+      >
+        <View style={styles.row}>
+          {/* Icon */}
+          <View
+            style={[
+              styles.iconBox,
+              {
+                backgroundColor: isActive ? colors.surfaceTint : colors.background,
+              },
+            ]}
+          >
+            <FamilyIcon
+              iconKey={profile.ikon}
+              size={22}
+              color={isActive ? colors.primary : colors.textSecondary}
+            />
+          </View>
+
+          {/* Info */}
+          <View style={styles.info}>
+            <View style={styles.nameRow}>
+              <Text style={[styles.name, { color: colors.text }]} numberOfLines={1}>
+                {profile.isim}
+              </Text>
+              {isActive && (
+                <View style={[styles.activeBadge, { backgroundColor: colors.successBg }]}>
+                  <Text style={[styles.activeBadgeText, { color: colors.successText }]}>
+                    {t("family.active")}
+                  </Text>
+                </View>
+              )}
+            </View>
+
+            {/* Audience badges */}
+            {profile.audiences.length > 0 && (
+              <View style={styles.badgeRow}>
+                {profile.audiences.map((audience) => (
+                  <View
+                    key={audience}
+                    style={[styles.audienceBadge, { backgroundColor: colors.surfaceTint }]}
+                  >
+                    <Text style={[styles.audienceBadgeText, { color: colors.primaryDeep }]}>
+                      {AUDIENCE_LABELS[audience] ?? audience}
+                    </Text>
+                  </View>
+                ))}
               </View>
             )}
           </View>
-
-          {/* Audience badges */}
-          {profile.audiences.length > 0 && (
-            <View style={styles.badgeRow}>
-              {profile.audiences.map((audience) => (
-                <View
-                  key={audience}
-                  style={[styles.audienceBadge, { backgroundColor: colors.surfaceTint }]}
-                >
-                  <Text style={[styles.audienceBadgeText, { color: colors.primaryDeep }]}>
-                    {AUDIENCE_LABELS[audience] ?? audience}
-                  </Text>
-                </View>
-              ))}
-            </View>
-          )}
         </View>
       </View>
-
-      {/* Actions */}
-      <View style={[styles.actions, { borderTopColor: colors.border }]}>
-        {!isActive && (
-          <Pressable
-            onPress={onSetActive}
-            accessibilityRole="button"
-            accessibilityLabel={t("family.setActive")}
-            style={({ pressed }) => [styles.actionBtn, { opacity: pressed ? 0.6 : 1 }]}
-          >
-            <Check size={14} color={colors.success} />
-            <Text style={[styles.actionText, { color: colors.success }]}>
-              {t("family.setActive")}
-            </Text>
-          </Pressable>
-        )}
-
-        <Pressable
-          onPress={onEdit}
-          accessibilityRole="button"
-          accessibilityLabel={t("family.editProfile")}
-          style={({ pressed }) => [styles.actionBtn, { opacity: pressed ? 0.6 : 1 }]}
-        >
-          <Pencil size={14} color={colors.primary} />
-          <Text style={[styles.actionText, { color: colors.primary }]}>
-            {t("family.editProfile")}
-          </Text>
-        </Pressable>
-
-        <Pressable
-          onPress={onDelete}
-          accessibilityRole="button"
-          accessibilityLabel={t("family.delete")}
-          style={({ pressed }) => [styles.actionBtn, { opacity: pressed ? 0.6 : 1 }]}
-        >
-          <Trash2 size={14} color={colors.danger} />
-          <Text style={[styles.actionText, { color: colors.danger }]}>{t("family.delete")}</Text>
-        </Pressable>
-      </View>
-    </View>
+    </Swipeable>
   );
 }
 
@@ -143,7 +194,7 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: "row",
-    alignItems: "flex-start",
+    alignItems: "center",
     padding: 16,
     gap: 14,
   },
@@ -176,7 +227,6 @@ const styles = StyleSheet.create({
   activeBadgeText: {
     fontFamily: fonts.body700,
     fontSize: 10,
-    textTransform: "uppercase",
     letterSpacing: 0.5,
   },
   badgeRow: {
@@ -193,23 +243,22 @@ const styles = StyleSheet.create({
     fontFamily: fonts.body600,
     fontSize: 11,
   },
-  actions: {
+  rightActions: {
     flexDirection: "row",
-    borderTopWidth: 1,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    gap: 4,
   },
-  actionBtn: {
-    flexDirection: "row",
+  swipeAction: {
+    width: ACTION_WIDTH,
     alignItems: "center",
+    justifyContent: "center",
     gap: 4,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    minHeight: 44,
   },
-  actionText: {
+  swipeActionLast: {
+    borderTopRightRadius: radius.lg,
+    borderBottomRightRadius: radius.lg,
+  },
+  swipeActionText: {
     fontFamily: fonts.body600,
-    fontSize: 12,
+    fontSize: 10,
+    color: "#FFFFFF",
   },
 });
