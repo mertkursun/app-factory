@@ -8,10 +8,12 @@ interface AppState {
   isHydrated: boolean;
   themeMode: ThemeMode;
   notificationsEnabled: boolean;
+  activeFamilyProfileId: string | null;
   setHasSeenOnboarding: (value: boolean) => void;
   setIsHydrated: (value: boolean) => void;
   setThemeMode: (mode: ThemeMode) => void;
   setNotificationsEnabled: (value: boolean) => void;
+  setActiveFamilyProfileId: (id: string | null) => void;
 }
 
 export const useAppStore = create<AppState>()(
@@ -21,10 +23,12 @@ export const useAppStore = create<AppState>()(
       isHydrated: false,
       themeMode: "system" as ThemeMode,
       notificationsEnabled: false,
+      activeFamilyProfileId: null,
       setHasSeenOnboarding: (value) => set({ hasSeenOnboarding: value }),
       setIsHydrated: (value) => set({ isHydrated: value }),
       setThemeMode: (mode) => set({ themeMode: mode }),
       setNotificationsEnabled: (value) => set({ notificationsEnabled: value }),
+      setActiveFamilyProfileId: (id) => set({ activeFamilyProfileId: id }),
     }),
     {
       name: "app-store",
@@ -36,6 +40,7 @@ export const useAppStore = create<AppState>()(
         hasSeenOnboarding: state.hasSeenOnboarding,
         themeMode: state.themeMode,
         notificationsEnabled: state.notificationsEnabled,
+        activeFamilyProfileId: state.activeFamilyProfileId,
       }),
     },
   ),

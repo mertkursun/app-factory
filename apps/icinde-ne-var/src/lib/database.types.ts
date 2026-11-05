@@ -3,6 +3,36 @@ export type Json = string | number | boolean | null | { [key: string]: Json | un
 export interface Database {
   public: {
     Tables: {
+      aile_profilleri: {
+        Row: {
+          id: string;
+          user_id: string;
+          isim: string;
+          ikon: string;
+          audiences: string[];
+          sira: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          isim: string;
+          ikon?: string;
+          audiences?: string[];
+          sira?: number;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          isim?: string;
+          ikon?: string;
+          audiences?: string[];
+          sira?: number;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
       profiller: {
         Row: {
           id: string;

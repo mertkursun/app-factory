@@ -1,7 +1,7 @@
 import { View, Text, ScrollView, ActivityIndicator, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { Settings, BarChart3 } from "lucide-react-native";
+import { Settings, BarChart3, Users } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTranslation } from "react-i18next";
 import { useAuthStore } from "@/stores/authStore";
@@ -13,7 +13,8 @@ import { ProBadge } from "@/components/profile/ProBadge";
 import { IconButton } from "@/components/ui/IconButton";
 import { LoadingScreen } from "@/components/ui/LoadingScreen";
 import { ErrorScreen } from "@/components/ui/ErrorScreen";
-import { useTheme, fonts, spacing, typography } from "@/theme/tokens";
+import { SettingsItem } from "@/components/settings/SettingsItem";
+import { useTheme, fonts, spacing, typography, radius } from "@/theme/tokens";
 import { useCallback, useState, useEffect } from "react";
 
 const AVATAR_SIZE = 58;
@@ -174,6 +175,21 @@ export default function ProfileScreen() {
           )}
         </View>
 
+        {/* Family Profiles */}
+        <View
+          style={[
+            styles.familyCard,
+            { backgroundColor: colors.surface, borderColor: colors.border },
+            shadow.low,
+          ]}
+        >
+          <SettingsItem
+            icon={Users}
+            label={t("family.title")}
+            onPress={() => router.push("/family-profiles")}
+          />
+        </View>
+
         {/* Quota card */}
         {quota && (
           <View style={styles.section}>
@@ -273,6 +289,11 @@ const styles = StyleSheet.create({
     fontFamily: fonts.body400,
     fontSize: 12,
     opacity: 0.8,
+  },
+  familyCard: {
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    overflow: "hidden",
   },
   section: {},
   sectionHeader: {
