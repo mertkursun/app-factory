@@ -1,12 +1,14 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { View, Text, ScrollView, Pressable, Alert, StatusBar, StyleSheet } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { X, Crown, Check } from "lucide-react-native";
+import { PACKAGE_TYPE } from "react-native-purchases";
 import { useTranslation } from "react-i18next";
 import { useSubscription } from "@/hooks/useSubscription";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
+import { PlanSelector } from "@/components/paywall/PlanSelector";
 import { useTheme, radius, fonts } from "@/theme/tokens";
 import type { PlanType } from "@/lib/revenuecat";
 
@@ -24,7 +26,7 @@ const FEATURES = [
 export default function PaywallScreen() {
   const router = useRouter();
   const { t } = useTranslation();
-  const { colors, shadow } = useTheme();
+  const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const { offering, isPro, isLoading, purchase, restore } = useSubscription();
   const [isPurchasing, setIsPurchasing] = useState(false);
@@ -54,6 +56,29 @@ export default function PaywallScreen() {
       Alert.alert(t("paywall.error"), t("paywall.restoreError"));
     }
   }, [restore, t]);
+
+  const prices = useMemo(() => {
+    const packages = offering?.availablePackages;
+    if (!packages || packages.length === 0) {
+      return { yearlyPrice: undefined, monthlyPrice: undefined, yearlyPerMonth: undefined };
+    }
+
+    const yearlyPkg = packages.find((pkg) => pkg.packageType === PACKAGE_TYPE.ANNUAL);
+    const monthlyPkg = packages.find((pkg) => pkg.packageType === PACKAGE_TYPE.MONTHLY);
+
+    const yearlyPerMonth =
+      yearlyPkg != null
+        ? t("paywall.yearlyPricePerMonth", {
+            price: (yearlyPkg.product.price / 12).toFixed(2),
+          })
+        : undefined;
+
+    return {
+      yearlyPrice: yearlyPkg?.product.priceString,
+      monthlyPrice: monthlyPkg?.product.priceString,
+      yearlyPerMonth,
+    };
+  }, [offering, t]);
 
   if (isPro) {
     return null;
@@ -113,30 +138,13 @@ export default function PaywallScreen() {
           bounces={false}
         >
           {/* Plan cards */}
-          <View style={styles.planCards}>
-            <PlanCard
-              isSelected={selectedPlan === "yearly"}
-              onSelect={() => setSelectedPlan("yearly")}
-              title={t("paywall.yearly")}
-              badgeLabel={t("paywall.yearlySaving")}
-              sublabel={t("paywall.yearlyMonthly")}
-              pricePrefix={t("paywall.yearlyPrice")}
-              amount="499"
-              amountUnit=" TL"
-              colors={colors}
-              shadow={shadow}
-            />
-            <PlanCard
-              isSelected={selectedPlan === "monthly"}
-              onSelect={() => setSelectedPlan("monthly")}
-              title={t("paywall.monthly")}
-              sublabel={t("paywall.monthlyCancel")}
-              amount="69"
-              amountUnit=" TL/ay"
-              colors={colors}
-              shadow={shadow}
-            />
-          </View>
+          <PlanSelector
+            selectedPlan={selectedPlan}
+            onSelect={setSelectedPlan}
+            yearlyPrice={prices.yearlyPrice}
+            monthlyPrice={prices.monthlyPrice}
+            yearlyPerMonth={prices.yearlyPerMonth}
+          />
 
           {/* Feature rows */}
           <View style={styles.featureList}>
@@ -179,96 +187,6 @@ export default function PaywallScreen() {
         </View>
       </View>
     </View>
-  );
-}
-
-/* ── Plan Card ─────────────────────────────────────────────────── */
-
-interface PlanCardProps {
-  isSelected: boolean;
-  onSelect: () => void;
-  title: string;
-  badgeLabel?: string;
-  sublabel?: string;
-  pricePrefix?: string;
-  amount: string;
-  amountUnit: string;
-  colors: ReturnType<typeof useTheme>["colors"];
-  shadow: ReturnType<typeof useTheme>["shadow"];
-}
-
-function PlanCard({
-  isSelected,
-  onSelect,
-  title,
-  badgeLabel,
-  sublabel,
-  pricePrefix,
-  amount,
-  amountUnit,
-  colors,
-  shadow: shadowTokens,
-}: PlanCardProps) {
-  return (
-    <Pressable
-      onPress={onSelect}
-      accessibilityRole="radio"
-      accessibilityState={{ selected: isSelected }}
-      accessibilityLabel={title}
-      style={[
-        styles.planCard,
-        {
-          backgroundColor: colors.surface,
-          borderColor: isSelected ? colors.primary : colors.border,
-          borderWidth: 2,
-        },
-        isSelected && {
-          shadowColor: colors.primary,
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 0.25,
-          shadowRadius: 12,
-          elevation: 6,
-        },
-      ]}
-    >
-      <View style={styles.planCardInner}>
-        {/* Radio */}
-        <View
-          style={[
-            styles.radio,
-            {
-              borderColor: isSelected ? colors.primary : colors.border,
-              borderWidth: isSelected ? 7 : 2,
-            },
-          ]}
-        />
-
-        {/* Text block */}
-        <View style={styles.planTextBlock}>
-          <View style={styles.planTitleRow}>
-            <Text style={[styles.planTitle, { color: colors.text }]}>{title}</Text>
-            {badgeLabel ? (
-              <View style={[styles.savingBadge, { backgroundColor: colors.successBg }]}>
-                <Text style={[styles.savingBadgeText, { color: colors.successText }]}>
-                  {badgeLabel}
-                </Text>
-              </View>
-            ) : null}
-          </View>
-          {sublabel ? (
-            <Text style={[styles.planSublabel, { color: colors.muted }]}>
-              {pricePrefix ? `${pricePrefix} · ${sublabel}` : sublabel}
-            </Text>
-          ) : null}
-        </View>
-
-        {/* Amount */}
-        <Text style={[styles.planAmount, { color: colors.text }]}>
-          {amount}
-          <Text style={[styles.planAmountUnit, { color: colors.muted }]}>{amountUnit}</Text>
-        </Text>
-      </View>
-    </Pressable>
   );
 }
 
@@ -369,64 +287,6 @@ const styles = StyleSheet.create({
   spacer: {
     flex: 1,
     minHeight: 8,
-  },
-  planCards: {
-    gap: 8,
-  },
-  planCard: {
-    borderRadius: radius.lg,
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-  },
-  planCardInner: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-  },
-  radio: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
-  },
-  planTextBlock: {
-    flex: 1,
-    gap: 3,
-  },
-  planTitleRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  planTitle: {
-    fontFamily: fonts.body800,
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  planSublabel: {
-    fontFamily: fonts.body500,
-    fontSize: 11,
-    lineHeight: 16,
-  },
-  savingBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: radius.pill,
-  },
-  savingBadgeText: {
-    fontFamily: fonts.body800,
-    fontSize: 10,
-    lineHeight: 10,
-  },
-  planAmount: {
-    fontFamily: fonts.display800,
-    fontSize: 18,
-    lineHeight: 18,
-    letterSpacing: -0.5,
-  },
-  planAmountUnit: {
-    fontFamily: fonts.body600,
-    fontSize: 11,
-    lineHeight: 11,
   },
   featureList: {
     gap: 10,

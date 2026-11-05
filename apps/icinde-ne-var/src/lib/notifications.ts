@@ -1,5 +1,9 @@
 import * as Notifications from "expo-notifications";
-import { SchedulableTriggerInputTypes, AndroidImportance } from "expo-notifications";
+import {
+  SchedulableTriggerInputTypes,
+  AndroidImportance,
+  type NotificationContentInput,
+} from "expo-notifications";
 import * as Device from "expo-device";
 import { Platform } from "react-native";
 import { supabase } from "./supabase";
@@ -162,7 +166,11 @@ export const NOTIFICATION_IDS = {
 // ─── Local notification schedulers ─────────────────────────────────
 
 const ONE_HOUR_SECONDS = 3_600;
-const SEVEN_DAYS_SECONDS = 7 * 24 * 3_600;
+
+/** Monday = 2 in Expo (1=Sun, 2=Mon, ..., 7=Sat) */
+const MONDAY_WEEKDAY = 2;
+const WEEKLY_REMINDER_HOUR = 10;
+const WEEKLY_REMINDER_MINUTE = 0;
 
 /**
  * Schedule a welcome notification 1 hour after registration.
@@ -178,30 +186,71 @@ export async function scheduleWelcomeNotification(title: string, body: string): 
 }
 
 /**
- * Schedule a quota warning notification (immediate).
+ * Schedule a quota warning notification when remaining quota is low.
+ * Only fires if remaining is 1 or fewer.
  */
-export async function scheduleQuotaWarning(title: string, body: string): Promise<void> {
+export async function scheduleQuotaWarning(
+  remaining: number,
+  title: string,
+  body: string,
+): Promise<void> {
   // Cancel previous one first
   await cancelScheduledNotification(NOTIFICATION_IDS.QUOTA_WARNING);
+
+  if (remaining > 1) return;
+
   await scheduleLocalNotification({
     title,
     body,
     identifier: NOTIFICATION_IDS.QUOTA_WARNING,
-    data: { type: "quota-warning" },
+    data: { type: "quota-warning", remaining },
   });
 }
 
 /**
- * Schedule a weekly reminder if the user hasn't scanned in 7 days.
+ * Schedule a repeating weekly reminder every Monday at 10:00.
+ * Uses a weekly calendar trigger for recurring delivery.
  */
 export async function scheduleWeeklyReminder(title: string, body: string): Promise<void> {
   // Cancel previous one first
   await cancelScheduledNotification(NOTIFICATION_IDS.WEEKLY_REMINDER);
-  await scheduleLocalNotification({
+
+  const content: NotificationContentInput = {
     title,
     body,
-    delaySeconds: SEVEN_DAYS_SECONDS,
-    identifier: NOTIFICATION_IDS.WEEKLY_REMINDER,
     data: { type: "weekly-reminder" },
+    sound: "default",
+  };
+
+  await Notifications.scheduleNotificationAsync({
+    content,
+    trigger: {
+      type: SchedulableTriggerInputTypes.WEEKLY,
+      weekday: MONDAY_WEEKDAY,
+      hour: WEEKLY_REMINDER_HOUR,
+      minute: WEEKLY_REMINDER_MINUTE,
+    },
+    identifier: NOTIFICATION_IDS.WEEKLY_REMINDER,
   });
+}
+
+/**
+ * Cancel the weekly reminder notification.
+ */
+export async function cancelWeeklyReminder(): Promise<void> {
+  await cancelScheduledNotification(NOTIFICATION_IDS.WEEKLY_REMINDER);
+}
+
+/**
+ * Cancel the quota warning notification.
+ */
+export async function cancelQuotaWarning(): Promise<void> {
+  await cancelScheduledNotification(NOTIFICATION_IDS.QUOTA_WARNING);
+}
+
+/**
+ * Get all currently scheduled notifications.
+ */
+export async function getScheduledNotifications(): Promise<Notifications.NotificationRequest[]> {
+  return Notifications.getAllScheduledNotificationsAsync();
 }

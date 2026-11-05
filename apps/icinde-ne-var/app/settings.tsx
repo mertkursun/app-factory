@@ -1,4 +1,13 @@
-import { View, Text, ScrollView, Pressable, Alert, Switch, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  Pressable,
+  Alert,
+  Switch,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
@@ -6,7 +15,8 @@ import {
   ChevronLeft,
   ChevronRight,
   PlayCircle,
-  Bell,
+  BellRing,
+  AlertTriangle,
   Crown,
   RotateCcw,
   ShieldCheck,
@@ -18,12 +28,15 @@ import {
 import Constants from "expo-constants";
 import { useTranslation } from "react-i18next";
 import { useAppStore } from "@/stores/appStore";
+import { useNotificationStore } from "@/stores/notificationStore";
 import { useTheme, fonts } from "@/theme/tokens";
 import { signOut } from "@/lib/auth";
 import { restorePurchases } from "@/lib/revenuecat";
 import {
   registerForPushNotificationsAsync,
-  cancelAllScheduledNotifications,
+  scheduleWeeklyReminder,
+  cancelWeeklyReminder,
+  cancelQuotaWarning,
 } from "@/lib/notifications";
 import { useCameraPermission } from "@/hooks/useCameraPermission";
 import { useMediaLibraryPermission } from "@/hooks/useMediaLibraryPermission";
@@ -42,6 +55,7 @@ const THEME_OPTIONS: readonly { key: ThemeMode; labelKey: string }[] = [
 function SettingsRow({
   icon: Icon,
   label,
+  description,
   onPress,
   showChevron = true,
   rightElement,
@@ -50,6 +64,7 @@ function SettingsRow({
 }: {
   icon: LucideIcon;
   label: string;
+  description?: string;
   onPress: () => void;
   showChevron?: boolean;
   rightElement?: ReactNode;
@@ -58,19 +73,28 @@ function SettingsRow({
 }) {
   const { colors } = useTheme();
   return (
-    <Pressable onPress={onPress} accessibilityRole="button" accessibilityLabel={label}>
-      {({ pressed }) => (
-        <View style={[s.row, { opacity: pressed ? 0.7 : 1 }]}>
-          <View style={[s.iconTile, { backgroundColor: iconBg ?? colors.surfaceTint }]}>
-            <Icon size={16} color={iconColor ?? colors.primaryDeep} />
-          </View>
-          <Text numberOfLines={1} style={[s.rowLabel, { color: colors.text }]}>
-            {label}
+    <TouchableOpacity
+      onPress={onPress}
+      activeOpacity={0.7}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      style={s.row}
+    >
+      <View style={[s.iconTile, { backgroundColor: iconBg ?? colors.surfaceTint }]}>
+        <Icon size={16} color={iconColor ?? colors.primaryDeep} />
+      </View>
+      <View style={s.rowTextWrap}>
+        <Text numberOfLines={1} style={[s.rowLabel, { color: colors.text }]}>
+          {label}
+        </Text>
+        {description ? (
+          <Text numberOfLines={2} style={[s.rowDesc, { color: colors.muted }]}>
+            {description}
           </Text>
-          {rightElement ?? (showChevron ? <ChevronRight size={16} color={colors.muted} /> : null)}
-        </View>
-      )}
-    </Pressable>
+        ) : null}
+      </View>
+      {rightElement ?? (showChevron ? <ChevronRight size={16} color={colors.muted} /> : null)}
+    </TouchableOpacity>
   );
 }
 
@@ -83,21 +107,44 @@ export default function SettingsScreen() {
   const setHasSeenOnboarding = useAppStore((s) => s.setHasSeenOnboarding);
   const notifOn = useAppStore((s) => s.notificationsEnabled);
   const setNotifOn = useAppStore((s) => s.setNotificationsEnabled);
+  const weeklyReminder = useNotificationStore((s) => s.weeklyReminder);
+  const setWeeklyReminderPref = useNotificationStore((s) => s.setWeeklyReminder);
+  const quotaWarning = useNotificationStore((s) => s.quotaWarning);
+  const setQuotaWarningPref = useNotificationStore((s) => s.setQuotaWarning);
   const cameraPerm = useCameraPermission();
   const mediaLibPerm = useMediaLibraryPermission();
 
-  const handleNotificationToggle = async (value: boolean) => {
+  const ensureNotificationPermission = async (): Promise<boolean> => {
+    if (notifOn) return true;
+    const token = await registerForPushNotificationsAsync();
+    if (!token) return false;
+    setNotifOn(true);
+    return true;
+  };
+
+  const handleWeeklyReminderToggle = async (value: boolean) => {
     if (value) {
-      // Request permission when enabling
-      const token = await registerForPushNotificationsAsync();
-      if (!token) {
-        // Permission denied or not available — don't enable
-        return;
-      }
-      setNotifOn(true);
+      const hasPermission = await ensureNotificationPermission();
+      if (!hasPermission) return;
+      setWeeklyReminderPref(true);
+      await scheduleWeeklyReminder(
+        t("notifications.weeklyReminderTitle"),
+        t("notifications.weeklyReminderBody"),
+      );
     } else {
-      setNotifOn(false);
-      await cancelAllScheduledNotifications();
+      setWeeklyReminderPref(false);
+      await cancelWeeklyReminder();
+    }
+  };
+
+  const handleQuotaWarningToggle = async (value: boolean) => {
+    if (value) {
+      const hasPermission = await ensureNotificationPermission();
+      if (!hasPermission) return;
+      setQuotaWarningPref(true);
+    } else {
+      setQuotaWarningPref(false);
+      await cancelQuotaWarning();
     }
   };
 
@@ -155,27 +202,22 @@ export default function SettingsScreen() {
       >
         {/* Header */}
         <View style={s.header}>
-          <Pressable
+          <TouchableOpacity
             onPress={() => router.back()}
+            activeOpacity={0.7}
             accessibilityRole="button"
             accessibilityLabel={t("common.back")}
+            style={[
+              s.backButton,
+              {
+                backgroundColor: colors.surface,
+                borderColor: colors.border,
+              },
+              shadow.low,
+            ]}
           >
-            {({ pressed }) => (
-              <View
-                style={[
-                  s.backButton,
-                  {
-                    backgroundColor: colors.surface,
-                    borderColor: colors.border,
-                    opacity: pressed ? 0.7 : 1,
-                  },
-                  shadow.low,
-                ]}
-              >
-                <ChevronLeft size={18} color={colors.text} strokeWidth={2.2} />
-              </View>
-            )}
-          </Pressable>
+            <ChevronLeft size={18} color={colors.text} strokeWidth={2.2} />
+          </TouchableOpacity>
           <Text style={[s.headerTitle, { color: colors.text }]}>{t("settings.title")}</Text>
           <View style={s.headerSpacer} />
         </View>
@@ -243,16 +285,46 @@ export default function SettingsScreen() {
             label={t("settings.replayOnboarding")}
             onPress={handleReplayOnboarding}
           />
-          <View style={[s.divider, { backgroundColor: colors.border }]} />
+        </View>
+
+        {/* BİLDİRİMLER */}
+        <Text style={[s.sectionLabel, { color: colors.muted }]}>
+          {t("settings.notificationSection")}
+        </Text>
+        <View
+          style={[
+            s.sectionCard,
+            { backgroundColor: colors.surface, borderColor: colors.border },
+            shadow.low,
+          ]}
+        >
           <SettingsRow
-            icon={Bell}
-            label={t("settings.notifications")}
-            onPress={() => handleNotificationToggle(!notifOn)}
+            icon={BellRing}
+            label={t("settings.weeklyReminder")}
+            description={t("settings.weeklyReminderDesc")}
+            onPress={() => handleWeeklyReminderToggle(!weeklyReminder)}
             showChevron={false}
             rightElement={
               <Switch
-                value={notifOn}
-                onValueChange={handleNotificationToggle}
+                value={weeklyReminder}
+                onValueChange={handleWeeklyReminderToggle}
+                trackColor={{ false: colors.border, true: colors.primary }}
+                thumbColor="#FFFFFF"
+                style={s.switch}
+              />
+            }
+          />
+          <View style={[s.divider, { backgroundColor: colors.border }]} />
+          <SettingsRow
+            icon={AlertTriangle}
+            label={t("settings.quotaWarning")}
+            description={t("settings.quotaWarningDesc")}
+            onPress={() => handleQuotaWarningToggle(!quotaWarning)}
+            showChevron={false}
+            rightElement={
+              <Switch
+                value={quotaWarning}
+                onValueChange={handleQuotaWarningToggle}
                 trackColor={{ false: colors.border, true: colors.primary }}
                 thumbColor="#FFFFFF"
                 style={s.switch}
@@ -389,25 +461,16 @@ export default function SettingsScreen() {
         </View>
 
         {/* Çıkış Yap */}
-        <Pressable
+        <TouchableOpacity
           onPress={handleSignOut}
+          activeOpacity={0.8}
           accessibilityRole="button"
           accessibilityLabel={t("settings.signOut")}
+          style={[s.signOutButton, { backgroundColor: colors.dangerBg }]}
         >
-          {({ pressed }) => (
-            <View
-              style={[
-                s.signOutButton,
-                { backgroundColor: colors.dangerBg, opacity: pressed ? 0.8 : 1 },
-              ]}
-            >
-              <LogOut size={16} color={colors.dangerText} />
-              <Text style={[s.signOutText, { color: colors.dangerText }]}>
-                {t("settings.signOut")}
-              </Text>
-            </View>
-          )}
-        </Pressable>
+          <LogOut size={16} color={colors.dangerText} />
+          <Text style={[s.signOutText, { color: colors.dangerText }]}>{t("settings.signOut")}</Text>
+        </TouchableOpacity>
 
         {/* Sürüm */}
         <Text style={[s.versionText, { color: colors.muted }]}>
@@ -496,11 +559,19 @@ const s = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  rowLabel: {
+  rowTextWrap: {
     flex: 1,
+  },
+  rowLabel: {
     fontFamily: fonts.body600,
     fontSize: 14,
     lineHeight: 20,
+  },
+  rowDesc: {
+    fontFamily: fonts.body400,
+    fontSize: 12,
+    lineHeight: 16,
+    marginTop: 2,
   },
   divider: { height: 1 },
   switch: { transform: [{ scaleX: 0.85 }, { scaleY: 0.85 }] },
