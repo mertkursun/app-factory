@@ -1,14 +1,25 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { View, Text, ScrollView, StyleSheet, ActivityIndicator } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ChevronLeft, Building2, Globe, Share2, Scale, Heart } from "lucide-react-native";
+import {
+  ChevronLeft,
+  Building2,
+  Globe,
+  Share2,
+  Scale,
+  Heart,
+  Volume2,
+  VolumeX,
+} from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
 import { useAnalysis } from "@/hooks/useAnalysis";
 import { useShareAnalysis } from "@/hooks/useShareAnalysis";
+import { useTextToSpeech } from "@/hooks/useTextToSpeech";
 import { useIsFavorite, useAddFavorite, useRemoveFavorite } from "@/hooks/useFavorites";
 import { useAuthStore } from "@/stores/authStore";
+import { generateAnalysisSummary } from "@/utils/analysisNarrator";
 import { ScoreCircle } from "@/components/ui/ScoreCircle";
 import { ProfileWarnings } from "@/components/analysis/ProfileWarnings";
 import { ExplanationCard } from "@/components/analysis/ExplanationCard";
@@ -79,6 +90,7 @@ export default function AnalysisScreen() {
   const user = useAuthStore((s) => s.user);
   const { data: analysis, isLoading, error } = useAnalysis(id);
   const { captureRef, share, isSharing } = useShareAnalysis();
+  const { speak, stop: stopSpeech, isSpeaking } = useTextToSpeech();
   const [isPickerVisible, setPickerVisible] = useState(false);
   const { data: isFavorite } = useIsFavorite(user?.id, id);
   const addFavorite = useAddFavorite();
@@ -129,6 +141,25 @@ export default function AnalysisScreen() {
     return { safe, caution, danger };
   }, [maddeler]);
 
+  useEffect(() => {
+    return () => {
+      stopSpeech();
+    };
+  }, [stopSpeech]);
+
+  const handleSpeak = useCallback(() => {
+    if (!analysis) return;
+    const summary = generateAnalysisSummary(
+      {
+        skor: analysis.skor as SkorRenk,
+        maddeSummary,
+        aciklama: analysis.aciklama,
+      },
+      t,
+    );
+    speak(summary);
+  }, [analysis, maddeSummary, speak, t]);
+
   if (isLoading) {
     return <LoadingScreen message={t("analysis.loading")} />;
   }
@@ -176,6 +207,23 @@ export default function AnalysisScreen() {
           {t("analysis.result")}
         </Text>
         <View style={styles.headerActions}>
+          <IconButton
+            icon={
+              isSpeaking ? (
+                <VolumeX size={18} color={colors.primary} />
+              ) : (
+                <Volume2 size={18} color={colors.text} />
+              )
+            }
+            onPress={handleSpeak}
+            accessibilityLabel={
+              isSpeaking ? t("analysis.stopSpeaking") : t("analysis.speakAnalysis")
+            }
+            style={{
+              backgroundColor: colors.glass,
+              borderColor: colors.glassBorder,
+            }}
+          />
           <IconButton
             icon={
               <Heart
