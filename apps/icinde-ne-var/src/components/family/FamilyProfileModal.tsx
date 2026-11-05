@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import {
   View,
   Text,
@@ -47,7 +47,19 @@ export function FamilyProfileModal({
   const [ikon, setIkon] = useState<string>(profile?.ikon ?? "user");
   const [audiences, setAudiences] = useState<string[]>(profile?.audiences ?? []);
 
-  // Reset state when profile changes
+  // Track previous profile id to detect prop changes during render
+  const prevProfileIdRef = useRef<string | null>(profile?.id ?? null);
+  const currentProfileId = profile?.id ?? null;
+
+  // Adjust state during render when profile prop changes (React-recommended pattern)
+  if (prevProfileIdRef.current !== currentProfileId) {
+    prevProfileIdRef.current = currentProfileId;
+    setIsim(profile?.isim ?? "");
+    setIkon(profile?.ikon ?? "user");
+    setAudiences(profile?.audiences ?? []);
+  }
+
+  // Reset state when modal opens
   const resetState = useCallback(() => {
     setIsim(profile?.isim ?? "");
     setIkon(profile?.ikon ?? "user");

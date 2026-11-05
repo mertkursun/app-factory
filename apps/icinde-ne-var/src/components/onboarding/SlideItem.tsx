@@ -49,9 +49,14 @@ export function SlideItem({ title, description, illustration, width }: SlideItem
   }));
 
   return (
-    <View style={[styles.container, { width }]}>
+    <View
+      style={[styles.container, { width }]}
+      accessible
+      accessibilityRole="summary"
+      accessibilityLabel={`${title}. ${description}`}
+    >
       {/* Illustration area with radial blob */}
-      <View style={styles.illustrationWrapper}>
+      <View style={styles.illustrationWrapper} importantForAccessibility="no-hide-descendants">
         <View style={[styles.blob, { backgroundColor: colors.surfaceTint }]} />
         <Animated.View style={[styles.illustrationContainer, floatStyle]}>
           {illustration}

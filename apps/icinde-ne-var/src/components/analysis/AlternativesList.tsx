@@ -32,7 +32,12 @@ export function AlternativesList({ data }: AlternativesListProps) {
   }
 
   return (
-    <View style={styles.container}>
+    <View
+      style={styles.container}
+      accessible
+      accessibilityRole="summary"
+      accessibilityLabel={t("analysis.alternatives")}
+    >
       <View style={styles.header}>
         <Leaf size={16} color={colors.success} strokeWidth={2.5} />
         <Text style={[styles.title, { color: colors.text }]}>{t("analysis.alternatives")}</Text>
@@ -40,7 +45,12 @@ export function AlternativesList({ data }: AlternativesListProps) {
       <Text style={[styles.hint, { color: colors.muted }]}>{t("analysis.alternativesHint")}</Text>
       <View style={styles.list}>
         {alternatives.map((alt) => (
-          <Card key={alt.name} style={styles.card}>
+          <Card
+            key={alt.name}
+            style={styles.card}
+            accessible
+            accessibilityLabel={`${alt.name}: ${alt.reason}`}
+          >
             <View style={styles.cardContent}>
               <View style={[styles.iconContainer, { backgroundColor: colors.successBg }]}>
                 <Leaf size={14} color={colors.success} strokeWidth={2} />

@@ -14,7 +14,12 @@ export function UnknownIngredients({ items }: UnknownIngredientsProps) {
   if (items.length === 0) return null;
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.surfaceTint }]}>
+    <View
+      style={[styles.container, { backgroundColor: colors.surfaceTint }]}
+      accessible
+      accessibilityRole="summary"
+      accessibilityLabel={`${t("analysis.unknownCount", { count: items.length })}. ${items.join(", ")}`}
+    >
       <View style={styles.headerRow}>
         <Info size={16} color={colors.primary} />
         <Text style={[styles.title, { color: colors.primaryDeep }]}>

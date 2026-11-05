@@ -16,12 +16,17 @@ import { FamilyProfileCard } from "@/components/family/FamilyProfileCard";
 import { FamilyProfileModal } from "@/components/family/FamilyProfileModal";
 import { LoadingScreen } from "@/components/ui/LoadingScreen";
 import { ErrorScreen } from "@/components/ui/ErrorScreen";
+import { ListSeparator } from "@/components/ui/ListSeparator";
 import { useTheme, fonts, radius, spacing, typography } from "@/theme/tokens";
 import type { Database } from "@/lib/database.types";
 
 type FamilyProfileRow = Database["public"]["Tables"]["aile_profilleri"]["Row"];
 
 const MAX_PROFILES = 5;
+
+function FamilySeparator() {
+  return <ListSeparator height={12} />;
+}
 
 export default function FamilyProfilesScreen() {
   const { t } = useTranslation();
@@ -175,7 +180,7 @@ export default function FamilyProfilesScreen() {
         ListEmptyComponent={renderEmpty}
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
-        ItemSeparatorComponent={() => <View style={styles.separator} />}
+        ItemSeparatorComponent={FamilySeparator}
       />
 
       {/* Add button */}
@@ -247,9 +252,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.screenX,
     paddingBottom: 120,
     flexGrow: 1,
-  },
-  separator: {
-    height: 12,
   },
   emptyContainer: {
     flex: 1,

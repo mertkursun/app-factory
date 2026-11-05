@@ -11,6 +11,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
+import { toUpperTR } from "@/utils/text";
 import { ChevronLeft, Search, ChevronDown, ChevronUp } from "lucide-react-native";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { useTheme, fonts, spacing, radius } from "@/theme/tokens";
@@ -20,6 +21,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { LoadingScreen } from "@/components/ui/LoadingScreen";
 import { ErrorScreen } from "@/components/ui/ErrorScreen";
+import { ListSeparator } from "@/components/ui/ListSeparator";
 import type { Database } from "@/lib/database.types";
 
 type MaddeRow = Database["public"]["Tables"]["maddeler"]["Row"];
@@ -28,6 +30,10 @@ type RiskSeviyesi = MaddeRow["risk_seviyesi"];
 type BadgeStatus = "success" | "warning" | "danger";
 
 const DEBOUNCE_MS = 300;
+
+function EncyclopediaSeparator() {
+  return <ListSeparator height={8} />;
+}
 
 const RISK_STATUS_MAP: Record<RiskSeviyesi, BadgeStatus> = {
   guvenli: "success",
@@ -65,7 +71,7 @@ function IngredientDetail({ item }: IngredientDetailProps) {
         {item.islev ? (
           <View style={s.detailRow}>
             <Text style={[s.detailLabel, { color: colors.muted }]}>
-              {t("encyclopedia.function")}
+              {toUpperTR(t("encyclopedia.function"))}
             </Text>
             <Text style={[s.detailValue, { color: colors.text }]}>{item.islev}</Text>
           </View>
@@ -73,7 +79,9 @@ function IngredientDetail({ item }: IngredientDetailProps) {
 
         {/* Category */}
         <View style={s.detailRow}>
-          <Text style={[s.detailLabel, { color: colors.muted }]}>{t("encyclopedia.category")}</Text>
+          <Text style={[s.detailLabel, { color: colors.muted }]}>
+            {toUpperTR(t("encyclopedia.category"))}
+          </Text>
           <Text style={[s.detailValue, { color: colors.text }]}>
             {t(CATEGORY_I18N_KEY[item.kategori] ?? "encyclopedia.categoryGeneral")}
           </Text>
@@ -82,7 +90,9 @@ function IngredientDetail({ item }: IngredientDetailProps) {
         {/* Source */}
         {item.kaynak ? (
           <View style={s.detailRow}>
-            <Text style={[s.detailLabel, { color: colors.muted }]}>{t("encyclopedia.source")}</Text>
+            <Text style={[s.detailLabel, { color: colors.muted }]}>
+              {toUpperTR(t("encyclopedia.source"))}
+            </Text>
             <Text style={[s.detailValue, { color: colors.textSecondary }]}>{item.kaynak}</Text>
           </View>
         ) : null}
@@ -91,7 +101,7 @@ function IngredientDetail({ item }: IngredientDetailProps) {
         {item.es_anlamlilar && item.es_anlamlilar.length > 0 ? (
           <View style={s.detailRow}>
             <Text style={[s.detailLabel, { color: colors.muted }]}>
-              {t("encyclopedia.synonyms")}
+              {toUpperTR(t("encyclopedia.synonyms"))}
             </Text>
             <Text style={[s.detailValue, { color: colors.textSecondary }]}>
               {item.es_anlamlilar.join(", ")}
@@ -266,7 +276,7 @@ export default function EncyclopediaScreen() {
 
       {/* Section label */}
       {sectionTitle ? (
-        <Text style={[s.sectionLabel, { color: colors.muted }]}>{sectionTitle}</Text>
+        <Text style={[s.sectionLabel, { color: colors.muted }]}>{toUpperTR(sectionTitle)}</Text>
       ) : null}
 
       {/* Results */}
@@ -278,7 +288,7 @@ export default function EncyclopediaScreen() {
           renderItem={renderItem}
           keyExtractor={keyExtractor}
           contentContainerStyle={s.listContent}
-          ItemSeparatorComponent={() => <View style={s.separator} />}
+          ItemSeparatorComponent={EncyclopediaSeparator}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="on-drag"
@@ -342,7 +352,6 @@ const s = StyleSheet.create({
     fontFamily: fonts.body800,
     fontSize: 11,
     letterSpacing: 1,
-    textTransform: "uppercase",
     paddingHorizontal: spacing.screenX + 4,
     marginTop: 16,
     marginBottom: 8,
@@ -351,9 +360,6 @@ const s = StyleSheet.create({
     paddingHorizontal: spacing.screenX,
     paddingTop: 8,
     paddingBottom: 100,
-  },
-  separator: {
-    height: 8,
   },
   ingredientCard: {
     overflow: "hidden",
@@ -396,7 +402,6 @@ const s = StyleSheet.create({
     fontFamily: fonts.body800,
     fontSize: 10,
     letterSpacing: 0.8,
-    textTransform: "uppercase",
   },
   detailValue: {
     fontFamily: fonts.body400,

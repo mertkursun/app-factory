@@ -6,7 +6,15 @@ export function DisclaimerNote() {
   const { colors } = useTheme();
   const { t } = useTranslation();
 
-  return <Text style={[styles.text, { color: colors.muted }]}>{t("analysis.disclaimer")}</Text>;
+  return (
+    <Text
+      style={[styles.text, { color: colors.muted }]}
+      accessibilityRole="text"
+      accessibilityLabel={t("analysis.disclaimer")}
+    >
+      {t("analysis.disclaimer")}
+    </Text>
+  );
 }
 
 const styles = StyleSheet.create({

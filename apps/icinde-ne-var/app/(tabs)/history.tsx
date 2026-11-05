@@ -1,12 +1,4 @@
-import {
-  View,
-  Text,
-  ActivityIndicator,
-  ScrollView,
-  Pressable,
-  StyleSheet,
-  FlatList,
-} from "react-native";
+import { View, Text, ActivityIndicator, ScrollView, StyleSheet, FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -15,59 +7,14 @@ import { HistoryCard } from "@/components/history/HistoryCard";
 import { EmptyHistory } from "@/components/history/EmptyHistory";
 import { LoadingScreen } from "@/components/ui/LoadingScreen";
 import { ErrorScreen } from "@/components/ui/ErrorScreen";
+import { FilterChip, CATEGORY_DOT_COLORS } from "@/components/ui/FilterChip";
+import { ListSeparator } from "@/components/ui/ListSeparator";
 import { useAuthStore } from "@/stores/authStore";
 import { useTheme, fonts, spacing, typography } from "@/theme/tokens";
 import type { HistoryItemWithKategori } from "@/services/history";
 import { useCallback, useMemo, useState } from "react";
 
 type FilterCategory = "all" | "gida" | "kozmetik" | "temizlik";
-
-interface FilterChipProps {
-  label: string;
-  isActive: boolean;
-  onPress: () => void;
-  dotColor?: string;
-}
-
-const CATEGORY_DOT_COLORS: Record<string, string> = {
-  gida: "#E39B07",
-  kozmetik: "#D95BA3",
-  temizlik: "#3B82F6",
-};
-
-function FilterChip({ label, isActive, onPress, dotColor }: FilterChipProps) {
-  const { colors } = useTheme();
-
-  return (
-    <Pressable
-      onPress={onPress}
-      accessibilityRole="tab"
-      accessibilityState={{ selected: isActive }}
-      accessibilityLabel={label}
-      style={[
-        styles.chip,
-        {
-          backgroundColor: isActive ? colors.text : colors.surface,
-          borderColor: isActive ? colors.text : colors.border,
-          borderWidth: isActive ? 0 : 1,
-        },
-      ]}
-    >
-      {dotColor && !isActive && <View style={[styles.chipDot, { backgroundColor: dotColor }]} />}
-      <Text
-        style={[
-          styles.chipText,
-          {
-            color: isActive ? colors.background : colors.textSecondary,
-            fontWeight: isActive ? "700" : "600",
-          },
-        ]}
-      >
-        {label}
-      </Text>
-    </Pressable>
-  );
-}
 
 function ListFooter({ isLoading, color }: { isLoading: boolean; color: string }) {
   if (!isLoading) return null;
@@ -193,7 +140,7 @@ export default function HistoryScreen() {
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.listContent}
-          ItemSeparatorComponent={() => <View style={styles.separator} />}
+          ItemSeparatorComponent={ListSeparator}
           onEndReached={handleEndReached}
           onEndReachedThreshold={0.5}
           ListFooterComponent={<ListFooter isLoading={isFetchingNextPage} color={colors.primary} />}
@@ -220,38 +167,19 @@ const styles = StyleSheet.create({
   },
   chipScrollView: {
     flexGrow: 0,
+    flexShrink: 0,
     marginTop: 16,
-    marginBottom: 4,
+    marginBottom: 8,
   },
   chipRow: {
     paddingHorizontal: spacing.screenX,
+    paddingVertical: 6,
     gap: 6,
-  },
-  chip: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    paddingHorizontal: 13,
-    paddingVertical: 7,
-    borderRadius: 999,
-    minHeight: 34,
-  },
-  chipDot: {
-    width: 7,
-    height: 7,
-    borderRadius: 4,
-  },
-  chipText: {
-    fontFamily: fonts.body700,
-    fontSize: 12,
   },
   listContent: {
     paddingHorizontal: spacing.screenX,
     paddingTop: 10,
     paddingBottom: 110,
-  },
-  separator: {
-    height: 10,
   },
   footer: {
     paddingVertical: 16,

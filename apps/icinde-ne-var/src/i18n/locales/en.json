@@ -12,7 +12,9 @@
     "appName": "What's Inside?",
     "analyzing": "Analyzing...",
     "appVersion": "What's Inside? v{{version}}",
-    "madeIn": "Made in 2026"
+    "madeIn": "Made in 2026",
+    "networkError": "Connection Error",
+    "networkErrorMessage": "Please check your internet connection and try again."
   },
   "splash": {
     "title": "What's Inside?",
@@ -137,6 +139,7 @@
     "cautionCount": "{{count}} caution",
     "dangerCount": "{{count}} harmful",
     "unknownCount": "{{count}} unknown ingredients",
+    "explanation": "AI Analysis Explanation",
     "disclaimer": "This analysis is for informational purposes only and does not constitute medical advice. Always consult an expert for health decisions.",
     "profileWarningTitle": "For {{audience}} profile",
     "profileWarningDetail": "{{count}} harmful ingredients · tap to see",

@@ -2,6 +2,7 @@ import { useEffect, useRef, useCallback } from "react";
 import { useRouter } from "expo-router";
 import type { EventSubscription } from "expo";
 import * as Notifications from "expo-notifications";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useTranslation } from "react-i18next";
 import { useAuthStore } from "@/stores/authStore";
 import { useAppStore } from "@/stores/appStore";
@@ -13,6 +14,8 @@ import {
   scheduleWeeklyReminder,
   configureNotificationHandler,
 } from "@/lib/notifications";
+
+const WELCOME_SCHEDULED_KEY = "welcome_notification_scheduled";
 
 /**
  * Hook that manages push notification lifecycle:
@@ -118,8 +121,20 @@ export function useNotifications(): void {
     if (!user?.id) return;
 
     if (notificationsEnabled) {
-      // Schedule welcome and weekly reminders
-      scheduleWelcomeNotification(t("notifications.welcomeTitle"), t("notifications.welcomeBody"));
+      // Schedule welcome only once ever
+      const scheduleWelcomeOnce = async () => {
+        const alreadyScheduled = await AsyncStorage.getItem(WELCOME_SCHEDULED_KEY);
+        if (!alreadyScheduled) {
+          await scheduleWelcomeNotification(
+            t("notifications.welcomeTitle"),
+            t("notifications.welcomeBody"),
+          );
+          await AsyncStorage.setItem(WELCOME_SCHEDULED_KEY, "true");
+        }
+      };
+      scheduleWelcomeOnce();
+
+      // Weekly reminder can be re-scheduled safely (it cancels previous first)
       scheduleWeeklyReminder(
         t("notifications.weeklyReminderTitle"),
         t("notifications.weeklyReminderBody"),

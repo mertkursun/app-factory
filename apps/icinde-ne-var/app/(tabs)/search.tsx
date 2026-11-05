@@ -12,6 +12,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
+import { toUpperTR } from "@/utils/text";
 import { Search, SearchX, TrendingUp } from "lucide-react-native";
 import Animated, {
   useSharedValue,
@@ -24,6 +25,8 @@ import { useSearchProducts, usePopularProducts } from "@/hooks/useSearch";
 import { useDebounce } from "@/hooks/useDebounce";
 import { Badge } from "@/components/ui/Badge";
 import { ErrorScreen } from "@/components/ui/ErrorScreen";
+import { FilterChip, CATEGORY_DOT_COLORS } from "@/components/ui/FilterChip";
+import { ListSeparator } from "@/components/ui/ListSeparator";
 import type { Database } from "@/lib/database.types";
 import type { SkorRenk } from "@/lib/schemas";
 
@@ -34,56 +37,6 @@ const DEBOUNCE_MS = 300;
 const MIN_QUERY_LENGTH = 2;
 const PRESS_SCALE = 0.96;
 const PRESS_DURATION_MS = 150;
-
-// -- Filter Chip -----------------------------------------------------------
-
-interface FilterChipProps {
-  label: string;
-  isActive: boolean;
-  onPress: () => void;
-  dotColor?: string;
-}
-
-const CATEGORY_DOT_COLORS: Record<string, string> = {
-  gida: "#E39B07",
-  kozmetik: "#D95BA3",
-  temizlik: "#3B82F6",
-  genel: "#6E807C",
-};
-
-function FilterChip({ label, isActive, onPress, dotColor }: FilterChipProps) {
-  const { colors } = useTheme();
-
-  return (
-    <Pressable
-      onPress={onPress}
-      accessibilityRole="tab"
-      accessibilityState={{ selected: isActive }}
-      accessibilityLabel={label}
-      style={[
-        styles.chip,
-        {
-          backgroundColor: isActive ? colors.text : colors.surface,
-          borderColor: isActive ? colors.text : colors.border,
-          borderWidth: isActive ? 0 : 1,
-        },
-      ]}
-    >
-      {dotColor && !isActive && <View style={[styles.chipDot, { backgroundColor: dotColor }]} />}
-      <Text
-        style={[
-          styles.chipText,
-          {
-            color: isActive ? colors.background : colors.textSecondary,
-            fontWeight: isActive ? "700" : "600",
-          },
-        ]}
-      >
-        {label}
-      </Text>
-    </Pressable>
-  );
-}
 
 // -- Product Card ----------------------------------------------------------
 
@@ -321,7 +274,9 @@ export default function SearchScreen() {
       {!isSearching && !isLoading && displayData.length > 0 && (
         <View style={styles.sectionHeader}>
           <TrendingUp size={14} color={colors.muted} />
-          <Text style={[styles.sectionTitle, { color: colors.muted }]}>{t("search.popular")}</Text>
+          <Text style={[styles.sectionTitle, { color: colors.muted }]}>
+            {toUpperTR(t("search.popular"))}
+          </Text>
         </View>
       )}
 
@@ -342,7 +297,7 @@ export default function SearchScreen() {
           renderItem={renderItem}
           keyExtractor={keyExtractor}
           contentContainerStyle={styles.listContent}
-          ItemSeparatorComponent={() => <View style={styles.separator} />}
+          ItemSeparatorComponent={ListSeparator}
           showsVerticalScrollIndicator={false}
         />
       ) : null}
@@ -386,24 +341,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.screenX,
     gap: 6,
   },
-  chip: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    paddingHorizontal: 13,
-    paddingVertical: 7,
-    borderRadius: 999,
-    minHeight: 34,
-  },
-  chipDot: {
-    width: 7,
-    height: 7,
-    borderRadius: 4,
-  },
-  chipText: {
-    fontFamily: fonts.body700,
-    fontSize: 12,
-  },
   sectionHeader: {
     flexDirection: "row",
     alignItems: "center",
@@ -415,7 +352,6 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontFamily: fonts.body700,
     fontSize: 12,
-    textTransform: "uppercase",
     letterSpacing: 0.5,
   },
   loadingContainer: {
@@ -432,9 +368,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.screenX,
     paddingTop: 10,
     paddingBottom: 110,
-  },
-  separator: {
-    height: 10,
   },
   card: {
     flexDirection: "row",

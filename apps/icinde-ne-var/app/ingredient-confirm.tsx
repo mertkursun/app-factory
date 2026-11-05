@@ -10,9 +10,10 @@ import {
   StyleSheet,
   Pressable,
 } from "react-native";
+import { Image } from "expo-image";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ChevronLeft, Sparkles, RotateCcw, X, Plus } from "lucide-react-native";
+import { ChevronLeft, Sparkles, RotateCcw, X, Plus, Camera } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTranslation } from "react-i18next";
 import { IconButton } from "@/components/ui/IconButton";
@@ -22,24 +23,46 @@ import { useAuthStore } from "@/stores/authStore";
 import { useAnalyzeProduct } from "@/hooks/useAnalysis";
 import { useAddToHistory } from "@/hooks/useHistory";
 import { useProfile } from "@/hooks/useProfile";
+import { uploadPhoto } from "@/lib/photoUpload";
+import { extractIngredients } from "@/services/ocr";
+import { launchCameraAsync, MediaTypeOptions } from "expo-image-picker";
 import { useTheme, fonts, radius, spacing } from "@/theme/tokens";
 import type { SkorRenk } from "@/lib/schemas";
 
-const PHOTO_CARD_HEIGHT = 92;
+const PHOTO_CARD_HEIGHT = 160;
 
 export default function IngredientConfirmScreen() {
   const router = useRouter();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { colors, shadow } = useTheme();
   const user = useAuthStore((s) => s.user);
   const { data: profile } = useProfile(user?.id);
   const analyzeMutation = useAnalyzeProduct();
   const addHistoryMutation = useAddToHistory();
 
-  const { photoUri, ingredients: rawIngredients } = useLocalSearchParams<{
+  const {
+    photoUri,
+    storagePath,
+    ingredients: rawIngredients,
+    productName: routeProductName,
+    category: routeCategory,
+    brand: routeBrand,
+    countryOfOrigin: routeCountryOfOrigin,
+    ingredientsFromLabel: routeIngredientsFromLabel,
+  } = useLocalSearchParams<{
     photoUri: string;
+    storagePath: string;
     ingredients: string;
+    productName: string;
+    category: string;
+    brand: string;
+    countryOfOrigin: string;
+    ingredientsFromLabel: string;
   }>();
+
+  const [isFromLabel, setIsFromLabel] = useState(routeIngredientsFromLabel === "true");
+  const [isRescanningLabel, setIsRescanningLabel] = useState(false);
+  const [currentPhotoUri, setCurrentPhotoUri] = useState(photoUri ?? "");
 
   const initialIngredients: string[] = (() => {
     if (!rawIngredients) return [];
@@ -58,6 +81,34 @@ export default function IngredientConfirmScreen() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [showAddInput, setShowAddInput] = useState(false);
   const [newItem, setNewItem] = useState("");
+
+  const handleRescanLabel = useCallback(async () => {
+    if (isRescanningLabel) return;
+    try {
+      const result = await launchCameraAsync({
+        mediaTypes: MediaTypeOptions.Images,
+        quality: 0.8,
+      });
+      if (result.canceled || !result.assets?.[0]?.uri) return;
+
+      setIsRescanningLabel(true);
+      const newUri = result.assets[0].uri;
+      const newStoragePath = await uploadPhoto(newUri);
+      const lang = i18n.language;
+      const ocrResult = await extractIngredients(newStoragePath, lang);
+
+      if (ocrResult.ingredients.length > 0) {
+        setItems(ocrResult.ingredients);
+        setIsFromLabel(ocrResult.ingredientsFromLabel);
+        setCurrentPhotoUri(newUri);
+      }
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : t("scanner.photoError");
+      setSubmitError(message);
+    } finally {
+      setIsRescanningLabel(false);
+    }
+  }, [isRescanningLabel, i18n, t]);
 
   const handleAdd = useCallback(() => {
     const trimmed = newItem.trim();
@@ -87,10 +138,16 @@ export default function IngredientConfirmScreen() {
 
     try {
       const audiences = profile?.audiences ?? [];
+      const lang = i18n.language;
       const result = await analyzeMutation.mutateAsync({
-        photoUri,
+        storagePath: storagePath ?? undefined,
         ingredients: items,
+        productName: routeProductName || undefined,
+        category: routeCategory || undefined,
+        brand: routeBrand || undefined,
+        countryOfOrigin: routeCountryOfOrigin || undefined,
         audiences,
+        lang,
       });
 
       addHistoryMutation.mutate({
@@ -115,9 +172,14 @@ export default function IngredientConfirmScreen() {
     profile,
     analyzeMutation,
     addHistoryMutation,
-    photoUri,
+    storagePath,
+    routeProductName,
+    routeCategory,
+    routeBrand,
+    routeCountryOfOrigin,
     router,
     t,
+    i18n,
   ]);
 
   return (
@@ -147,21 +209,19 @@ export default function IngredientConfirmScreen() {
         >
           {/* Photo card */}
           <View style={[styles.photoCard, shadow.card]}>
+            {currentPhotoUri ? (
+              <Image
+                source={{ uri: currentPhotoUri }}
+                style={StyleSheet.absoluteFill}
+                contentFit="cover"
+              />
+            ) : null}
             <LinearGradient
-              colors={["#243633", "#121F1D"]}
+              colors={["rgba(18,31,29,0.3)", "rgba(18,31,29,0.85)"]}
               start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
+              end={{ x: 0, y: 1 }}
               style={styles.photoGradient}
             >
-              {/* Decorative OCR lines */}
-              <View style={styles.ocrLinesContainer}>
-                <View style={[styles.ocrLineFirst, { width: "60%" }]} />
-                <View style={[styles.ocrLine, { width: "95%" }]} />
-                <View style={[styles.ocrLine, { width: "88%" }]} />
-                <View style={[styles.ocrLine, { width: "70%" }]} />
-                <View style={[styles.ocrLine, { width: "92%" }]} />
-              </View>
-
               {/* Retake pill */}
               <Pressable
                 onPress={() => router.back()}
@@ -175,8 +235,10 @@ export default function IngredientConfirmScreen() {
 
               {/* AI read indicator */}
               <View style={styles.ocrConfidenceRow}>
-                <Sparkles size={12} color="#9BF0E3" strokeWidth={2.5} />
-                <Text style={styles.ocrConfidence}>{t("ingredients.readByAi")}</Text>
+                <Sparkles size={12} color={isFromLabel ? "#9BF0E3" : "#FFD580"} strokeWidth={2.5} />
+                <Text style={[styles.ocrConfidence, !isFromLabel && { color: "#FFD580" }]}>
+                  {isFromLabel ? t("ingredients.readByAi") : t("ingredients.estimatedByAi")}
+                </Text>
               </View>
             </LinearGradient>
           </View>
@@ -190,10 +252,37 @@ export default function IngredientConfirmScreen() {
             </View>
           ) : null}
 
+          {/* AI estimation warning + rescan CTA */}
+          {!isFromLabel && items.length > 0 ? (
+            <View style={[styles.estimationBanner, { backgroundColor: colors.warningBg }]}>
+              <Text style={{ fontFamily: fonts.body500, fontSize: 13, color: colors.warningText }}>
+                {t("ingredients.estimationWarning")}
+              </Text>
+              <Pressable
+                onPress={handleRescanLabel}
+                disabled={isRescanningLabel}
+                accessibilityRole="button"
+                accessibilityLabel={t("ingredients.scanLabel")}
+                style={[
+                  styles.rescanBtn,
+                  {
+                    backgroundColor: colors.warning,
+                    opacity: isRescanningLabel ? 0.6 : 1,
+                  },
+                ]}
+              >
+                <Camera size={14} color="#FFFFFF" strokeWidth={2.5} />
+                <Text style={styles.rescanBtnText}>
+                  {isRescanningLabel ? t("ingredients.scanning") : t("ingredients.scanLabel")}
+                </Text>
+              </Pressable>
+            </View>
+          ) : null}
+
           {/* Section header */}
           <View style={styles.sectionHeader}>
             <Text style={[styles.sectionTitle, { color: colors.text }]}>
-              {t("ingredients.extracted")}
+              {isFromLabel ? t("ingredients.extracted") : t("ingredients.estimated")}
             </Text>
             <View style={[styles.countBadge, { backgroundColor: colors.surfaceTint }]}>
               <Text
@@ -342,20 +431,6 @@ const styles = StyleSheet.create({
     padding: 16,
     justifyContent: "space-between",
   },
-  ocrLinesContainer: {
-    gap: 6,
-    paddingRight: 74,
-  },
-  ocrLineFirst: {
-    height: 5,
-    borderRadius: 3,
-    backgroundColor: "rgba(255,255,255,0.55)",
-  },
-  ocrLine: {
-    height: 4,
-    borderRadius: 3,
-    backgroundColor: "rgba(255,255,255,0.3)",
-  },
   retakePill: {
     position: "absolute",
     top: 12,
@@ -389,6 +464,26 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 12,
     marginBottom: 16,
+  },
+  estimationBanner: {
+    padding: 12,
+    borderRadius: 12,
+    marginBottom: 8,
+    gap: 10,
+  },
+  rescanBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+    paddingVertical: 9,
+    paddingHorizontal: 14,
+    borderRadius: 10,
+  },
+  rescanBtnText: {
+    fontFamily: fonts.body700,
+    fontSize: 12,
+    color: "#FFFFFF",
   },
   sectionHeader: {
     flexDirection: "row",

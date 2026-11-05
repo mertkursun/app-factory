@@ -12,7 +12,9 @@
     "appName": "İçinde Ne Var?",
     "analyzing": "Analiz ediliyor...",
     "appVersion": "İçinde Ne Var? v{{version}}",
-    "madeIn": "Yapım: 2026"
+    "madeIn": "Yapım: 2026",
+    "networkError": "Bağlantı Hatası",
+    "networkErrorMessage": "İnternet bağlantınızı kontrol edip tekrar deneyin."
   },
   "splash": {
     "title": "İçinde Ne Var?",
@@ -137,6 +139,7 @@
     "cautionCount": "{{count}} dikkat",
     "dangerCount": "{{count}} sakıncalı",
     "unknownCount": "{{count}} bilinmeyen madde",
+    "explanation": "AI Analiz Açıklaması",
     "disclaimer": "Bu analiz bilgilendirme amaçlıdır, tıbbi tavsiye niteliği taşımaz. Sağlık kararlarınız için mutlaka bir uzmana danışın.",
     "profileWarningTitle": "{{audience}} profili için",
     "profileWarningDetail": "{{count}} sakıncalı madde · dokun ve gör",
