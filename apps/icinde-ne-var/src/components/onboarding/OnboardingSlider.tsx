@@ -12,6 +12,8 @@ import { ScanIllustration } from "./illustrations/ScanIllustration";
 import { ColorsIllustration } from "./illustrations/ColorsIllustration";
 import { ProfileIllustration } from "./illustrations/ProfileIllustration";
 import { ProIllustration } from "./illustrations/ProIllustration";
+import { FamilyIllustration } from "./illustrations/FamilyIllustration";
+import { EncyclopediaIllustration } from "./illustrations/EncyclopediaIllustration";
 
 const ILLUSTRATION_SIZE = 264;
 
@@ -26,6 +28,8 @@ const SLIDE_DATA: Slide[] = [
   { id: "2", titleKey: "onboarding.slide2Title", descKey: "onboarding.slide2Desc" },
   { id: "3", titleKey: "onboarding.slide3Title", descKey: "onboarding.slide3Desc" },
   { id: "4", titleKey: "onboarding.slide4Title", descKey: "onboarding.slide4Desc" },
+  { id: "5", titleKey: "onboarding.slide5Title", descKey: "onboarding.slide5Desc" },
+  { id: "6", titleKey: "onboarding.slide6Title", descKey: "onboarding.slide6Desc" },
 ];
 
 const VIEWABILITY_CONFIG = { viewAreaCoveragePercentThreshold: 50 };
@@ -80,6 +84,8 @@ export function OnboardingSlider() {
       <ColorsIllustration key="colors" size={ILLUSTRATION_SIZE} colors={colors} />,
       <ProfileIllustration key="profile" size={ILLUSTRATION_SIZE} colors={colors} />,
       <ProIllustration key="pro" size={ILLUSTRATION_SIZE} colors={colors} />,
+      <FamilyIllustration key="family" size={ILLUSTRATION_SIZE} colors={colors} />,
+      <EncyclopediaIllustration key="encyclopedia" size={ILLUSTRATION_SIZE} colors={colors} />,
     ],
     [colors],
   );
