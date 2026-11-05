@@ -1,4 +1,3 @@
-// deno-lint-ignore-file no-explicit-any
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.0";
 
@@ -84,6 +83,19 @@ serve(async (req: Request) => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 
+    // ─── Auth: Only service_role callers allowed ──────────────────────
+    const authHeader = req.headers.get("authorization");
+    const apiKeyHeader = req.headers.get("apikey");
+
+    // Verify the caller is using the service_role key (passed as apikey or Bearer token)
+    const callerKey = apiKeyHeader ?? authHeader?.replace("Bearer ", "") ?? "";
+    if (callerKey !== serviceRoleKey) {
+      return new Response(
+        JSON.stringify({ error: "Unauthorized: service_role key required" }),
+        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
     const supabase = createClient(supabaseUrl, serviceRoleKey);
 
     const body = await req.json();
@@ -125,8 +137,13 @@ serve(async (req: Request) => {
       );
     }
 
-    const messages: ExpoPushMessage[] = tokens.map((t: any) => ({
-      to: t.token as string,
+    interface PushTokenRow {
+      token: string;
+      user_id: string;
+    }
+
+    const messages: ExpoPushMessage[] = tokens.map((t: PushTokenRow) => ({
+      to: t.token,
       title: notification.title,
       body: notification.body,
       data: notification.data,

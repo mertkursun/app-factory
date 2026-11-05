@@ -6,11 +6,17 @@ type MaddeRow = Database["public"]["Tables"]["maddeler"]["Row"];
 const SEARCH_LIMIT = 50;
 const POPULAR_LIMIT = 20;
 
+/** Escape ILIKE special characters to prevent wildcard injection */
+function escapeIlike(input: string): string {
+  return input.replace(/\\/g, "\\\\").replace(/%/g, "\\%").replace(/_/g, "\\_");
+}
+
 export async function searchIngredients(query: string): Promise<MaddeRow[]> {
+  const escaped = escapeIlike(query);
   const { data, error } = await supabase
     .from("maddeler")
     .select("*")
-    .ilike("ad", `%${query}%`)
+    .ilike("ad", `%${escaped}%`)
     .order("ad", { ascending: true })
     .limit(SEARCH_LIMIT);
 

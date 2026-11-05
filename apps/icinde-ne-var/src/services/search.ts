@@ -24,9 +24,16 @@ export async function searchProducts({
     .limit(SEARCH_LIMIT);
 
   // Text search: ILIKE on urun_adi OR exact match on barkod
+  // Sanitize input to prevent PostgREST filter injection
   const trimmed = query.trim();
   if (trimmed.length > 0) {
-    builder = builder.or(`urun_adi.ilike.%${trimmed}%,barkod.eq.${trimmed}`);
+    const sanitized = trimmed
+      .replace(/\\/g, "\\\\")
+      .replace(/%/g, "\\%")
+      .replace(/_/g, "\\_")
+      .replace(/[.,()]/g, "");
+
+    builder = builder.or(`urun_adi.ilike.%${sanitized}%,barkod.eq.${sanitized}`);
   }
 
   if (category) {
