@@ -153,7 +153,15 @@
       "sakincali": "This ingredient may pose potential health risks."
     },
     "alternatives": "Cleaner Alternatives",
-    "alternativesHint": "Options you can try instead of this product"
+    "alternativesHint": "Options you can try instead of this product",
+    "speakAnalysis": "Read analysis aloud",
+    "stopSpeaking": "Stop reading",
+    "narratorSafe": "This product appears to be safe.",
+    "narratorCaution": "This product should be consumed with caution.",
+    "narratorDanger": "We recommend avoiding this product.",
+    "narratorScore": "The product score is {{score}}.",
+    "narratorIngredients": "It contains {{safe}} safe, {{caution}} cautionary, and {{danger}} harmful ingredients.",
+    "narratorConclusion": "Overall assessment: {{summary}}"
   },
   "ingredients": {
     "confirm": "Confirm Ingredients",
@@ -231,6 +239,11 @@
     "themeSystem": "System",
     "sectionGeneral": "General",
     "notifications": "Notifications",
+    "notificationSection": "Notifications",
+    "weeklyReminder": "Weekly Reminder",
+    "weeklyReminderDesc": "We'll invite you to scan every Monday",
+    "quotaWarning": "Quota Warning",
+    "quotaWarningDesc": "Get notified when your remaining quota is low",
     "sectionSubscription": "Subscription",
     "sectionLegal": "Legal",
     "sectionAccount": "Account",
@@ -320,6 +333,39 @@
     "quotaWarningBody": "You have 1 scan left. Go Pro for unlimited scans.",
     "weeklyReminderTitle": "We miss you!",
     "weeklyReminderBody": "What did you eat this week? Let us join your grocery run."
+  },
+  "family": {
+    "title": "Family Profiles",
+    "addProfile": "Add Profile",
+    "editProfile": "Edit Profile",
+    "deleteProfile": "Delete Profile",
+    "deleteConfirm": "Are you sure you want to delete this profile?",
+    "name": "Name",
+    "namePlaceholder": "Profile name (e.g. Baby, Mom)",
+    "icon": "Icon",
+    "audiences": "Audience Flags",
+    "maxReached": "You can add up to 5 profiles",
+    "active": "Active",
+    "setActive": "Set Active",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "empty": "No family profiles yet",
+    "emptyHint": "Set different audience flags for each family member and get personalized warnings."
+  },
+  "stats": {
+    "title": "Statistics",
+    "totalScans": "Total Scans",
+    "monthlyScans": "This Month",
+    "scoreDistribution": "Score Distribution",
+    "safe": "Safe",
+    "caution": "Caution",
+    "danger": "Harmful",
+    "topCategories": "Most Scanned",
+    "streak": "{{count}} day scan streak!",
+    "streakEmpty": "No scan streak yet",
+    "noData": "No scan data yet",
+    "noDataHint": "Scan your first product to see your statistics here."
   },
   "compare": {
     "title": "Compare",

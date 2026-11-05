@@ -153,7 +153,15 @@
       "sakincali": "Bu madde potansiyel sağlık riski taşıyabilir."
     },
     "alternatives": "Daha Temiz Alternatifler",
-    "alternativesHint": "Bu ürün yerine deneyebileceğiniz seçenekler"
+    "alternativesHint": "Bu ürün yerine deneyebileceğiniz seçenekler",
+    "speakAnalysis": "Analizi sesli oku",
+    "stopSpeaking": "Sesli okumayı durdur",
+    "narratorSafe": "Bu ürün güvenli görünüyor.",
+    "narratorCaution": "Bu ürün dikkatli tüketilmeli.",
+    "narratorDanger": "Bu üründen kaçınmanızı öneriyoruz.",
+    "narratorScore": "Ürünün skoru {{score}}.",
+    "narratorIngredients": "{{safe}} güvenli, {{caution}} dikkatli, {{danger}} sakıncalı madde içeriyor.",
+    "narratorConclusion": "Genel değerlendirme: {{summary}}"
   },
   "ingredients": {
     "confirm": "İçeriği Onayla",
@@ -223,6 +231,11 @@
     "replayOnboarding": "Tanıtımı tekrar izle",
     "replayOnboardingDesc": "Onboarding slaytlarını yeniden göster",
     "notifications": "Bildirimler",
+    "notificationSection": "Bildirimler",
+    "weeklyReminder": "Haftalık Hatırlatma",
+    "weeklyReminderDesc": "Her Pazartesi seni taramaya davet edelim",
+    "quotaWarning": "Kota Uyarısı",
+    "quotaWarningDesc": "Kalan hakkın azaldığında bildirim al",
     "sectionSubscription": "Abonelik",
     "subscriptionManagement": "Abonelik yönetimi",
     "subscriptionManagementDesc": "Planınızı görüntüleyin veya değiştirin",
@@ -321,6 +334,39 @@
     "quotaWarningBody": "Son 1 tarama hakkın kaldı. Pro'ya geçerek sınırsız taraya devam et.",
     "weeklyReminderTitle": "Seni özledik!",
     "weeklyReminderBody": "Bu hafta ne yedin? Market alışverişinde yanında ol."
+  },
+  "family": {
+    "title": "Aile Profilleri",
+    "addProfile": "Profil Ekle",
+    "editProfile": "Profili Düzenle",
+    "deleteProfile": "Profili Sil",
+    "deleteConfirm": "Bu profili silmek istediğinden emin misin?",
+    "name": "İsim",
+    "namePlaceholder": "Profil adı (ör. Bebek, Anne)",
+    "icon": "İkon",
+    "audiences": "Kitle Bayrakları",
+    "maxReached": "En fazla 5 profil ekleyebilirsin",
+    "active": "Aktif",
+    "setActive": "Aktif Yap",
+    "cancel": "İptal",
+    "save": "Kaydet",
+    "delete": "Sil",
+    "empty": "Henüz aile profili yok",
+    "emptyHint": "Her aile üyesi için farklı kitle bayrakları belirle, kişiye özel uyarılar al."
+  },
+  "stats": {
+    "title": "İstatistikler",
+    "totalScans": "Toplam Tarama",
+    "monthlyScans": "Bu Ay",
+    "scoreDistribution": "Skor Dağılımı",
+    "safe": "Güvenli",
+    "caution": "Dikkat",
+    "danger": "Sakıncalı",
+    "topCategories": "En Çok Taranan",
+    "streak": "{{count}} gün üst üste tarama!",
+    "streakEmpty": "Henüz ardışık tarama yok",
+    "noData": "Henüz tarama verisi yok",
+    "noDataHint": "İlk ürününü tara, istatistiklerin burada görünsün."
   },
   "compare": {
     "title": "Karşılaştır",

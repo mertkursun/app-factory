@@ -1,7 +1,7 @@
 import { View, Text, ScrollView, ActivityIndicator, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { Settings } from "lucide-react-native";
+import { Settings, BarChart3 } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTranslation } from "react-i18next";
 import { useAuthStore } from "@/stores/authStore";
@@ -93,11 +93,18 @@ export default function ProfileScreen() {
         {/* Header */}
         <View style={styles.header}>
           <Text style={[typography.screenTitle, { color: colors.text }]}>{t("tabs.profile")}</Text>
-          <IconButton
-            icon={<Settings size={18} color={colors.text} />}
-            onPress={() => router.push("/settings")}
-            accessibilityLabel={t("profile.settings")}
-          />
+          <View style={styles.headerActions}>
+            <IconButton
+              icon={<BarChart3 size={18} color={colors.text} />}
+              onPress={() => router.push("/stats")}
+              accessibilityLabel={t("stats.title")}
+            />
+            <IconButton
+              icon={<Settings size={18} color={colors.text} />}
+              onPress={() => router.push("/settings")}
+              accessibilityLabel={t("profile.settings")}
+            />
+          </View>
         </View>
 
         {/* Hero card */}
@@ -198,6 +205,11 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingTop: 6,
     paddingHorizontal: 2,
+  },
+  headerActions: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
   },
   heroCard: {
     borderRadius: 24,
