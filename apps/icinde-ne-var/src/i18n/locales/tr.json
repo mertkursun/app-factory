@@ -384,6 +384,10 @@
     "caution": "Dikkat",
     "danger": "Sakıncalı",
     "topCategories": "En Çok Taranan",
+    "categoryFood": "Gıda",
+    "categoryCosmetic": "Kozmetik",
+    "categoryCleaning": "Temizlik",
+    "categoryGeneral": "Genel",
     "streak": "{{count}} gün üst üste tarama!",
     "streakEmpty": "Henüz ardışık tarama yok",
     "noData": "Henüz tarama verisi yok",
@@ -410,6 +414,16 @@
     "loading": "Maddeler yükleniyor...",
     "error": "Bir hata oluştu",
     "errorMessage": "Maddeler yüklenirken bir sorun oluştu."
+  },
+  "audience": {
+    "bebek": "Bebek",
+    "hamile": "Hamile",
+    "hassas_cilt": "Hassas Cilt",
+    "gluten_alerjisi": "Gluten Alerjisi",
+    "laktoz_intoleransi": "Laktoz İntoleransı",
+    "fistik_alerjisi": "Fıstık Alerjisi",
+    "vegan": "Vegan",
+    "diyabet": "Diyabet"
   },
   "compare": {
     "title": "Karşılaştır",

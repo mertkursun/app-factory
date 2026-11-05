@@ -11,11 +11,11 @@ import { ErrorScreen } from "@/components/ui/ErrorScreen";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { useTheme, fonts, spacing, typography, radius } from "@/theme/tokens";
 
-const CATEGORY_LABELS: Record<string, { tr: string; en: string }> = {
-  gida: { tr: "Gıda", en: "Food" },
-  kozmetik: { tr: "Kozmetik", en: "Cosmetics" },
-  temizlik: { tr: "Temizlik", en: "Cleaning" },
-  genel: { tr: "Genel", en: "General" },
+const CATEGORY_I18N_KEYS: Record<string, string> = {
+  gida: "stats.categoryFood",
+  kozmetik: "stats.categoryCosmetic",
+  temizlik: "stats.categoryCleaning",
+  genel: "stats.categoryGeneral",
 };
 
 const CATEGORY_DOT_COLORS = ["#F2B544", "#F08BC4", "#60A5FA", "#7E8B88"];
@@ -23,7 +23,7 @@ const CATEGORY_DOT_COLORS = ["#F2B544", "#F08BC4", "#60A5FA", "#7E8B88"];
 const MIN_BAR_FLEX = 0.04;
 
 export default function StatsScreen() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const router = useRouter();
   const { colors } = useTheme();
   const user = useAuthStore((s) => s.user);
@@ -70,7 +70,6 @@ export default function StatsScreen() {
     );
   }
 
-  const lang = i18n.language === "tr" ? "tr" : "en";
   const total = stats.safeCount + stats.cautionCount + stats.dangerCount;
 
   const safeRatio = total > 0 ? stats.safeCount / total : 0;
@@ -176,7 +175,8 @@ export default function StatsScreen() {
               <View style={styles.categoriesList}>
                 {stats.topCategories.map((cat, idx) => {
                   const dotColor = CATEGORY_DOT_COLORS[idx % CATEGORY_DOT_COLORS.length];
-                  const label = CATEGORY_LABELS[cat.category]?.[lang] ?? cat.category;
+                  const i18nKey = CATEGORY_I18N_KEYS[cat.category];
+                  const label = i18nKey ? t(i18nKey) : cat.category;
                   return (
                     <View key={cat.category} style={styles.categoryRow}>
                       <View style={[styles.categoryDot, { backgroundColor: dotColor }]} />

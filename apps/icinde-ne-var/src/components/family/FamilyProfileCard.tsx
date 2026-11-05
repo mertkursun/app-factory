@@ -6,7 +6,7 @@ import { Pencil, Trash2, Check, UserMinus } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import { useTheme, fonts, radius } from "@/theme/tokens";
 import { FAMILY_ICON_MAP } from "@/lib/familyIcons";
-import { AUDIENCE_LABELS } from "@/lib/constants";
+import { AUDIENCE_LABEL_KEYS } from "@/lib/constants";
 import { User } from "lucide-react-native";
 import type { Database } from "@/lib/database.types";
 
@@ -174,7 +174,7 @@ export function FamilyProfileCard({
                     style={[styles.audienceBadge, { backgroundColor: colors.surfaceTint }]}
                   >
                     <Text style={[styles.audienceBadgeText, { color: colors.primaryDeep }]}>
-                      {AUDIENCE_LABELS[audience] ?? audience}
+                      {AUDIENCE_LABEL_KEYS[audience] ? t(AUDIENCE_LABEL_KEYS[audience]) : audience}
                     </Text>
                   </View>
                 ))}

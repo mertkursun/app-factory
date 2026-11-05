@@ -2,7 +2,7 @@ import { View, Text, Pressable, StyleSheet } from "react-native";
 import { AlertTriangle, ChevronRight } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import { useTheme, fonts, radius } from "@/theme/tokens";
-import { AUDIENCE_LABELS } from "@/lib/constants";
+import { AUDIENCE_LABEL_KEYS } from "@/lib/constants";
 
 interface Warning {
   kitle: string;
@@ -33,7 +33,7 @@ export function ProfileWarnings({ warnings, onPress }: ProfileWarningsProps) {
     <View style={styles.container}>
       {Object.entries(grouped).map(([kitle, items]) => {
         const dangerCount = items.filter((w) => w.riskSeviyesi === "sakincali").length;
-        const audienceLabel = AUDIENCE_LABELS[kitle] ?? kitle;
+        const audienceLabel = AUDIENCE_LABEL_KEYS[kitle] ? t(AUDIENCE_LABEL_KEYS[kitle]) : kitle;
         const audienceEmoji = kitle === "hamile" ? "🤰" : kitle === "bebek" ? "👶" : "";
 
         return (

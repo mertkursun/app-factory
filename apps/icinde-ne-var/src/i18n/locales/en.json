@@ -222,6 +222,7 @@
     "monthlyQuota": "Your monthly scan quota",
     "quotaDesc": "2 free scans remaining. Renews Nov 27.",
     "audienceCount": "{{count}} selected",
+    "audienceDesc": "Select for personalized warnings.",
     "audienceDescText": "Warnings are personalized to these profiles.",
     "unlimited": "Unlimited",
     "goToPro": "Pro"
@@ -383,6 +384,10 @@
     "caution": "Caution",
     "danger": "Harmful",
     "topCategories": "Most Scanned",
+    "categoryFood": "Food",
+    "categoryCosmetic": "Cosmetics",
+    "categoryCleaning": "Cleaning",
+    "categoryGeneral": "General",
     "streak": "{{count}} day scan streak!",
     "streakEmpty": "No scan streak yet",
     "noData": "No scan data yet",
@@ -409,6 +414,16 @@
     "loading": "Loading ingredients...",
     "error": "An error occurred",
     "errorMessage": "Something went wrong while loading ingredients."
+  },
+  "audience": {
+    "bebek": "Baby",
+    "hamile": "Pregnant",
+    "hassas_cilt": "Sensitive Skin",
+    "gluten_alerjisi": "Gluten Allergy",
+    "laktoz_intoleransi": "Lactose Intolerance",
+    "fistik_alerjisi": "Peanut Allergy",
+    "vegan": "Vegan",
+    "diyabet": "Diabetes"
   },
   "compare": {
     "title": "Compare",

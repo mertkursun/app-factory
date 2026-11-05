@@ -1,6 +1,7 @@
 import { View, StyleSheet } from "react-native";
+import { useTranslation } from "react-i18next";
 import { Chip } from "@/components/ui/Chip";
-import { AUDIENCE_LABELS } from "@/lib/constants";
+import { AUDIENCE_LABEL_KEYS } from "@/lib/constants";
 
 const CHIP_EMOJIS: Record<string, string> = {
   bebek: "\u{1F476}",
@@ -20,7 +21,8 @@ interface AudienceSelectorProps {
 }
 
 export function AudienceSelector({ selected, onChange, disabled }: AudienceSelectorProps) {
-  const allAudiences = Object.keys(AUDIENCE_LABELS);
+  const { t } = useTranslation();
+  const allAudiences = Object.keys(AUDIENCE_LABEL_KEYS);
 
   const handleToggle = (audience: string) => {
     if (disabled) return;
@@ -34,7 +36,7 @@ export function AudienceSelector({ selected, onChange, disabled }: AudienceSelec
       {allAudiences.map((audience) => {
         const isSelected = selected.includes(audience);
         const emoji = CHIP_EMOJIS[audience] ?? "";
-        const label = AUDIENCE_LABELS[audience] ?? audience;
+        const label = AUDIENCE_LABEL_KEYS[audience] ? t(AUDIENCE_LABEL_KEYS[audience]) : audience;
 
         return (
           <View key={audience} style={styles.chipWrapper}>
