@@ -10,6 +10,8 @@ export default function PrivacyScreen() {
     { n: "03", h: t("legal.privacyS3Title"), p: t("legal.privacyS3Body") },
     { n: "04", h: t("legal.privacyS4Title"), p: t("legal.privacyS4Body") },
     { n: "05", h: t("legal.privacyS5Title"), p: t("legal.privacyS5Body") },
+    { n: "06", h: t("legal.privacyS6Title"), p: t("legal.privacyS6Body") },
+    { n: "07", h: t("legal.privacyS7Title"), p: t("legal.privacyS7Body") },
   ] as const;
 
   return (

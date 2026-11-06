@@ -28,6 +28,7 @@ import {
 } from "lucide-react-native";
 import Constants from "expo-constants";
 import { useTranslation } from "react-i18next";
+import { toUpperTR } from "@/utils/text";
 import { useAppStore } from "@/stores/appStore";
 import { useNotificationStore } from "@/stores/notificationStore";
 import { useTheme, fonts } from "@/theme/tokens";
@@ -225,7 +226,7 @@ export default function SettingsScreen() {
 
         {/* GÖRÜNÜM */}
         <Text style={[s.sectionLabel, { color: colors.muted, marginTop: 18 }]}>
-          {t("settings.sectionAppearance")}
+          {toUpperTR(t("settings.sectionAppearance"))}
         </Text>
         <View
           style={[
@@ -272,7 +273,7 @@ export default function SettingsScreen() {
 
         {/* GENEL */}
         <Text style={[s.sectionLabel, { color: colors.muted }]}>
-          {t("settings.sectionGeneral")}
+          {toUpperTR(t("settings.sectionGeneral"))}
         </Text>
         <View
           style={[
@@ -296,7 +297,7 @@ export default function SettingsScreen() {
 
         {/* BİLDİRİMLER */}
         <Text style={[s.sectionLabel, { color: colors.muted }]}>
-          {t("settings.notificationSection")}
+          {toUpperTR(t("settings.notificationSection"))}
         </Text>
         <View
           style={[
@@ -342,7 +343,7 @@ export default function SettingsScreen() {
 
         {/* İZİNLER */}
         <Text style={[s.sectionLabel, { color: colors.muted }]}>
-          {t("settings.sectionPermissions")}
+          {toUpperTR(t("settings.sectionPermissions"))}
         </Text>
         <View
           style={[
@@ -406,7 +407,7 @@ export default function SettingsScreen() {
 
         {/* ABONELİK */}
         <Text style={[s.sectionLabel, { color: colors.muted }]}>
-          {t("settings.sectionSubscription")}
+          {toUpperTR(t("settings.sectionSubscription"))}
         </Text>
         <View
           style={[
@@ -446,7 +447,7 @@ export default function SettingsScreen() {
         </View>
 
         {/* YASAL */}
-        <Text style={[s.sectionLabel, { color: colors.muted }]}>{t("settings.sectionLegal")}</Text>
+        <Text style={[s.sectionLabel, { color: colors.muted }]}>{toUpperTR(t("settings.sectionLegal"))}</Text>
         <View
           style={[
             s.sectionCard,
@@ -518,7 +519,6 @@ const s = StyleSheet.create({
     fontFamily: fonts.body800,
     fontSize: 11,
     letterSpacing: 1,
-    textTransform: "uppercase",
     marginTop: 22,
     marginBottom: 8,
     paddingHorizontal: 6,

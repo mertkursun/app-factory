@@ -5,6 +5,7 @@ import { Settings, BarChart3, Users } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTranslation } from "react-i18next";
 import { useAuthStore } from "@/stores/authStore";
+import { useAppStore } from "@/stores/appStore";
 import { useProfile, useUpdateProfile, useCreateProfile } from "@/hooks/useProfile";
 import { useQuota } from "@/hooks/useQuota";
 import { AudienceSelector } from "@/components/profile/AudienceSelector";
@@ -20,8 +21,6 @@ import { useCallback, useState, useEffect } from "react";
 const AVATAR_SIZE = 58;
 const AVATAR_RING_WIDTH = 3;
 const AVATAR_INNER = AVATAR_SIZE - AVATAR_RING_WIDTH * 2;
-const AVATAR_BG = "#0B4F4A";
-const AVATAR_TEXT_COLOR = "#9BF0E3";
 
 export default function ProfileScreen() {
   const { t } = useTranslation();
@@ -29,6 +28,8 @@ export default function ProfileScreen() {
   const { colors, gradient, shadow } = useTheme();
   const user = useAuthStore((s) => s.user);
   const userId = user?.id;
+  const pendingDisplayName = useAppStore((s) => s.pendingDisplayName);
+  const setPendingDisplayName = useAppStore((s) => s.setPendingDisplayName);
 
   const { data: profile, isLoading: profileLoading } = useProfile(userId);
   const { data: quota, isLoading: quotaLoading } = useQuota(userId);
@@ -77,12 +78,19 @@ export default function ProfileScreen() {
     return <ErrorScreen title={t("profile.noSession")} message={t("profile.noSessionMessage")} />;
   }
 
-  const displayName = profile?.display_name ?? user.email ?? "";
+  const resolvedName = profile?.display_name ?? pendingDisplayName;
+  const displayName = resolvedName ?? user.email ?? "";
   const initials = displayName
     .split(/[\s@]+/)
     .slice(0, 2)
-    .map((part) => part.charAt(0).toUpperCase())
+    .map((part) => part.charAt(0).toLocaleUpperCase("tr-TR"))
     .join("");
+
+  useEffect(() => {
+    if (profile?.display_name && pendingDisplayName) {
+      setPendingDisplayName(null);
+    }
+  }, [profile?.display_name, pendingDisplayName, setPendingDisplayName]);
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: colors.background }]} edges={["top"]}>
@@ -128,15 +136,17 @@ export default function ProfileScreen() {
               end={{ x: 1, y: 1 }}
               style={styles.avatarRing}
             >
-              <View style={styles.avatarInner}>
-                <Text style={styles.avatarText}>{initials || "?"}</Text>
+              <View style={[styles.avatarInner, { backgroundColor: colors.primaryDeep }]}>
+                <Text style={[styles.avatarText, { color: colors.primaryLight }]}>
+                  {initials || "?"}
+                </Text>
               </View>
             </LinearGradient>
 
             {/* Info */}
             <View style={styles.heroInfo}>
               <Text style={[styles.heroName, { color: colors.primaryFg }]} numberOfLines={1}>
-                {profile?.display_name ?? user.email ?? ""}
+                {displayName}
               </Text>
               <Text style={[styles.heroEmail, { color: colors.primaryFg }]} numberOfLines={1}>
                 {user.email ?? ""}
@@ -265,14 +275,12 @@ const styles = StyleSheet.create({
   avatarInner: {
     flex: 1,
     borderRadius: AVATAR_INNER / 2,
-    backgroundColor: AVATAR_BG,
     alignItems: "center",
     justifyContent: "center",
   },
   avatarText: {
     fontFamily: fonts.display800,
     fontSize: 20,
-    color: AVATAR_TEXT_COLOR,
     letterSpacing: -0.5,
   },
   heroInfo: {

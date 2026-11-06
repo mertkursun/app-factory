@@ -1,0 +1,18 @@
+schemaname,table_name,blocks_read,write_tuples,blocks_write,activity_ratio
+auth,users,24,22,-0,Read-Only
+public,maddeler,2,427,11,5.5:1 (Write-Heavy)
+auth,refresh_tokens,12,15,-0,Read-Only
+storage,objects,10,3,-0,Read-Only
+storage,migrations,7,80,2.13333333333333,0.3:1 (Write-Heavy)
+auth,sessions,9,10,-0,Read-Only
+auth,identities,7,2,-0,Read-Only
+auth,one_time_tokens,7,6,-0,Read-Only
+auth,schema_migrations,4,75,0.914634146341463,0.2:1 (Write-Heavy)
+realtime,schema_migrations,2,91,1,0.5:1 (Write-Heavy)
+public,kullanim,2,7,-0,Read-Only
+auth,mfa_amr_claims,2,5,-0,Read-Only
+storage,buckets,2,1,-0,Read-Only
+public,profiller,2,4,-0,Read-Only
+public,urun_analizleri,2,3,-0,Read-Only
+public,tarama_gecmisi,2,9,-0,Read-Only
+supabase_migrations,schema_migrations,1,4,-0,Read-Only

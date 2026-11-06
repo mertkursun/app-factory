@@ -1,1 +1,2 @@
 - [Supabase types need Relationships](project_supabase-relationships.md) -- database.types.ts tables must include Relationships: [] for postgrest-js v2.118+
+- [Pre-existing TS/lint errors](project_pre-existing-errors.md) -- Known errors in SplashAnimation, tokens.ts, verify-otp, tests; don't block commits

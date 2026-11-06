@@ -59,7 +59,10 @@
     "otpDigitLabel": "Doğrulama kodu {{digit}}. hane",
     "trustTitle": "Şifre saklamıyoruz.",
     "trustDesc": "Kod 3 dakika geçerlidir, kimseyle paylaşma.",
-    "codeNotReceived": "Kod gelmedi mi?"
+    "codeNotReceived": "Kod gelmedi mi?",
+    "nameLabel": "Ad Soyad",
+    "namePlaceholder": "Adınızı girin",
+    "nameValidation": "İsim en az 2 karakter olmalı"
   },
   "onboarding": {
     "skip": "Atla",
@@ -168,7 +171,8 @@
     "narratorDanger": "Bu üründen kaçınmanızı öneriyoruz.",
     "narratorScore": "Ürünün skoru {{score}}.",
     "narratorIngredients": "{{safe}} güvenli, {{caution}} dikkatli, {{danger}} sakıncalı madde içeriyor.",
-    "narratorConclusion": "Genel değerlendirme: {{summary}}"
+    "narratorConclusion": "Genel değerlendirme: {{summary}}",
+    "profileScoreNote": "profili için sakıncalı"
   },
   "ingredients": {
     "confirm": "İçeriği Onayla",

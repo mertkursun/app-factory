@@ -1,8 +1,7 @@
 ---
 name: ship
-description: Uygulamayı store'a hazırlar — kalite kapısı, metadata, sürüm, EAS build, store listing. Yayına çıkmadan önce kullan.
+description: Uygulamayı store'a hazırlar — kalite kapısı, metadata, sürüm, EAS build, store listing. Kullanıcı "yayınla", "ship", "store'a gönder", "build al" dediğinde kullan.
 argument-hint: "<slug> [patch|minor|major]"
-disable-model-invocation: true
 allowed-tools: Bash(npm run *) Bash(git add *) Bash(git commit *) Bash(git tag *) Bash(eas build *)
 ---
 

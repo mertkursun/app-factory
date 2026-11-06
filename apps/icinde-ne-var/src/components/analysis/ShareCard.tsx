@@ -4,6 +4,7 @@ import ViewShot, { type ViewShotRef } from "react-native-view-shot";
 import Svg, { Circle, Defs, LinearGradient, Stop } from "react-native-svg";
 import { useTranslation } from "react-i18next";
 import { useTheme, fonts, radius } from "@/theme/tokens";
+import { toUpperTR } from "@/utils/text";
 import type { SkorRenk } from "@/lib/schemas";
 
 // ── Types ──────────────────────────────────────────────────────────
@@ -186,7 +187,7 @@ export const ShareCard = forwardRef<ViewShotRef, ShareCardProps>(function ShareC
             </View>
 
             {/* Score label */}
-            <Text style={[styles.scoreLabel, { color: statusColor }]}>{scoreLabel}</Text>
+            <Text style={[styles.scoreLabel, { color: statusColor }]}>{toUpperTR(scoreLabel)}</Text>
           </View>
         </View>
 
@@ -300,7 +301,6 @@ const styles = StyleSheet.create({
     fontFamily: fonts.body800,
     fontSize: 32,
     letterSpacing: 1.5,
-    textTransform: "uppercase",
   },
   summarySection: {
     alignItems: "center",

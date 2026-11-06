@@ -1,0 +1,17 @@
+name,table,columns,size,percent_used,index_scans,seq_scans,unused
+public.maddeler_es_anlamlilar_idx,public.maddeler,es_anlamlilar,112 kB,0%,0,0,t
+public.maddeler_ad_idx,public.maddeler,lower(ad),40 kB,0%,0,0,t
+public.maddeler_pkey,public.maddeler,id,40 kB,0%,0,0,t
+public.urun_analizleri_pkey,public.urun_analizleri,id,16 kB,100%,15,0,f
+public.profiller_pkey,public.profiller,id,16 kB,0%,0,0,t
+public.tarama_gecmisi_pkey,public.tarama_gecmisi,id,16 kB,0%,0,0,t
+public.kullanim_pkey,public.kullanim,id,16 kB,100%,1,0,f
+public.profiller_user_id_unique,public.profiller,user_id,16 kB,100%,26,0,f
+public.urun_analizleri_barkod_idx,public.urun_analizleri,barkod,16 kB,100%,12,0,f
+public.kullanim_user_donem_unique,public.kullanim,"user_id,donem",16 kB,100%,46,0,f
+public.tarama_gecmisi_user_idx,public.tarama_gecmisi,"user_id,created_at",16 kB,100%,20,0,f
+public.abonelikler_pkey,public.abonelikler,id,8192 bytes,0%,0,0,t
+public.push_tokens_user_id_token_key,public.push_tokens,"user_id,token",8192 bytes,0%,0,0,t
+public.idx_push_tokens_user_id,public.push_tokens,user_id,8192 bytes,0%,0,0,t
+public.push_tokens_pkey,public.push_tokens,id,8192 bytes,0%,0,0,t
+public.abonelikler_user_id_unique,public.abonelikler,user_id,8192 bytes,100%,40,0,f

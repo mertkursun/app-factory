@@ -19,7 +19,7 @@ const OUTER_SIZE = 76;
 const RING_WIDTH = 4;
 const GAP_WIDTH = 4;
 const INNER_SIZE = OUTER_SIZE - (RING_WIDTH + GAP_WIDTH) * 2;
-const ICON_SIZE = 26;
+const ICON_SIZE = 24;
 const SCALE_PRESSED = 0.96;
 const PRESS_DURATION_MS = 150;
 const PRIMARY_DEEP = "#0B6E66";
@@ -62,7 +62,17 @@ export function PhotoCaptureButton({ onPress, disabled }: PhotoCaptureButtonProp
       disabled={disabled}
       accessibilityRole="button"
       accessibilityLabel={t("scanner.shutter")}
-      style={[animatedStyle, { opacity: disabled ? 0.5 : 1 }]}
+      style={[
+        animatedStyle,
+        {
+          opacity: disabled ? 0.5 : 1,
+          shadowColor: "rgba(45,212,191,1)",
+          shadowOffset: { width: 0, height: 10 },
+          shadowOpacity: 0.6,
+          shadowRadius: 15,
+          elevation: 10,
+        },
+      ]}
     >
       {/* Outer teal ring */}
       <LinearGradient
@@ -75,12 +85,12 @@ export function PhotoCaptureButton({ onPress, disabled }: PhotoCaptureButtonProp
         <View style={styles.gap}>
           {/* White gradient inner */}
           <LinearGradient
-            colors={["#FFFFFF", "#E8E8E8"]}
+            colors={["#FFFFFF", "#DDE9E6"]}
             start={{ x: 0, y: 0 }}
             end={{ x: 0, y: 1 }}
             style={styles.inner}
           >
-            <ScanLine size={ICON_SIZE} color={PRIMARY_DEEP} />
+            <ScanLine size={ICON_SIZE} color={PRIMARY_DEEP} strokeWidth={2.2} />
           </LinearGradient>
         </View>
       </LinearGradient>

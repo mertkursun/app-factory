@@ -6,5 +6,6 @@ module.exports = {
     "prettier/prettier": "error",
     "@typescript-eslint/no-redeclare": "off",
     "import/no-unresolved": ["error", { ignore: ["^react-native-url-polyfill"] }],
+    "react-hooks/immutability": "off",
   },
 };

@@ -1,0 +1,8 @@
+name,last_vacuum,last_autovacuum,last_analyze,last_autoanalyze,rowcount,dead_rowcount,autovacuum_threshold,expect_autovacuum,autoanalyze_threshold,expect_autoanalyze
+public.maddeler,"","","",2026-11-03 14:51,           427,             0,           135,no,            93,no
+public.abonelikler,"","","","",            -1,             0,            50,no,            50,no
+public.kullanim,"","","","",            -1,             6,            50,no,            50,no
+public.profiller,"","","","",            -1,             3,            50,no,            50,no
+public.push_tokens,"","","","",            -1,             0,            50,no,            50,no
+public.tarama_gecmisi,"","","","",            -1,             0,            50,no,            50,no
+public.urun_analizleri,"","","","",            -1,             0,            50,no,            50,no

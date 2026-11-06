@@ -54,18 +54,21 @@ function PickerItem({
       onPress={() => onSelect(item.analiz_id)}
       accessibilityRole="button"
       accessibilityLabel={item.urun_adi ?? "Bilinmeyen Ürün"}
-      style={({ pressed }) => [
-        styles.itemRow,
-        {
-          backgroundColor: pressed ? colors.surfaceTint : colors.surface,
-          borderBottomColor: colors.border,
-        },
-      ]}
+      style={[styles.itemRow, { borderBottomColor: colors.border }]}
     >
-      <Text style={[styles.itemName, { color: colors.text }]} numberOfLines={1}>
-        {item.urun_adi ?? "Bilinmeyen Ürün"}
-      </Text>
-      <Badge label={SKOR_LABELS_TR[skor]} status={status} />
+      {({ pressed }: { pressed: boolean }) => (
+        <View
+          style={[
+            styles.itemRowInner,
+            { backgroundColor: pressed ? colors.surfaceTint : "transparent" },
+          ]}
+        >
+          <Text style={[styles.itemName, { color: colors.text }]} numberOfLines={1}>
+            {item.urun_adi ?? "Bilinmeyen Ürün"}
+          </Text>
+          <Badge label={SKOR_LABELS_TR[skor]} status={status} />
+        </View>
+      )}
     </Pressable>
   );
 }
@@ -190,13 +193,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.screenX,
   },
   itemRow: {
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    minHeight: 52,
+  },
+  itemRowInner: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     paddingVertical: 14,
     paddingHorizontal: 4,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    minHeight: 52,
   },
   itemName: {
     fontFamily: fonts.body600,

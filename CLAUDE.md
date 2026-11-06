@@ -32,6 +32,7 @@ Akışın her aşaması `/new-app`, `/add-feature`, `/ship` skill'leri ile tetik
 | Liste | FlatList / @shopify/flash-list | ScrollView+map yasak |
 | İkon | lucide-react-native | Tutarlı, tree-shakeable ikon seti; başka ikon kütüphanesi kullanma |
 | Animasyon | lottie-react-native + @lottiefiles/dotlottie-react-native | Onboarding, micro-interaction, illüstrasyon animasyonları |
+| i18n | i18next + react-i18next + expo-localization | `src/i18n/`, fallback: tr, JSON çeviri dosyaları |
 | Font | @expo-google-fonts/* | DESIGN.md'deki aile |
 | Test | Jest (jest-expo) + React Native Testing Library | |
 | Lint/format | ESLint (eslint-config-expo) + Prettier | PostToolUse hook ile otomatik |
@@ -58,6 +59,8 @@ Her app görsel olarak **özgün, modern ve akılda kalıcı** olmalı. Varsayı
 - Commit mesajı: `feat(scope): …`, `fix(scope): …`, `chore: …` (Conventional Commits).
 - Türkçe konuş, kod ve commit mesajları İngilizce.
 - **Türkçe karakter zorunluluğu:** Tüm Türkçe metinlerde (docs, kod içi stringler, seed data, UI metinleri) doğru Türkçe karakterler kullanılmalı: ç, ş, ğ, ı, ö, ü, İ, Ş, Ç, Ğ, Ö, Ü. ASCII yaklaşık karşılıkları (c, s, g, i, o, u) YASAK. HTML dosyalarında `<meta charset="UTF-8">` zorunlu. Bu kural agent'lar dahil herkes için geçerli.
+- **i18n zorunlu:** UI'da hardcoded string yasak. Tüm kullanıcı-görünür metinler `src/i18n/locales/{lang}.json` içinde tanımlanır, bileşenlerde `useTranslation` hook'u ile `t("key")` kullanılır. Yeni app'te i18n altyapısı T01'de kurulur, varsayılan diller: `tr` (fallback) + `en`. Her yeni ekran/bileşen yazılırken string'ler direkt çeviri dosyasına eklenir.
+- **Paket güncelliği zorunlu:** Yeni app oluştururken ve mevcut app'e dönüşte `npx expo install --fix` ile tüm bağımlılıklar SDK-uyumlu en güncel sürüme çekilir. Major SDK yükseltmelerinde `npx expo install expo@latest --fix` kullanılır. App'in `CLAUDE.md`'sine kurulan SDK sürümü yazılır.
 - Bir şeyi iki kez yanlış yaparsan, kuralı bu dosyaya veya `rn-conventions` skill'ine ekle.
 
 ## Ajanlara delegasyon

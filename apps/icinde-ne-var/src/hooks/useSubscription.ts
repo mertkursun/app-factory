@@ -26,13 +26,17 @@ export function useSubscription() {
 
   useEffect(() => {
     async function load() {
-      const [info, offering] = await Promise.all([getCustomerInfo(), getOfferings()]);
-      setState({
-        isPro: isProFromCustomerInfo(info),
-        offering,
-        customerInfo: info,
-        isLoading: false,
-      });
+      try {
+        const [info, offering] = await Promise.all([getCustomerInfo(), getOfferings()]);
+        setState({
+          isPro: isProFromCustomerInfo(info),
+          offering,
+          customerInfo: info,
+          isLoading: false,
+        });
+      } catch {
+        setState((prev) => ({ ...prev, isLoading: false }));
+      }
     }
     load();
   }, []);

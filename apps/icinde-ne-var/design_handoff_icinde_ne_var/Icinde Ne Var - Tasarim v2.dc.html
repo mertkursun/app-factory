@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#ECE9E1;font-family:'Plus Jakarta Sans',system-ui,sans-serif;color:#0F1F1D;-webkit-font-smoothing:antialiased}
+a{color:#0B6E66}a:hover{color:#0F9B8E}
+*{box-sizing:border-box}
+@keyframes inv-scan{0%{transform:translateY(-92px);opacity:0}12%{opacity:1}88%{opacity:1}100%{transform:translateY(92px);opacity:0}}
+@keyframes inv-pulse{0%,100%{transform:scale(1);opacity:.55}50%{transform:scale(1.18);opacity:.15}}
+@keyframes inv-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes inv-spin{to{transform:rotate(360deg)}}
+@keyframes inv-caret{0%,100%{opacity:1}50%{opacity:0}}
+</style>
+</helmet>
+
+<div style="--fd:'Bricolage Grotesque',sans-serif;max-width:1480px;margin:0 auto;padding:36px 32px 80px;display:flex;flex-direction:column;gap:40px">
+
+  <!-- PAGE HEADER -->
+  <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:20px">
+    <div style="display:flex;flex-direction:column;gap:10px;max-width:720px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <svg width="44" height="44" viewBox="0 0 120 120" fill="none"><defs><linearGradient id="lgA" x1="20" y1="20" x2="100" y2="100"><stop offset="0" stop-color="#2BC4B4"></stop><stop offset="1" stop-color="#0B6E66"></stop></linearGradient></defs><circle cx="50" cy="50" r="31" stroke="url(#lgA)" stroke-width="10"></circle><path d="M74 74 L99 99" stroke="url(#lgA)" stroke-width="13" stroke-linecap="round"></path><path d="M50 26 C63 30 69 43 64 55 C53 57 41 50 41 37 C43 31 46 27 50 26 Z" fill="#0F9B8E"></path><path d="M46 50 C52 44 58 38 62 32" stroke="#F7F5EE" stroke-width="2.5" stroke-linecap="round"></path><circle cx="37" cy="61" r="4.5" fill="#1D9E5F"></circle><circle cx="50" cy="65" r="4.5" fill="#E39B07"></circle><circle cx="63" cy="61" r="4.5" fill="#E03E3E"></circle></svg>
+        <h1 style="margin:0;font:800 30px/1.05 var(--fd);letter-spacing:-0.6px">İçinde Ne Var? <span style="font:600 14px/1 'Plus Jakarta Sans',sans-serif;color:#7E8B88;margin-left:8px">Tasarım v2</span></h1>
+      </div>
+      <p style="margin:0;font-size:14px;line-height:1.6;color:#4B5B58">Tipografi önerisi: <strong style="color:#0F1F1D">Bricolage Grotesque</strong> (başlıklar, skor rakamları) + <strong style="color:#0F1F1D">Plus Jakarta Sans</strong> (gövde). Teal canlandırıldı ve gradient'e taşındı; fildişi zemin korundu; skor renkleri doygunlaştırıldı; dark mode derin teal alt tonlu. Tüm telefonlar tıklanabilir — splash'e dokunup akışı takip edin. Glass/blur efektleri RN'de <code>expo-blur</code> + yarı saydam yüzeyle yaklaşık uygulanır.</p>
+    </div>
+    <div style="display:flex;gap:4px;padding:4px;background:#fff;border-radius:999px;box-shadow:0 1px 2px rgba(0,0,0,.05),0 6px 20px -8px rgba(0,0,0,.12)">
+      <div onClick="{{ setBoth }}" style="{{ vBoth }}">Yan yana</div>
+      <div onClick="{{ setLight }}" style="{{ vLight }}">Açık</div>
+      <div onClick="{{ setDark }}" style="{{ vDark }}">Koyu</div>
+    </div>
+  </div>
+
+  <!-- LOGO -->
+  <div style="background:#fff;border-radius:28px;padding:28px 32px;display:flex;flex-direction:column;gap:20px;box-shadow:0 1px 2px rgba(0,0,0,.04),0 10px 30px -14px rgba(0,0,0,.12)">
+    <div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;align-items:baseline">
+      <h2 style="margin:0;font:700 20px/1.2 var(--fd);letter-spacing:-0.3px">Logo — Büyüteç · Yaprak · 3 Skor</h2>
+      <span style="font-size:13px;color:#4B5B58">Kalın gradient halka tek bakışta okunur; yaprak merceğin içinde "doğal içerik", 3 nokta merceğin alt yayında "skor DNA'sı". 29px'te bile ayrışır.</span>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+        <div style="width:140px;height:140px;border-radius:28px;background:#F7F5EE;border:1px solid #E4E0D5;display:flex;align-items:center;justify-content:center">
+          <svg width="88" height="88" viewBox="0 0 120 120" fill="none"><defs><linearGradient id="lg1" x1="20" y1="20" x2="100" y2="100"><stop offset="0" stop-color="#2BC4B4"></stop><stop offset="1" stop-color="#0B6E66"></stop></linearGradient></defs><circle cx="50" cy="50" r="31" stroke="url(#lg1)" stroke-width="10"></circle><circle cx="50" cy="50" r="26" fill="#E6F4F1"></circle><path d="M74 74 L99 99" stroke="url(#lg1)" stroke-width="13" stroke-linecap="round"></path><path d="M50 26 C63 30 69 43 64 55 C53 57 41 50 41 37 C43 31 46 27 50 26 Z" fill="#0F9B8E"></path><path d="M46 50 C52 44 58 38 62 32" stroke="#E6F4F1" stroke-width="2.5" stroke-linecap="round"></path><circle cx="37" cy="61" r="4.5" fill="#1D9E5F"></circle><circle cx="50" cy="65" r="4.5" fill="#E39B07"></circle><circle cx="63" cy="61" r="4.5" fill="#E03E3E"></circle></svg>
+        </div>
+        <span style="font-size:11px;font-weight:700;color:#7E8B88;letter-spacing:.6px;text-transform:uppercase">Beyaz / Fildişi</span>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+        <div style="width:140px;height:140px;border-radius:28px;background:linear-gradient(135deg,#19B8A6 0%,#0E8F84 55%,#0B6E66 100%);display:flex;align-items:center;justify-content:center">
+          <svg width="88" height="88" viewBox="0 0 120 120" fill="none"><circle cx="50" cy="50" r="31" stroke="#FFFFFF" stroke-width="10"></circle><circle cx="50" cy="50" r="26" fill="rgba(255,255,255,0.12)"></circle><path d="M74 74 L99 99" stroke="#FFFFFF" stroke-width="13" stroke-linecap="round"></path><path d="M50 26 C63 30 69 43 64 55 C53 57 41 50 41 37 C43 31 46 27 50 26 Z" fill="#9BF0E3"></path><path d="M46 50 C52 44 58 38 62 32" stroke="#0B6E66" stroke-width="2.5" stroke-linecap="round"></path><circle cx="37" cy="61" r="4.5" fill="#6EE7A8"></circle><circle cx="50" cy="65" r="4.5" fill="#FBD36A"></circle><circle cx="63" cy="61" r="4.5" fill="#FF8A8A"></circle></svg>
+        </div>
+        <span style="font-size:11px;font-weight:700;color:#7E8B88;letter-spacing:.6px;text-transform:uppercase">Teal zemin</span>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+        <div style="width:140px;height:140px;border-radius:28px;background:#0A1514;display:flex;align-items:center;justify-content:center">
+          <svg width="88" height="88" viewBox="0 0 120 120" fill="none"><defs><linearGradient id="lg3" x1="20" y1="20" x2="100" y2="100"><stop offset="0" stop-color="#5EEAD4"></stop><stop offset="1" stop-color="#14B8A6"></stop></linearGradient></defs><circle cx="50" cy="50" r="31" stroke="url(#lg3)" stroke-width="10"></circle><circle cx="50" cy="50" r="26" fill="rgba(45,212,191,0.08)"></circle><path d="M74 74 L99 99" stroke="url(#lg3)" stroke-width="13" stroke-linecap="round"></path><path d="M50 26 C63 30 69 43 64 55 C53 57 41 50 41 37 C43 31 46 27 50 26 Z" fill="#2DD4BF"></path><path d="M46 50 C52 44 58 38 62 32" stroke="#0A1514" stroke-width="2.5" stroke-linecap="round"></path><circle cx="37" cy="61" r="4.5" fill="#3BD98A"></circle><circle cx="50" cy="65" r="4.5" fill="#F5C242"></circle><circle cx="63" cy="61" r="4.5" fill="#F36B6B"></circle></svg>
+        </div>
+        <span style="font-size:11px;font-weight:700;color:#7E8B88;letter-spacing:.6px;text-transform:uppercase">Koyu zemin</span>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+        <div style="width:140px;height:140px;border-radius:32px;background:linear-gradient(160deg,#22C9B7 0%,#0F9B8E 45%,#0A5B55 100%);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;box-shadow:0 14px 30px -10px rgba(11,110,102,.55)">
+          <div style="position:absolute;inset:0;background:radial-gradient(90% 60% at 30% 0%,rgba(255,255,255,.35),transparent 60%)"></div>
+          <div style="position:absolute;width:200px;height:200px;border-radius:50%;border:1px solid rgba(255,255,255,.16);left:-40px;top:70px"></div>
+          <svg width="92" height="92" viewBox="0 0 120 120" fill="none" style="position:relative"><circle cx="50" cy="50" r="31" stroke="#FFFFFF" stroke-width="10"></circle><circle cx="50" cy="50" r="26" fill="rgba(255,255,255,0.14)"></circle><path d="M74 74 L99 99" stroke="#FFFFFF" stroke-width="13" stroke-linecap="round"></path><path d="M50 26 C63 30 69 43 64 55 C53 57 41 50 41 37 C43 31 46 27 50 26 Z" fill="#9BF0E3"></path><path d="M46 50 C52 44 58 38 62 32" stroke="#0B6E66" stroke-width="2.5" stroke-linecap="round"></path><circle cx="37" cy="61" r="4.5" fill="#6EE7A8"></circle><circle cx="50" cy="65" r="4.5" fill="#FBD36A"></circle><circle cx="63" cy="61" r="4.5" fill="#FF8A8A"></circle></svg>
+        </div>
+        <span style="font-size:11px;font-weight:700;color:#7E8B88;letter-spacing:.6px;text-transform:uppercase">App Store ikonu</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px;justify-content:center;min-height:140px;padding-left:12px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <svg width="32" height="32" viewBox="0 0 120 120" fill="none"><circle cx="50" cy="50" r="31" stroke="#0F9B8E" stroke-width="10"></circle><path d="M74 74 L99 99" stroke="#0F9B8E" stroke-width="13" stroke-linecap="round"></path><path d="M50 26 C63 30 69 43 64 55 C53 57 41 50 41 37 C43 31 46 27 50 26 Z" fill="#0F9B8E"></path><circle cx="37" cy="61" r="4.5" fill="#1D9E5F"></circle><circle cx="50" cy="65" r="4.5" fill="#E39B07"></circle><circle cx="63" cy="61" r="4.5" fill="#E03E3E"></circle></svg>
+          <span style="font:800 22px/1 var(--fd);letter-spacing:-0.5px;color:#0F1F1D">İçinde Ne Var?</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px">
+          <svg width="20" height="20" viewBox="0 0 120 120" fill="none"><circle cx="50" cy="50" r="31" stroke="#0F9B8E" stroke-width="12"></circle><path d="M74 74 L99 99" stroke="#0F9B8E" stroke-width="14" stroke-linecap="round"></path><path d="M50 26 C63 30 69 43 64 55 C53 57 41 50 41 37 C43 31 46 27 50 26 Z" fill="#0F9B8E"></path><circle cx="37" cy="61" r="5" fill="#1D9E5F"></circle><circle cx="50" cy="65" r="5" fill="#E39B07"></circle><circle cx="63" cy="61" r="5" fill="#E03E3E"></circle></svg>
+          <svg width="29" height="29" viewBox="0 0 120 120" fill="none" style="border-radius:7px;background:linear-gradient(160deg,#22C9B7,#0A5B55);padding:4px"><circle cx="50" cy="50" r="31" stroke="#fff" stroke-width="12"></circle><path d="M74 74 L99 99" stroke="#fff" stroke-width="14" stroke-linecap="round"></path><path d="M50 26 C63 30 69 43 64 55 C53 57 41 50 41 37 C43 31 46 27 50 26 Z" fill="#9BF0E3"></path><circle cx="37" cy="61" r="5" fill="#6EE7A8"></circle><circle cx="50" cy="65" r="5" fill="#FBD36A"></circle><circle cx="63" cy="61" r="5" fill="#FF8A8A"></circle></svg>
+          <span style="font-size:12px;color:#7E8B88">20px · 29px küçük boyut testi</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOKENS -->
+  <div style="background:#fff;border-radius:28px;padding:28px 32px;display:flex;flex-direction:column;gap:18px;box-shadow:0 1px 2px rgba(0,0,0,.04),0 10px 30px -14px rgba(0,0,0,.12)">
+    <h2 style="margin:0;font:700 20px/1.2 var(--fd);letter-spacing:-0.3px">Renk Token'ları</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px">
+      <sc-for list="{{ tokens }}" as="tk" hint-placeholder-count="12">
+        <div style="display:flex;flex-direction:column;gap:8px;padding:10px;border-radius:16px;background:#F7F5EE;border:1px solid #E4E0D5">
+          <div style="display:flex;gap:6px">
+            <div style="flex:1;height:44px;border-radius:10px;border:1px solid rgba(0,0,0,.06);background:{{ tk.l }}"></div>
+            <div style="flex:1;height:44px;border-radius:10px;border:1px solid rgba(0,0,0,.06);background:{{ tk.d }}"></div>
+          </div>
+          <div style="font-size:12px;font-weight:700;color:#0F1F1D">{{ tk.name }}</div>
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:#7E8B88;font-family:ui-monospace,Menlo,monospace"><span>{{ tk.l }}</span><span>{{ tk.d }}</span></div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="font-size:12px;color:#7E8B88">Her kartta sol: açık tema · sağ: koyu tema. Primary butonlar düz renk yerine <code>primaryGradient</code> kullanır (RN: expo-linear-gradient).</div>
+  </div>
+
+  <!-- SCREENS -->
+  <sc-for list="{{ groups }}" as="g" hint-placeholder-count="3">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;align-items:baseline;gap:12px">
+        <span style="font:700 11px/1 ui-monospace,Menlo,monospace;padding:5px 9px;border-radius:7px;background:#0F1F1D;color:#fff">{{ g.num }}</span>
+        <span style="font:700 18px/1.2 var(--fd);letter-spacing:-0.3px">{{ g.label }}</span>
+        <span style="font-size:12px;color:#7E8B88">{{ g.note }}</span>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start">
+        <sc-for list="{{ g.phones }}" as="ph" hint-placeholder-count="2">
+          <div style="{{ ph.vars }}">
+            <div style="width:334px;height:712px;border-radius:54px;background:#0C0F0F;padding:7px;box-shadow:0 40px 70px -30px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.08) inset,0 2px 0 rgba(255,255,255,.08) inset;position:relative">
+              <div style="width:320px;height:698px;border-radius:47px;overflow:hidden;background:var(--bg);position:relative;font-family:'Plus Jakarta Sans',sans-serif;color:var(--tx)">
+
+                <!-- island + status bar -->
+                <div style="position:absolute;top:12px;left:50%;transform:translateX(-50%);width:108px;height:32px;border-radius:20px;background:#000;z-index:30"></div>
+                <div style="position:absolute;top:0;left:0;right:0;height:54px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 30px 8px;font-size:14px;font-weight:600;z-index:25;color:{{ ph.sb }}">
+                  <span>09:41</span>
+                  <div style="display:flex;align-items:center;gap:5px">
+                    <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"></rect><rect x="4.3" y="4.5" width="3" height="6.5" rx="1"></rect><rect x="8.6" y="2.2" width="3" height="8.8" rx="1"></rect><rect x="13" y="0" width="3" height="11" rx="1"></rect></svg>
+                    <svg width="24" height="11" viewBox="0 0 24 11" fill="none"><rect x="0.5" y="0.5" width="20" height="10" rx="3" stroke="currentColor" opacity=".45"></rect><rect x="2" y="2" width="15" height="7" rx="1.5" fill="currentColor"></rect><rect x="22" y="3.5" width="1.6" height="4" rx=".8" fill="currentColor" opacity=".5"></rect></svg>
+                  </div>
+                </div>
+
+                <!-- ===== SPLASH ===== -->
+                <sc-if value="{{ ph.s.splash }}" hint-placeholder-val="{{ false }}">
+                  <div onClick="{{ ph.go.onb }}" style="position:absolute;inset:0;background:var(--splash);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;overflow:hidden">
+                    <div style="position:absolute;width:420px;height:420px;border-radius:50%;border:1px solid rgba(255,255,255,.12);top:120px;left:-50px"></div>
+                    <div style="position:absolute;width:300px;height:300px;border-radius:50%;border:1px solid rgba(255,255,255,.1);top:180px;left:10px"></div>
+                    <div style="position:absolute;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(94,234,212,.35),transparent 70%);top:150px;left:30px;animation:inv-pulse 4s ease-in-out infinite"></div>
+                    <div style="position:relative;width:132px;height:132px;border-radius:38px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);display:flex;align-items:center;justify-content:center;box-shadow:0 24px 50px -20px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.4)">
+                      <svg width="86" height="86" viewBox="0 0 120 120" fill="none"><circle cx="50" cy="50" r="31" stroke="#FFFFFF" stroke-width="10"></circle><circle cx="50" cy="50" r="26" fill="rgba(255,255,255,0.12)"></circle><path d="M74 74 L99 99" stroke="#FFFFFF" stroke-width="13" stroke-linecap="round"></path><path d="M50 26 C63 30 69 43 64 55 C53 57 41 50 41 37 C43 31 46 27 50 26 Z" fill="#9BF0E3"></path><path d="M46 50 C52 44 58 38 62 32" stroke="#0B6E66" stroke-width="2.5" stroke-linecap="round"></path><circle cx="37" cy="61" r="4.5" fill="#6EE7A8"></circle><circle cx="50" cy="65" r="4.5" fill="#FBD36A"></circle><circle cx="63" cy="61" r="4.5" fill="#FF8A8A"></circle></svg>
+                    </div>
+                    <div style="position:relative;margin-top:26px;font:800 32px/1.05 var(--fd);letter-spacing:-0.8px;color:#fff;text-align:center">İçinde Ne Var?</div>
+                    <div style="position:relative;margin-top:10px;font-size:13px;font-weight:600;color:rgba(255,255,255,.72);letter-spacing:.3px">Ne aldığını bil, ne yediğini seç.</div>
+                    <div style="position:absolute;bottom:56px;display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);font-size:11px;font-weight:600;color:rgba(255,255,255,.85)">
+                      <div style="width:12px;height:12px;border-radius:50%;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;animation:inv-spin 1s linear infinite"></div>
+                      Veritabanı hazırlanıyor
+                    </div>
+                  </div>
+                </sc-if>
+
+                <!-- ===== ONBOARDING ===== -->
+                <sc-if value="{{ ph.s.onb }}" hint-placeholder-val="{{ false }}">
+                  <div style="position:absolute;inset:0;display:flex;flex-direction:column;padding:62px 22px 26px">
+                    <div style="display:flex;align-items:center;justify-content:space-between">
+                      <div style="display:flex;gap:5px">
+                        <sc-for list="{{ ph.segs }}" as="sg" hint-placeholder-count="4"><div style="{{ sg.style }}"></div></sc-for>
+                      </div>
+                      <div onClick="{{ ph.go.login }}" style="font-size:13px;font-weight:700;color:var(--pr);cursor:pointer;padding:6px 10px">Atla</div>
+                    </div>
+                    <div style="flex:1;display:flex;align-items:center;justify-content:center;position:relative;min-height:0">
+                      <div style="position:absolute;width:250px;height:250px;border-radius:50%;background:radial-gradient(circle,var(--sf2) 0%,transparent 70%)"></div>
+                      <sc-if value="{{ ph.slide0 }}" hint-placeholder-val="{{ false }}">
+                        <svg width="264" height="250" viewBox="0 0 264 250" fill="none" style="position:relative;animation:inv-float 5s ease-in-out infinite">
+                          <rect x="150" y="68" width="78" height="118" rx="12" fill="#F2B544"></rect>
+                          <rect x="150" y="68" width="78" height="118" rx="12" fill="url(#onbShade)"></rect>
+                          <rect x="150" y="104" width="78" height="30" fill="#FFF4D6"></rect>
+                          <path d="M176 128 C178 114 190 108 202 110 C200 122 190 130 176 128 Z" fill="#1D9E5F"></path>
+                          <rect x="162" y="150" width="54" height="5" rx="2.5" fill="#D99A2B"></rect>
+                          <rect x="162" y="161" width="38" height="5" rx="2.5" fill="#D99A2B"></rect>
+                          <rect x="54" y="18" width="118" height="216" rx="26" fill="#0F1F1D"></rect>
+                          <rect x="61" y="26" width="104" height="200" rx="20" fill="var(--bg)"></rect>
+                          <rect x="97" y="34" width="32" height="8" rx="4" fill="#0F1F1D"></rect>
+                          <rect x="73" y="66" width="80" height="104" rx="14" fill="var(--cam)"></rect>
+                          <path d="M83 84 V76 H91 M135 76 H143 V84 M143 152 V160 H135 M91 160 H83 V152" stroke="var(--prl)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                          <g opacity=".9"><rect x="92" y="100" width="3" height="36" fill="#fff"></rect><rect x="98" y="100" width="2" height="36" fill="#fff"></rect><rect x="103" y="100" width="4" height="36" fill="#fff"></rect><rect x="110" y="100" width="2" height="36" fill="#fff"></rect><rect x="115" y="100" width="3" height="36" fill="#fff"></rect><rect x="121" y="100" width="2" height="36" fill="#fff"></rect><rect x="126" y="100" width="4" height="36" fill="#fff"></rect><rect x="133" y="100" width="2" height="36" fill="#fff"></rect></g>
+                          <rect x="79" y="116" width="68" height="3" rx="1.5" fill="var(--prl)"></rect>
+                          <rect x="79" y="112" width="68" height="11" rx="2" fill="url(#onbGlow)"></rect>
+                          <rect x="73" y="180" width="80" height="12" rx="6" fill="var(--sf2)"></rect>
+                          <rect x="82" y="184" width="40" height="4" rx="2" fill="var(--pr)"></rect>
+                          <circle cx="113" cy="206" r="10" fill="var(--pr)"></circle>
+                          <circle cx="113" cy="206" r="4" fill="var(--bg)"></circle>
+                          <circle cx="44" cy="190" r="22" fill="var(--sf)" stroke="var(--bd)"></circle>
+                          <path d="M36 190 L42 196 L53 184" stroke="#1D9E5F" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                          <circle cx="206" cy="36" r="16" fill="var(--sf)" stroke="var(--bd)"></circle>
+                          <path d="M200 36 h12 M206 30 v12" stroke="var(--pr)" stroke-width="2.5" stroke-linecap="round"></path>
+                          <path d="M40 60 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3z" fill="#F2B544"></path>
+                          <path d="M236 200 l2 5 5 2 -5 2 -2 5 -2 -5 -5 -2 5 -2z" fill="var(--prl)"></path>
+                          <defs><linearGradient id="onbShade" x1="150" y1="68" x2="228" y2="186"><stop offset="0" stop-color="#fff" stop-opacity=".25"></stop><stop offset="1" stop-color="#000" stop-opacity=".12"></stop></linearGradient><linearGradient id="onbGlow" x1="0" y1="112" x2="0" y2="123"><stop offset="0" stop-color="#2DD4BF" stop-opacity="0"></stop><stop offset=".5" stop-color="#2DD4BF" stop-opacity=".55"></stop><stop offset="1" stop-color="#2DD4BF" stop-opacity="0"></stop></linearGradient></defs>
+                        </svg>
+                      </sc-if>
+                      <sc-if value="{{ ph.slide1 }}" hint-placeholder-val="{{ false }}">
+                        <svg width="264" height="250" viewBox="0 0 264 250" fill="none" style="position:relative;animation:inv-float 5s ease-in-out infinite">
+                          <rect x="152" y="14" width="76" height="224" rx="38" fill="#12302C"></rect>
+                          <rect x="158" y="20" width="64" height="212" rx="32" fill="#1B403B"></rect>
+                          <circle cx="190" cy="56" r="34" fill="#1D9E5F" opacity=".22"></circle>
+                          <circle cx="190" cy="56" r="23" fill="#1D9E5F"></circle>
+                          <circle cx="184" cy="50" r="7" fill="#fff" opacity=".35"></circle>
+                          <path d="M180 56 l7 7 13 -14" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></path>
+                          <circle cx="190" cy="126" r="30" fill="#E39B07" opacity=".16"></circle>
+                          <circle cx="190" cy="126" r="23" fill="#E39B07"></circle>
+                          <circle cx="184" cy="120" r="7" fill="#fff" opacity=".3"></circle>
+                          <path d="M190 114 v14 M190 136 v1" stroke="#fff" stroke-width="4.5" stroke-linecap="round"></path>
+                          <circle cx="190" cy="196" r="30" fill="#E03E3E" opacity=".16"></circle>
+                          <circle cx="190" cy="196" r="23" fill="#E03E3E"></circle>
+                          <circle cx="184" cy="190" r="7" fill="#fff" opacity=".3"></circle>
+                          <path d="M182 188 l16 16 M198 188 l-16 16" stroke="#fff" stroke-width="4" stroke-linecap="round"></path>
+                          <path d="M150 56 H118" stroke="var(--bd)" stroke-width="2" stroke-dasharray="4 4"></path>
+                          <path d="M150 126 H118" stroke="var(--bd)" stroke-width="2" stroke-dasharray="4 4"></path>
+                          <path d="M150 196 H118" stroke="var(--bd)" stroke-width="2" stroke-dasharray="4 4"></path>
+                          <rect x="20" y="34" width="98" height="44" rx="14" fill="var(--sf)" stroke="var(--bd)"></rect>
+                          <rect x="30" y="44" width="24" height="24" rx="8" fill="#DDF4E6"></rect>
+                          <path d="M36 56 l4 4 8 -9" stroke="#1D9E5F" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                          <rect x="62" y="47" width="44" height="6" rx="3" fill="var(--tx)" opacity=".85"></rect>
+                          <rect x="62" y="58" width="30" height="5" rx="2.5" fill="var(--mu)" opacity=".6"></rect>
+                          <rect x="20" y="104" width="98" height="44" rx="14" fill="var(--sf)" stroke="var(--bd)"></rect>
+                          <rect x="30" y="114" width="24" height="24" rx="8" fill="#FDF0C7"></rect>
+                          <path d="M42 120 v7 M42 131 v.5" stroke="#E39B07" stroke-width="2.8" stroke-linecap="round"></path>
+                          <rect x="62" y="117" width="38" height="6" rx="3" fill="var(--tx)" opacity=".85"></rect>
+                          <rect x="62" y="128" width="26" height="5" rx="2.5" fill="var(--mu)" opacity=".6"></rect>
+                          <rect x="20" y="174" width="98" height="44" rx="14" fill="var(--sf)" stroke="var(--bd)"></rect>
+                          <rect x="30" y="184" width="24" height="24" rx="8" fill="#FDE2E2"></rect>
+                          <path d="M38 192 l8 8 M46 192 l-8 8" stroke="#E03E3E" stroke-width="2.5" stroke-linecap="round"></path>
+                          <rect x="62" y="187" width="46" height="6" rx="3" fill="var(--tx)" opacity=".85"></rect>
+                          <rect x="62" y="198" width="22" height="5" rx="2.5" fill="var(--mu)" opacity=".6"></rect>
+                          <path d="M240 150 C250 136 250 118 240 106 C228 114 226 136 240 150 Z" fill="var(--pr)"></path>
+                          <path d="M240 148 C240 134 238 122 236 112" stroke="var(--bg)" stroke-width="1.5" stroke-linecap="round"></path>
+                        </svg>
+                      </sc-if>
+                      <sc-if value="{{ ph.slide2 }}" hint-placeholder-val="{{ false }}">
+                        <svg width="264" height="250" viewBox="0 0 264 250" fill="none" style="position:relative;animation:inv-float 5s ease-in-out infinite">
+                          <defs><linearGradient id="onbShield" x1="80" y1="20" x2="190" y2="200"><stop offset="0" stop-color="#2BC4B4"></stop><stop offset="1" stop-color="#0B6E66"></stop></linearGradient></defs>
+                          <path d="M132 18 L206 44 V118 C206 166 174 200 132 220 C90 200 58 166 58 118 V44 Z" fill="url(#onbShield)"></path>
+                          <path d="M132 34 L190 55 V118 C190 156 164 184 132 202 C100 184 74 156 74 118 V55 Z" fill="rgba(255,255,255,.1)"></path>
+                          <path d="M132 18 L206 44 V118 C206 166 174 200 132 220" stroke="rgba(255,255,255,.35)" stroke-width="2" stroke-linecap="round"></path>
+                          <circle cx="132" cy="106" r="34" fill="rgba(255,255,255,.16)"></circle>
+                          <path d="M114 108 l12 12 24 -26" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"></path>
+                          <circle cx="64" cy="194" r="34" fill="var(--sf)" stroke="var(--bd)" stroke-width="2"></circle>
+                          <circle cx="64" cy="186" r="12" fill="#E8B48A"></circle>
+                          <path d="M42 222 C44 206 52 200 64 200 C76 200 84 206 86 222" fill="var(--pr)"></path>
+                          <path d="M52 182 C52 172 58 168 64 168 C72 168 77 173 77 184 C72 178 60 178 52 182 Z" fill="#3B2A22"></path>
+                          <rect x="178" y="178" width="76" height="34" rx="17" fill="var(--sf)" stroke="var(--bd)"></rect>
+                          <circle cx="196" cy="195" r="7" fill="#1D9E5F"></circle>
+                          <rect x="208" y="191" width="34" height="8" rx="4" fill="var(--tx)" opacity=".8"></rect>
+                          <rect x="188" y="134" width="70" height="34" rx="17" fill="var(--sf)" stroke="var(--bd)"></rect>
+                          <circle cx="206" cy="151" r="7" fill="#E39B07"></circle>
+                          <rect x="218" y="147" width="28" height="8" rx="4" fill="var(--tx)" opacity=".8"></rect>
+                          <rect x="4" y="98" width="66" height="34" rx="17" fill="var(--sf)" stroke="var(--bd)"></rect>
+                          <circle cx="22" cy="115" r="7" fill="#E03E3E"></circle>
+                          <rect x="34" y="111" width="26" height="8" rx="4" fill="var(--tx)" opacity=".8"></rect>
+                          <path d="M226 60 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3z" fill="#F2B544"></path>
+                          <path d="M30 40 l2 5 5 2 -5 2 -2 5 -2 -5 -5 -2 5 -2z" fill="var(--prl)"></path>
+                        </svg>
+                      </sc-if>
+                      <sc-if value="{{ ph.slide3 }}" hint-placeholder-val="{{ false }}">
+                        <svg width="264" height="250" viewBox="0 0 264 250" fill="none" style="position:relative;animation:inv-float 5s ease-in-out infinite">
+                          <defs><linearGradient id="onbPro" x1="140" y1="30" x2="250" y2="220"><stop offset="0" stop-color="#2BC4B4"></stop><stop offset="1" stop-color="#0A5B55"></stop></linearGradient></defs>
+                          <rect x="16" y="60" width="112" height="160" rx="22" fill="var(--sf)" stroke="var(--bd)" stroke-width="1.5"></rect>
+                          <rect x="34" y="78" width="52" height="8" rx="4" fill="var(--mu)" opacity=".5"></rect>
+                          <text x="34" y="134" font-family="Bricolage Grotesque, sans-serif" font-weight="800" font-size="46" fill="var(--tx)" letter-spacing="-2">5</text>
+                          <text x="66" y="134" font-family="Plus Jakarta Sans, sans-serif" font-weight="600" font-size="13" fill="var(--mu)">/ ay</text>
+                          <g><circle cx="40" cy="160" r="7" fill="var(--pr)"></circle><circle cx="58" cy="160" r="7" fill="var(--pr)"></circle><circle cx="76" cy="160" r="7" fill="var(--pr)"></circle><circle cx="94" cy="160" r="7" fill="var(--pr)" opacity=".35"></circle><circle cx="112" cy="160" r="7" fill="var(--pr)" opacity=".35"></circle></g>
+                          <rect x="34" y="184" width="76" height="6" rx="3" fill="var(--bd)"></rect>
+                          <rect x="34" y="196" width="54" height="6" rx="3" fill="var(--bd)"></rect>
+                          <rect x="136" y="32" width="116" height="196" rx="24" fill="url(#onbPro)"></rect>
+                          <circle cx="232" cy="60" r="60" fill="rgba(255,255,255,.08)"></circle>
+                          <rect x="154" y="52" width="48" height="22" rx="11" fill="rgba(255,255,255,.2)"></rect>
+                          <text x="178" y="67" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-weight="800" font-size="11" fill="#fff" letter-spacing="1">PRO</text>
+                          <path d="M210 50 l4 -10 6 8 8 -6 -3 16 h-20 l-3 -16 8 6z" fill="#FBD36A"></path>
+                          <path d="M194 128 c-6 -8 -12 -12 -18 -12 a12 12 0 1 0 0 24 c6 0 12 -4 18 -12z m0 0 c6 8 12 12 18 12 a12 12 0 1 0 0 -24 c-6 0 -12 4 -18 12z" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"></path>
+                          <text x="194" y="168" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-weight="700" font-size="13" fill="#fff">Sınırsız tarama</text>
+                          <rect x="156" y="186" width="76" height="6" rx="3" fill="rgba(255,255,255,.45)"></rect>
+                          <rect x="156" y="198" width="52" height="6" rx="3" fill="rgba(255,255,255,.45)"></rect>
+                          <path d="M248 20 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3z" fill="#F2B544"></path>
+                          <path d="M130 236 l2 5 5 2 -5 2 -2 5 -2 -5 -5 -2 5 -2z" fill="var(--prl)"></path>
+                        </svg>
+                      </sc-if>
+                    </div>
+                    <div style="text-align:center;padding:0 4px 22px">
+                      <div style="font:800 28px/1.1 var(--fd);letter-spacing:-0.7px;margin-bottom:10px;text-wrap:balance">{{ ph.slide.title }}</div>
+                      <div style="font-size:14px;line-height:1.55;color:var(--tx2);text-wrap:pretty">{{ ph.slide.body }}</div>
+                    </div>
+                    <div onClick="{{ ph.next }}" style="height:56px;border-radius:28px;background:var(--prg);color:var(--prf);display:flex;align-items:center;justify-content:center;gap:10px;font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 12px 24px -10px var(--prsh),inset 0 1px 0 rgba(255,255,255,.25)">
+                      {{ ph.slide.cta }}
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                    </div>
+                  </div>
+                </sc-if>
+
+                <!-- ===== LOGIN ===== -->
+                <sc-if value="{{ ph.s.login }}" hint-placeholder-val="{{ false }}">
+                  <div style="position:absolute;inset:0;display:flex;flex-direction:column;padding:70px 22px 24px;overflow:hidden">
+                    <div style="position:absolute;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,var(--sf2),transparent 70%);top:-80px;right:-100px"></div>
+                    <svg width="52" height="52" viewBox="0 0 120 120" fill="none" style="position:relative"><circle cx="50" cy="50" r="31" stroke="var(--pr)" stroke-width="10"></circle><path d="M74 74 L99 99" stroke="var(--pr)" stroke-width="13" stroke-linecap="round"></path><path d="M50 26 C63 30 69 43 64 55 C53 57 41 50 41 37 C43 31 46 27 50 26 Z" fill="var(--pr)"></path><circle cx="37" cy="61" r="4.5" fill="var(--ok)"></circle><circle cx="50" cy="65" r="4.5" fill="var(--wa)"></circle><circle cx="63" cy="61" r="4.5" fill="var(--no)"></circle></svg>
+                    <div style="font:800 30px/1.08 var(--fd);letter-spacing:-0.8px;margin-top:22px;position:relative">Hoş geldin.</div>
+                    <div style="font-size:14px;line-height:1.55;color:var(--tx2);margin-top:8px;position:relative">E-postanla giriş yap; şifre yok, tek kullanımlık kod var.</div>
+                    <div style="margin-top:30px;display:flex;flex-direction:column;gap:8px">
+                      <span style="font-size:12px;font-weight:700;color:var(--tx2);letter-spacing:.2px;padding-left:4px">E-posta</span>
+                      <div style="height:54px;border-radius:18px;background:var(--sf);border:1.5px solid var(--pr);display:flex;align-items:center;gap:10px;padding:0 16px;box-shadow:0 0 0 4px var(--prring),var(--shl)">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--pr)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg>
+                        <span style="font-size:14px;font-weight:500;color:var(--tx)">mert@ornek.com</span>
+                        <span style="width:2px;height:18px;background:var(--pr);border-radius:1px;animation:inv-caret 1s step-end infinite"></span>
+                      </div>
+                    </div>
+                    <div onClick="{{ ph.go.otp }}" style="margin-top:14px;height:54px;border-radius:27px;background:var(--prg);color:var(--prf);display:flex;align-items:center;justify-content:center;gap:8px;font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 12px 24px -10px var(--prsh),inset 0 1px 0 rgba(255,255,255,.25)">Kod Gönder</div>
+                    <div style="display:flex;align-items:center;gap:12px;margin:24px 0;color:var(--mu);font-size:12px;font-weight:600"><div style="flex:1;height:1px;background:var(--bd)"></div>veya<div style="flex:1;height:1px;background:var(--bd)"></div></div>
+                    <div style="display:flex;flex-direction:column;gap:10px">
+                      <div onClick="{{ ph.go.scanner }}" style="height:52px;border-radius:26px;background:var(--sf);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;gap:10px;font-weight:600;font-size:14px;cursor:pointer;box-shadow:var(--shl)">
+                        <svg width="18" height="18" viewBox="0 0 18 18"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 01-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"></path><path d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z" fill="#34A853"></path><path d="M3.964 10.706A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.706V4.962H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.038l3.007-2.332z" fill="#FBBC05"></path><path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.962L3.964 7.294C4.672 5.166 6.656 3.58 9 3.58z" fill="#EA4335"></path></svg>
+                        Google ile devam et
+                      </div>
+                      <div onClick="{{ ph.go.scanner }}" style="height:52px;border-radius:26px;background:var(--sf);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;gap:10px;font-weight:600;font-size:14px;cursor:pointer;box-shadow:var(--shl)">
+                        <svg width="16" height="18" viewBox="0 0 16 18" fill="var(--tx)"><path d="M12.744 9.554c-.022-2.157 1.76-3.193 1.84-3.243-1.002-1.465-2.562-1.665-3.116-1.687-1.326-.134-2.59.781-3.263.781-.673 0-1.714-.761-2.816-.741-1.449.02-2.786.843-3.533 2.142-1.505 2.612-.385 6.482 1.081 8.601.717 1.037 1.572 2.201 2.695 2.159 1.082-.043 1.49-.7 2.797-.7 1.306 0 1.674.7 2.816.678 1.163-.02 1.902-1.056 2.616-2.096.824-1.202 1.163-2.365 1.183-2.426-.026-.011-2.27-.872-2.3-3.468zM10.587 3.07c.596-.722.998-1.725.889-2.725-.859.035-1.9.572-2.516 1.294-.553.64-1.037 1.662-.907 2.642.959.075 1.938-.487 2.534-1.21z"></path></svg>
+                        Apple ile devam et
+                      </div>
+                    </div>
+                    <div style="flex:1"></div>
+                    <div style="display:flex;align-items:center;gap:8px;justify-content:center;font-size:11px;color:var(--mu);line-height:1.5;text-align:center;padding:0 8px">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--pr)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path><path d="m9 12 2 2 4-4"></path></svg>
+                      <span>Devam ederek <span style="color:var(--pr);font-weight:600">KVKK Metni</span> ve <span style="color:var(--pr);font-weight:600">Kullanım Şartları</span>'nı kabul edersin.</span>
+                    </div>
+                  </div>
+                </sc-if>
+
+                <!-- ===== OTP ===== -->
+                <sc-if value="{{ ph.s.otp }}" hint-placeholder-val="{{ false }}">
+                  <div style="position:absolute;inset:0;display:flex;flex-direction:column;padding:62px 22px 24px">
+                    <div onClick="{{ ph.go.login }}" style="width:40px;height:40px;border-radius:14px;background:var(--sf);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:var(--shl)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></div>
+                    <div style="font:800 28px/1.1 var(--fd);letter-spacing:-0.7px;margin-top:26px">Kodu gir</div>
+                    <div style="font-size:14px;line-height:1.55;color:var(--tx2);margin-top:8px"><strong style="color:var(--tx);font-weight:700">mert@ornek.com</strong> adresine 6 haneli kod gönderdik.</div>
+                    <div style="display:flex;gap:8px;margin-top:30px;justify-content:space-between">
+                      <sc-for list="{{ ph.otp }}" as="o" hint-placeholder-count="6"><div style="{{ o.style }}">{{ o.v }}</div></sc-for>
+                    </div>
+                    <div style="display:flex;justify-content:center;margin-top:20px">
+                      <div style="display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;background:var(--sf2);font-size:12px;font-weight:700;color:var(--prd);font-variant-numeric:tabular-nums">
+                        <div style="width:14px;height:14px;border-radius:50%;background:conic-gradient(var(--pr) 0 72%,var(--bd) 72% 100%)"></div>
+                        02:47
+                      </div>
+                    </div>
+                    <div onClick="{{ ph.go.scanner }}" style="margin-top:28px;height:54px;border-radius:27px;background:var(--prg);color:var(--prf);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 12px 24px -10px var(--prsh),inset 0 1px 0 rgba(255,255,255,.25)">Doğrula</div>
+                    <div style="text-align:center;margin-top:22px;font-size:13px;color:var(--tx2)">Kod gelmedi mi? <span style="color:var(--mu);font-weight:600">Tekrar gönder</span></div>
+                    <div style="flex:1"></div>
+                    <div style="display:flex;align-items:flex-start;gap:10px;padding:14px;border-radius:18px;background:var(--sf);border:1px solid var(--bd);box-shadow:var(--shl)">
+                      <div style="width:34px;height:34px;border-radius:11px;background:var(--sf2);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--pr)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path><path d="m9 12 2 2 4-4"></path></svg></div>
+                      <div style="font-size:12px;line-height:1.5;color:var(--tx2)"><strong style="color:var(--tx)">Şifre saklamıyoruz.</strong> Kod 3 dakika geçerlidir, kimseyle paylaşma.</div>
+                    </div>
+                  </div>
+                </sc-if>
+
+                <!-- ===== SCANNER ===== -->
+                <sc-if value="{{ ph.s.scanner }}" hint-placeholder-val="{{ false }}">
+                  <div style="position:absolute;inset:0;background:var(--cam);overflow:hidden">
+                    <div style="position:absolute;inset:0;background:radial-gradient(120% 70% at 50% 40%,#1A2E2B 0%,#0C1716 60%,#060C0B 100%)"></div>
+                    <div style="position:absolute;left:92px;top:184px;width:136px;height:196px;border-radius:14px;background:linear-gradient(160deg,#2A3B38,#172522);box-shadow:0 30px 50px -20px rgba(0,0,0,.8)"></div>
+                    <div style="position:absolute;left:92px;top:238px;width:136px;height:50px;background:#223431"></div>
+                    <div style="position:absolute;left:112px;top:308px;width:96px;height:38px;border-radius:4px;background:#F4F1E8;opacity:.92;display:flex;align-items:flex-end;justify-content:center;gap:2px;padding:6px 10px"><div style="width:2px;height:22px;background:#111"></div><div style="width:3px;height:22px;background:#111"></div><div style="width:1.5px;height:22px;background:#111"></div><div style="width:3px;height:22px;background:#111"></div><div style="width:2px;height:22px;background:#111"></div><div style="width:1.5px;height:22px;background:#111"></div><div style="width:3px;height:22px;background:#111"></div><div style="width:2px;height:22px;background:#111"></div><div style="width:3px;height:22px;background:#111"></div><div style="width:1.5px;height:22px;background:#111"></div><div style="width:2px;height:22px;background:#111"></div><div style="width:3px;height:22px;background:#111"></div><div style="width:2px;height:22px;background:#111"></div></div>
+                    <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.45) 0%,transparent 22%,transparent 68%,rgba(0,0,0,.55) 100%)"></div>
+                    <!-- top bar -->
+                    <div style="position:absolute;top:62px;left:18px;right:18px;display:flex;align-items:center;justify-content:space-between">
+                      <div style="display:flex;align-items:center;gap:8px;padding:7px 12px 7px 8px;border-radius:999px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)">
+                        <svg width="22" height="22" viewBox="0 0 120 120" fill="none"><circle cx="50" cy="50" r="31" stroke="#fff" stroke-width="12"></circle><path d="M74 74 L99 99" stroke="#fff" stroke-width="14" stroke-linecap="round"></path><path d="M50 26 C63 30 69 43 64 55 C53 57 41 50 41 37 C43 31 46 27 50 26 Z" fill="#9BF0E3"></path><circle cx="37" cy="61" r="5" fill="#6EE7A8"></circle><circle cx="50" cy="65" r="5" fill="#FBD36A"></circle><circle cx="63" cy="61" r="5" fill="#FF8A8A"></circle></svg>
+                        <span style="font:700 13px/1 var(--fd);color:#fff;letter-spacing:-.2px">İçinde Ne Var?</span>
+                      </div>
+                      <div onClick="{{ ph.go.paywall }}" style="display:flex;align-items:center;gap:7px;padding:6px 12px 6px 7px;border-radius:999px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);cursor:pointer">
+                        <div style="width:20px;height:20px;border-radius:50%;background:conic-gradient(#5EEAD4 0 60%,rgba(255,255,255,.18) 60% 100%);display:flex;align-items:center;justify-content:center"><div style="width:12px;height:12px;border-radius:50%;background:#182A28"></div></div>
+                        <span style="font-size:12px;font-weight:700;color:#fff;font-variant-numeric:tabular-nums">3/5</span>
+                      </div>
+                    </div>
+                    <!-- scan frame -->
+                    <div style="position:absolute;left:50px;top:170px;width:220px;height:220px">
+                      <div style="position:absolute;inset:-30px;border-radius:50%;background:radial-gradient(circle,rgba(45,212,191,.18),transparent 65%)"></div>
+                      <svg width="220" height="220" viewBox="0 0 220 220" fill="none" style="position:absolute;inset:0;filter:drop-shadow(0 0 10px rgba(94,234,212,.55))"><path d="M4 40 V22 a18 18 0 0 1 18 -18 H40 M180 4 H198 a18 18 0 0 1 18 18 V40 M216 180 V198 a18 18 0 0 1 -18 18 H180 M40 216 H22 a18 18 0 0 1 -18 -18 V180" stroke="#5EEAD4" stroke-width="5" stroke-linecap="round"></path></svg>
+                      <div style="position:absolute;left:14px;right:14px;top:50%;height:2px;border-radius:2px;background:linear-gradient(90deg,transparent,#5EEAD4 20%,#fff 50%,#5EEAD4 80%,transparent);box-shadow:0 0 16px 3px rgba(94,234,212,.6);animation:inv-scan 2.6s ease-in-out infinite"></div>
+                    </div>
+                    <div style="position:absolute;top:412px;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:6px">
+                      <div style="display:flex;align-items:center;gap:7px;padding:8px 14px;border-radius:999px;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);font-size:12px;font-weight:600;color:rgba(255,255,255,.9)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#5EEAD4" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"></path></svg>Barkodu ya da etiketi çerçeveye al</div>
+                      <div style="font-size:11px;color:rgba(255,255,255,.55);font-weight:500">Ne olduğunu otomatik algılarız</div>
+                    </div>
+                    <!-- controls -->
+                    <div style="position:absolute;top:506px;left:0;right:0;display:flex;align-items:center;justify-content:center;gap:34px">
+                      <div style="width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;color:#fff"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"></path></svg></div>
+                      <div onClick="{{ ph.go.confirm }}" style="width:76px;height:76px;border-radius:50%;background:conic-gradient(from 0deg,#5EEAD4,#0F9B8E,#5EEAD4);padding:4px;cursor:pointer;box-shadow:0 10px 30px -6px rgba(45,212,191,.6)">
+                        <div style="width:100%;height:100%;border-radius:50%;background:var(--cam);padding:4px"><div style="width:100%;height:100%;border-radius:50%;background:linear-gradient(180deg,#fff,#DDE9E6);display:flex;align-items:center;justify-content:center;color:#0B6E66"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"></path><path d="M17 3h2a2 2 0 0 1 2 2v2"></path><path d="M21 17v2a2 2 0 0 1-2 2h-2"></path><path d="M7 21H5a2 2 0 0 1-2-2v-2"></path><path d="M7 12h10"></path></svg></div></div>
+                      </div>
+                      <div style="width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;color:#fff"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.09-3.09a2 2 0 0 0-2.82 0L6 21"></path></svg></div>
+                    </div>
+                  </div>
+                </sc-if>
+
+                <!-- ===== CONFIRM ===== -->
+                <sc-if value="{{ ph.s.confirm }}" hint-placeholder-val="{{ false }}">
+                  <div style="position:absolute;inset:0;display:flex;flex-direction:column;padding:62px 18px 20px">
+                    <div style="display:flex;align-items:center;justify-content:space-between">
+                      <div onClick="{{ ph.go.scanner }}" style="width:40px;height:40px;border-radius:14px;background:var(--sf);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:var(--shl)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></div>
+                      <span style="font:700 17px/1 var(--fd);letter-spacing:-.3px">İçeriği Onayla</span>
+                      <div style="width:40px"></div>
+                    </div>
+                    <div style="margin-top:16px;height:92px;border-radius:20px;overflow:hidden;position:relative;background:linear-gradient(135deg,#243633,#121F1D);box-shadow:var(--sh)">
+                      <div style="position:absolute;left:16px;top:16px;right:90px;display:flex;flex-direction:column;gap:6px"><div style="height:5px;width:60%;border-radius:3px;background:rgba(255,255,255,.55)"></div><div style="height:4px;width:95%;border-radius:3px;background:rgba(255,255,255,.3)"></div><div style="height:4px;width:88%;border-radius:3px;background:rgba(255,255,255,.3)"></div><div style="height:4px;width:70%;border-radius:3px;background:rgba(255,255,255,.3)"></div><div style="height:4px;width:92%;border-radius:3px;background:rgba(255,255,255,.3)"></div></div>
+                      <div style="position:absolute;right:12px;top:12px;display:flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.18);font-size:11px;font-weight:700;color:#fff;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>Yeniden çek</div>
+                      <div style="position:absolute;left:16px;bottom:12px;display:flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:#9BF0E3"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"></path></svg>OCR güveni %94</div>
+                    </div>
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-top:18px;padding:0 4px">
+                      <span style="font:700 15px/1 var(--fd)">Çıkarılan maddeler</span>
+                      <span style="padding:4px 10px;border-radius:999px;background:var(--sf2);color:var(--prd);font-size:11px;font-weight:800">14</span>
+                    </div>
+                    <div style="margin-top:10px;flex:1;min-height:0;overflow-y:auto;border-radius:20px;background:var(--sf);border:1px solid var(--bd);box-shadow:var(--shl);display:flex;flex-direction:column">
+                      <sc-for list="{{ confirmItems }}" as="ci" hint-placeholder-count="8">
+                        <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--bd);font-size:13px;font-weight:500">
+                          <span>{{ ci }}</span>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--mu)" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+                        </div>
+                      </sc-for>
+                      <div style="display:flex;align-items:center;gap:6px;padding:12px 16px;font-size:13px;font-weight:700;color:var(--pr)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>Madde ekle</div>
+                    </div>
+                    <div onClick="{{ ph.go.result2 }}" style="margin-top:14px;height:56px;border-radius:28px;background:var(--prg);color:var(--prf);display:flex;align-items:center;justify-content:center;gap:8px;font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 12px 24px -10px var(--prsh),inset 0 1px 0 rgba(255,255,255,.25)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"></path></svg>Analiz Et</div>
+                  </div>
+                </sc-if>
+
+                <!-- ===== RESULT ===== -->
+                <sc-if value="{{ ph.s.result }}" hint-placeholder-val="{{ false }}">
+                  <div style="position:absolute;inset:0;overflow:hidden">
+                    <div style="position:absolute;top:-120px;left:-60px;right:-60px;height:380px;border-radius:50%;background:{{ ph.r.halo }};filter:blur(30px);opacity:.55"></div>
+                    <div style="position:absolute;inset:0;overflow-y:auto;padding:62px 18px 28px"><div style="display:flex;flex-direction:column;gap:14px">
+                      <div style="display:flex;align-items:center;justify-content:space-between">
+                        <div onClick="{{ ph.go.scanner }}" style="width:40px;height:40px;border-radius:14px;background:var(--glass);border:1px solid var(--glassBd);display:flex;align-items:center;justify-content:center;cursor:pointer;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></div>
+                        <span style="font:700 17px/1 var(--fd);letter-spacing:-.3px">Analiz</span>
+                        <div style="width:40px;height:40px;border-radius:14px;background:var(--glass);border:1px solid var(--glassBd);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" x2="12" y1="2" y2="15"></line></svg></div>
+                      </div>
+                      <sc-if value="{{ ph.r.hasBanner }}" hint-placeholder-val="{{ false }}">
+                        <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:18px;background:var(--nol);border:1px solid rgba(224,62,62,.18);box-shadow:var(--shl)">
+                          <div style="width:40px;height:40px;border-radius:13px;background:var(--no);display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0;box-shadow:0 8px 16px -6px rgba(224,62,62,.6)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg></div>
+                          <div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:800;color:var(--not)">🤰 Hamile profili için</div><div style="font-size:12px;color:var(--not);opacity:.85;margin-top:1px">2 sakıncalı madde · dokun ve gör</div></div>
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--not)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg>
+                        </div>
+                      </sc-if>
+                      <div style="display:flex;flex-direction:column;align-items:center;padding:10px 0 4px">
+                        <div style="position:relative;width:168px;height:168px">
+                          <div style="position:absolute;inset:14px;border-radius:50%;box-shadow:0 0 50px 10px {{ ph.r.glow }}"></div>
+                          <div style="position:absolute;inset:0;border-radius:50%;background:{{ ph.r.ring }}"></div>
+                          <div style="position:absolute;inset:0;border-radius:50%;background:linear-gradient(180deg,rgba(255,255,255,.45),rgba(255,255,255,0) 45%,rgba(0,0,0,.12));mask:radial-gradient(farthest-side,transparent calc(100% - 15px),#000 calc(100% - 14px));-webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 15px),#000 calc(100% - 14px))"></div>
+                          <div style="position:absolute;inset:14px;border-radius:50%;background:var(--sf);box-shadow:inset 0 3px 10px rgba(0,0,0,.10),0 6px 14px -4px rgba(0,0,0,.14);display:flex;flex-direction:column;align-items:center;justify-content:center">
+                            <span style="font:800 54px/1 var(--fd);letter-spacing:-3px;color:{{ ph.r.color }}">{{ ph.r.score }}</span>
+                            <span style="font-size:12px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:{{ ph.r.color }};margin-top:4px">{{ ph.r.label }}</span>
+                          </div>
+                        </div>
+                        <div style="font:800 21px/1.15 var(--fd);letter-spacing:-.5px;margin-top:16px;text-align:center">{{ ph.r.product }}</div>
+                        <div style="display:flex;align-items:center;gap:8px;margin-top:8px">
+                          <span style="padding:4px 10px;border-radius:999px;background:var(--sf2);color:var(--prd);font-size:11px;font-weight:700">{{ ph.r.cat }}</span>
+                          <span style="font-size:11px;color:var(--mu);font-variant-numeric:tabular-nums">{{ ph.r.barcode }}</span>
+                        </div>
+                      </div>
+                      <div style="padding:16px;border-radius:20px;background:var(--sf);border:1px solid var(--bd);box-shadow:var(--sh);font-size:13px;line-height:1.6;color:var(--tx2);text-wrap:pretty">{{ ph.r.summary }}</div>
+                      <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 4px 0">
+                        <span style="font:700 15px/1 var(--fd)">Maddeler</span>
+                        <div style="display:flex;gap:4px">
+                          <span style="padding:3px 8px;border-radius:999px;background:var(--okl);color:var(--okt);font-size:10px;font-weight:800">{{ ph.r.nOk }}</span>
+                          <span style="padding:3px 8px;border-radius:999px;background:var(--wal);color:var(--wat);font-size:10px;font-weight:800">{{ ph.r.nWa }}</span>
+                          <span style="padding:3px 8px;border-radius:999px;background:var(--nol);color:var(--not);font-size:10px;font-weight:800">{{ ph.r.nNo }}</span>
+                        </div>
+                      </div>
+                      <div style="border-radius:20px;background:var(--sf);border:1px solid var(--bd);box-shadow:var(--sh);overflow:hidden">
+                        <sc-for list="{{ ph.r.items }}" as="it" hint-placeholder-count="4">
+                          <div style="border-bottom:1px solid var(--bd)">
+                            <div style="display:flex;align-items:center;gap:12px;padding:12px 14px">
+                              <div style="{{ it.dot }}"><span style="width:8px;height:8px;border-radius:50%;background:currentColor;display:block"></span></div>
+                              <div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700">{{ it.n }}</div><div style="font-size:11px;color:var(--mu);margin-top:1px">{{ it.m }}</div></div>
+                              <span style="{{ it.badge }}">{{ it.label }}</span>
+                            </div>
+                            <sc-if value="{{ it.hasDetail }}" hint-placeholder-val="{{ false }}">
+                              <div style="margin:0 14px 12px 54px;padding:10px 12px;border-radius:12px;background:var(--bg);font-size:11px;line-height:1.5;color:var(--tx2)"><strong style="color:var(--tx)">Hamile:</strong> {{ it.detail }} <span style="color:var(--mu)">· Kaynak: EFSA 2021</span></div>
+                            </sc-if>
+                          </div>
+                        </sc-for>
+                      </div>
+                      <sc-if value="{{ ph.r.hasBanner }}" hint-placeholder-val="{{ false }}">
+                        <div style="display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border-radius:16px;background:var(--sf2);font-size:12px;line-height:1.5;color:var(--tx2)">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--pr)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>
+                          <div><strong style="color:var(--tx)">2 bilinmeyen madde.</strong> Polisorbat 80, BHT veritabanında yok; AI tahminiyle değerlendirildi.</div>
+                        </div>
+                      </sc-if>
+                      <div style="text-align:center;font-size:11px;color:var(--mu);line-height:1.5;padding:0 12px">Bu sonuç tıbbi tavsiye değildir. Kesin bilgi için uzmanına danış.</div>
+                    </div></div>
+                  </div>
+                </sc-if>
+
+                <!-- ===== HISTORY ===== -->
+                <sc-if value="{{ ph.s.history }}" hint-placeholder-val="{{ false }}">
+                  <div style="position:absolute;inset:0;display:flex;flex-direction:column;padding:62px 0 0">
+                    <div style="padding:6px 20px 0;display:flex;align-items:flex-end;justify-content:space-between">
+                      <div><div style="font:800 28px/1 var(--fd);letter-spacing:-.8px">Geçmiş</div><div style="font-size:12px;color:var(--mu);margin-top:6px">Bu ay 12 tarama · 8 güvenli</div></div>
+                      <div style="width:40px;height:40px;border-radius:14px;background:var(--sf);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;box-shadow:var(--shl)"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg></div>
+                    </div>
+                    <div style="display:flex;gap:6px;padding:16px 20px 4px;overflow-x:auto;scrollbar-width:none;flex-shrink:0">
+                      <span style="padding:7px 13px;border-radius:999px;background:var(--tx);color:var(--bg);font-size:12px;font-weight:700">Tümü</span>
+                      <span style="padding:7px 13px;border-radius:999px;background:var(--sf);border:1px solid var(--bd);color:var(--tx2);font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px"><span style="width:7px;height:7px;border-radius:50%;background:#E39B07"></span>Gıda</span>
+                      <span style="padding:7px 13px;border-radius:999px;background:var(--sf);border:1px solid var(--bd);color:var(--tx2);font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px"><span style="width:7px;height:7px;border-radius:50%;background:#D95BA3"></span>Kozmetik</span>
+                      <span style="padding:7px 13px;border-radius:999px;background:var(--sf);border:1px solid var(--bd);color:var(--tx2);font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px"><span style="width:7px;height:7px;border-radius:50%;background:#3B82F6"></span>Temizlik</span>
+                    </div>
+                    <div style="flex:1;overflow-y:auto;padding:10px 18px 110px;display:flex;flex-direction:column;gap:10px">
+                      <sc-for list="{{ ph.history }}" as="h" hint-placeholder-count="6">
+                        <div onClick="{{ h.open }}" style="display:flex;align-items:center;gap:12px;padding:12px;border-radius:20px;background:var(--sf);border:1px solid var(--bd);box-shadow:var(--shl);cursor:pointer;position:relative;overflow:hidden">
+                          <div style="position:absolute;left:0;top:0;bottom:0;width:4px;background:{{ h.scoreColor }}"></div>
+                          <div style="{{ h.tile }}">
+                            <sc-if value="{{ h.isFood }}" hint-placeholder-val="{{ true }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path><path d="M7 2v20"></path><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path></svg></sc-if>
+                            <sc-if value="{{ h.isCos }}" hint-placeholder-val="{{ false }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"></path></svg></sc-if>
+                            <sc-if value="{{ h.isClean }}" hint-placeholder-val="{{ false }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h.01"></path><path d="M7 5h.01"></path><path d="M11 7h.01"></path><path d="M3 7h.01"></path><path d="M7 9h.01"></path><path d="M3 11h.01"></path><rect width="4" height="4" x="15" y="5"></rect><path d="m19 9 2 2v10c0 .6-.4 1-1 1h-6c-.6 0-1-.4-1-1V11l2-2"></path><path d="m13 14 8-2"></path><path d="m13 19 8-2"></path></svg></sc-if>
+                          </div>
+                          <div style="flex:1;min-width:0">
+                            <div style="font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ h.n }}</div>
+                            <div style="font-size:11px;color:var(--mu);margin-top:2px">{{ h.cat }} · {{ h.d }}</div>
+                          </div>
+                          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+                            <span style="font:800 18px/1 var(--fd);letter-spacing:-.5px;color:{{ h.scoreColor }}">{{ h.score }}</span>
+                            <span style="{{ h.badge }}">{{ h.label }}</span>
+                          </div>
+                        </div>
+                      </sc-for>
+                    </div>
+                  </div>
+                </sc-if>
+
+                <!-- ===== HISTORY EMPTY ===== -->
+                <sc-if value="{{ ph.s.historyEmpty }}" hint-placeholder-val="{{ false }}">
+                  <div style="position:absolute;inset:0;display:flex;flex-direction:column;padding:62px 20px 0">
+                    <div style="padding-top:6px;font:800 28px/1 var(--fd);letter-spacing:-.8px">Geçmiş</div>
+                    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding-bottom:90px">
+                      <div style="position:relative;width:150px;height:150px;display:flex;align-items:center;justify-content:center">
+                        <div style="position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle,var(--sf2),transparent 70%)"></div>
+                        <div style="position:absolute;inset:18px;border-radius:50%;border:1.5px dashed var(--bd)"></div>
+                        <svg width="76" height="76" viewBox="0 0 120 120" fill="none" style="position:relative;animation:inv-float 4s ease-in-out infinite"><circle cx="50" cy="50" r="31" stroke="var(--pr)" stroke-width="10"></circle><circle cx="50" cy="50" r="26" fill="var(--sf)"></circle><path d="M74 74 L99 99" stroke="var(--pr)" stroke-width="13" stroke-linecap="round"></path><circle cx="37" cy="52" r="4.5" fill="var(--bd)"></circle><circle cx="50" cy="52" r="4.5" fill="var(--bd)"></circle><circle cx="63" cy="52" r="4.5" fill="var(--bd)"></circle></svg>
+                      </div>
+                      <div style="font:800 20px/1.2 var(--fd);letter-spacing:-.4px;margin-top:8px">Henüz tarama yok</div>
+                      <div style="font-size:13px;line-height:1.55;color:var(--tx2);margin-top:8px;max-width:230px;text-wrap:pretty">İlk ürününü tarat; sonuçlar burada birikir, istediğin zaman dönüp bakarsın.</div>
+                      <div onClick="{{ ph.go.scanner }}" style="margin-top:22px;height:48px;padding:0 24px;border-radius:24px;background:var(--prg);color:var(--prf);display:flex;align-items:center;justify-content:center;gap:8px;font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 12px 24px -10px var(--prsh)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"></path><path d="M17 3h2a2 2 0 0 1 2 2v2"></path><path d="M21 17v2a2 2 0 0 1-2 2h-2"></path><path d="M7 21H5a2 2 0 0 1-2-2v-2"></path><path d="M7 12h10"></path></svg>İlk taramanı yap</div>
+                    </div>
+                  </div>
+                </sc-if>
+
+                <!-- ===== PROFILE ===== -->
+                <sc-if value="{{ ph.s.profile }}" hint-placeholder-val="{{ false }}">
+                  <div style="position:absolute;inset:0;overflow-y:auto;padding:62px 18px 110px"><div style="display:flex;flex-direction:column;gap:16px">
+                    <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 2px 0">
+                      <div style="font:800 28px/1 var(--fd);letter-spacing:-.8px">Profil</div>
+                      <div onClick="{{ ph.go.settings }}" style="width:40px;height:40px;border-radius:14px;background:var(--sf);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:var(--shl)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg></div>
+                    </div>
+                    <div style="position:relative;padding:18px;border-radius:24px;background:var(--prg);color:#fff;overflow:hidden;box-shadow:0 16px 30px -14px var(--prsh)">
+                      <div style="position:absolute;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.12);right:-60px;top:-80px"></div>
+                      <div style="position:absolute;width:120px;height:120px;border-radius:50%;border:1px solid rgba(255,255,255,.25);right:10px;bottom:-70px"></div>
+                      <div style="position:relative;display:flex;align-items:center;gap:14px">
+                        <div style="width:58px;height:58px;border-radius:50%;padding:3px;background:linear-gradient(135deg,#fff,rgba(255,255,255,.4))"><div style="width:100%;height:100%;border-radius:50%;background:#0B4F4A;display:flex;align-items:center;justify-content:center;font:800 20px/1 var(--fd);letter-spacing:-.5px;color:#9BF0E3">MK</div></div>
+                        <div style="flex:1;min-width:0"><div style="font:800 18px/1.1 var(--fd);letter-spacing:-.3px;color:var(--prf)">Mert Kurşun</div><div style="font-size:12px;opacity:.8;margin-top:4px;color:var(--prf)">mert@ornek.com</div></div>
+                        <span style="display:flex;align-items:center;gap:5px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.35);font-size:10px;font-weight:800;letter-spacing:1px;color:var(--prf)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z"></path><path d="M5 21h14"></path></svg>PRO</span>
+                      </div>
+                    </div>
+                    <div>
+                      <div style="display:flex;align-items:baseline;justify-content:space-between;padding:0 2px"><span style="font:700 16px/1 var(--fd)">Kitle seçimi</span><span style="font-size:11px;color:var(--mu)">{{ chipCount }} seçili</span></div>
+                      <div style="font-size:12px;color:var(--tx2);margin-top:6px;padding:0 2px">Uyarılar bu profillere göre kişiselleşir.</div>
+                      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px">
+                        <sc-for list="{{ chips }}" as="c" hint-placeholder-count="8">
+                          <div onClick="{{ c.toggle }}" style="{{ c.style }}">
+                            <span style="font-size:22px;line-height:1">{{ c.e }}</span>
+                            <span style="font-size:13px;font-weight:700;flex:1">{{ c.l }}</span>
+                            <span style="{{ c.check }}"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></span>
+                          </div>
+                        </sc-for>
+                      </div>
+                    </div>
+                    <div style="padding:16px;border-radius:22px;background:var(--sf);border:1px solid var(--bd);box-shadow:var(--sh);display:flex;align-items:center;gap:14px">
+                      <div style="position:relative;width:64px;height:64px;flex-shrink:0">
+                        <div style="position:absolute;inset:0;border-radius:50%;background:conic-gradient(from -90deg,var(--pr) 0 60%,var(--bd) 60% 100%)"></div>
+                        <div style="position:absolute;inset:7px;border-radius:50%;background:var(--sf);display:flex;flex-direction:column;align-items:center;justify-content:center;font:800 17px/1 var(--fd);letter-spacing:-.5px">3<span style="font:600 9px/1 'Plus Jakarta Sans',sans-serif;color:var(--mu);margin-top:2px">/ 5</span></div>
+                      </div>
+                      <div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:700">Bu ayki tarama hakkın</div><div style="font-size:12px;color:var(--tx2);margin-top:3px;line-height:1.45">2 ücretsiz tarama kaldı. 27 Kas'ta yenilenir.</div></div>
+                      <div onClick="{{ ph.go.paywall }}" style="padding:10px 14px;border-radius:999px;background:var(--tx);color:var(--bg);font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">Pro</div>
+                    </div>
+                  </div></div>
+                </sc-if>
+
+                <!-- ===== SETTINGS ===== -->
+                <sc-if value="{{ ph.s.settings }}" hint-placeholder-val="{{ false }}">
+                  <div style="position:absolute;inset:0;overflow-y:auto;padding:62px 18px 28px"><div style="display:flex;flex-direction:column;gap:18px">
+                    <div style="display:flex;align-items:center;justify-content:space-between">
+                      <div onClick="{{ ph.go.profile }}" style="width:40px;height:40px;border-radius:14px;background:var(--sf);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:var(--shl)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></div>
+                      <span style="font:700 17px/1 var(--fd);letter-spacing:-.3px">Ayarlar</span>
+                      <div style="width:40px"></div>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:8px">
+                      <span style="font-size:11px;font-weight:800;color:var(--mu);letter-spacing:1px;text-transform:uppercase;padding:0 6px">Görünüm</span>
+                      <div style="padding:6px;border-radius:18px;background:var(--sf);border:1px solid var(--bd);box-shadow:var(--shl);display:flex;gap:4px">
+                        <div style="{{ ph.apLight }}">Açık</div><div style="{{ ph.apDark }}">Koyu</div><div style="flex:1;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:var(--tx2)">Sistem</div>
+                      </div>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:8px">
+                      <span style="font-size:11px;font-weight:800;color:var(--mu);letter-spacing:1px;text-transform:uppercase;padding:0 6px">Genel</span>
+                      <div style="border-radius:20px;background:var(--sf);border:1px solid var(--bd);box-shadow:var(--shl);overflow:hidden">
+                        <div onClick="{{ ph.go.onb }}" style="display:flex;align-items:center;gap:12px;padding:13px 14px;cursor:pointer;border-bottom:1px solid var(--bd)"><div style="width:34px;height:34px;border-radius:11px;background:var(--sf2);color:var(--prd);display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg></div><span style="flex:1;font-size:14px;font-weight:600">Tanıtımı tekrar izle</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--mu)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></div>
+                        <div style="display:flex;align-items:center;gap:12px;padding:13px 14px"><div style="width:34px;height:34px;border-radius:11px;background:var(--sf2);color:var(--prd);display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg></div><span style="flex:1;font-size:14px;font-weight:600">Bildirimler</span><div style="width:44px;height:26px;border-radius:13px;background:var(--pr);position:relative"><div style="position:absolute;top:3px;right:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2)"></div></div></div>
+                      </div>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:8px">
+                      <span style="font-size:11px;font-weight:800;color:var(--mu);letter-spacing:1px;text-transform:uppercase;padding:0 6px">Abonelik</span>
+                      <div style="border-radius:20px;background:var(--sf);border:1px solid var(--bd);box-shadow:var(--shl);overflow:hidden">
+                        <div onClick="{{ ph.go.paywall }}" style="display:flex;align-items:center;gap:12px;padding:13px 14px;cursor:pointer;border-bottom:1px solid var(--bd)"><div style="width:34px;height:34px;border-radius:11px;background:var(--wal);color:var(--wat);display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z"></path><path d="M5 21h14"></path></svg></div><span style="flex:1;font-size:14px;font-weight:600">Abonelik yönetimi</span><span style="font-size:11px;font-weight:800;padding:3px 8px;border-radius:999px;background:var(--sf2);color:var(--prd)">PRO</span></div>
+                        <div style="display:flex;align-items:center;gap:12px;padding:13px 14px"><div style="width:34px;height:34px;border-radius:11px;background:var(--sf2);color:var(--prd);display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg></div><span style="flex:1;font-size:14px;font-weight:600">Satın almaları geri yükle</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--mu)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></div>
+                      </div>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:8px">
+                      <span style="font-size:11px;font-weight:800;color:var(--mu);letter-spacing:1px;text-transform:uppercase;padding:0 6px">Yasal</span>
+                      <div style="border-radius:20px;background:var(--sf);border:1px solid var(--bd);box-shadow:var(--shl);overflow:hidden">
+                        <div onClick="{{ ph.go.privacy }}" style="display:flex;align-items:center;gap:12px;padding:13px 14px;cursor:pointer;border-bottom:1px solid var(--bd)"><div style="width:34px;height:34px;border-radius:11px;background:var(--sf2);color:var(--prd);display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path></svg></div><span style="flex:1;font-size:14px;font-weight:600">KVKK Aydınlatma Metni</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--mu)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></div>
+                        <div onClick="{{ ph.go.terms }}" style="display:flex;align-items:center;gap:12px;padding:13px 14px;cursor:pointer"><div style="width:34px;height:34px;border-radius:11px;background:var(--sf2);color:var(--prd);display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path></svg></div><span style="flex:1;font-size:14px;font-weight:600">Kullanım Şartları</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--mu)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></div>
+                      </div>
+                    </div>
+                    <div onClick="{{ ph.go.login }}" style="display:flex;align-items:center;justify-content:center;gap:8px;height:50px;border-radius:18px;background:var(--nol);color:var(--not);font-size:14px;font-weight:700;cursor:pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" x2="9" y1="12" y2="12"></line></svg>Çıkış Yap</div>
+                    <div style="text-align:center;font-size:11px;color:var(--mu);line-height:1.6">İçinde Ne Var? v2.0.0 · 2026</div>
+                  </div></div>
+                </sc-if>
+
+                <!-- ===== PAYWALL ===== -->
+                <sc-if value="{{ ph.s.paywall }}" hint-placeholder-val="{{ false }}">
+                  <div style="position:absolute;inset:0;overflow:hidden;display:flex;flex-direction:column">
+                    <div style="position:relative;height:300px;background:linear-gradient(170deg,#0F2E2B 0%,#0B4F4A 55%,#0F9B8E 140%);flex-shrink:0;overflow:hidden">
+                      <div style="position:absolute;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(94,234,212,.45),transparent 65%);left:10px;top:30px"></div>
+                      <div style="position:absolute;width:360px;height:360px;border-radius:50%;border:1px solid rgba(255,255,255,.1);left:-20px;top:60px"></div>
+                      <div onClick="{{ ph.go.profile }}" style="position:absolute;top:62px;right:18px;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;color:#fff;cursor:pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></div>
+                      <div style="position:absolute;left:22px;top:104px;right:22px">
+                        <div style="display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:rgba(251,211,106,.18);border:1px solid rgba(251,211,106,.4);color:#FBD36A;font-size:11px;font-weight:800;letter-spacing:1px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z"></path><path d="M5 21h14"></path></svg>PRO</div>
+                        <div style="font:800 32px/1.05 var(--fd);letter-spacing:-.9px;color:#fff;margin-top:14px">Sınırsız tara,<br>hiç tereddüt etme.</div>
+                        <div style="font-size:13px;color:rgba(255,255,255,.75);margin-top:10px;line-height:1.5">Ayda 5 yerine sınırsız analiz, tüm profiller, detaylı raporlar.</div>
+                      </div>
+                    </div>
+                    <div style="flex:1;overflow-y:auto;padding:18px 18px 24px;display:flex;flex-direction:column;gap:14px;margin-top:-22px;background:var(--bg);border-radius:28px 28px 0 0;position:relative">
+                      <div style="display:flex;flex-direction:column;gap:8px">
+                        <div onClick="{{ setYearly }}" style="{{ planYearly }}">
+                          <div style="{{ radioYearly }}"></div>
+                          <div style="flex:1"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:14px;font-weight:800">Yıllık</span><span style="padding:3px 8px;border-radius:999px;background:var(--okl);color:var(--okt);font-size:10px;font-weight:800">%40 tasarruf</span></div><div style="font-size:11px;color:var(--mu);margin-top:3px">499 TL / yıl · aylık 41,58 TL</div></div>
+                          <span style="font:800 18px/1 var(--fd);letter-spacing:-.5px">499<span style="font:600 11px/1 'Plus Jakarta Sans',sans-serif;color:var(--mu)"> TL</span></span>
+                        </div>
+                        <div onClick="{{ setMonthly }}" style="{{ planMonthly }}">
+                          <div style="{{ radioMonthly }}"></div>
+                          <div style="flex:1"><div style="font-size:14px;font-weight:800">Aylık</div><div style="font-size:11px;color:var(--mu);margin-top:3px">İstediğin zaman iptal</div></div>
+                          <span style="font:800 18px/1 var(--fd);letter-spacing:-.5px">69<span style="font:600 11px/1 'Plus Jakarta Sans',sans-serif;color:var(--mu)"> TL/ay</span></span>
+                        </div>
+                      </div>
+                      <div style="display:flex;flex-direction:column;gap:10px;padding:4px 6px">
+                        <div style="display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600"><div style="width:24px;height:24px;border-radius:8px;background:var(--sf2);color:var(--prd);display:flex;align-items:center;justify-content:center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></div>Sınırsız barkod + etiket analizi</div>
+                        <div style="display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600"><div style="width:24px;height:24px;border-radius:8px;background:var(--sf2);color:var(--prd);display:flex;align-items:center;justify-content:center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></div>Birden fazla profil (bebek + hamile + alerji)</div>
+                        <div style="display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600"><div style="width:24px;height:24px;border-radius:8px;background:var(--sf2);color:var(--prd);display:flex;align-items:center;justify-content:center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></div>Kaynaklı detaylı madde raporları</div>
+                        <div style="display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600"><div style="width:24px;height:24px;border-radius:8px;background:var(--sf2);color:var(--prd);display:flex;align-items:center;justify-content:center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></div>Reklamsız, öncelikli analiz</div>
+                      </div>
+                      <div style="flex:1"></div>
+                      <div onClick="{{ ph.go.profile }}" style="height:58px;min-height:58px;flex-shrink:0;border-radius:29px;background:var(--prg);color:var(--prf);display:flex;align-items:center;justify-content:center;gap:8px;font-weight:800;font-size:15px;cursor:pointer;box-shadow:0 12px 24px -10px var(--prsh),inset 0 1px 0 rgba(255,255,255,.25)">{{ planCta }}</div>
+                      <div style="text-align:center;font-size:11px;color:var(--mu);line-height:1.6">Abonelik otomatik yenilenir, istediğin zaman iptal. <span style="font-weight:700;color:var(--tx2)">Satın almaları geri yükle</span></div>
+                    </div>
+                  </div>
+                </sc-if>
+
+                <!-- ===== LEGAL ===== -->
+                <sc-if value="{{ ph.s.legal }}" hint-placeholder-val="{{ false }}">
+                  <div style="position:absolute;inset:0;overflow-y:auto;padding:62px 18px 28px"><div style="display:flex;flex-direction:column;gap:16px">
+                    <div style="display:flex;align-items:center;justify-content:space-between">
+                      <div onClick="{{ ph.go.settings }}" style="width:40px;height:40px;border-radius:14px;background:var(--sf);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:var(--shl)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></div>
+                      <span style="font:700 16px/1 var(--fd);letter-spacing:-.3px">{{ ph.legal.title }}</span>
+                      <div style="width:40px"></div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:8px"><span style="padding:5px 10px;border-radius:999px;background:var(--sf2);color:var(--prd);font-size:11px;font-weight:700">Son güncelleme: 1 Kas 2026</span><span style="font-size:11px;color:var(--mu)">5 dk okuma</span></div>
+                    <div style="border-radius:22px;background:var(--sf);border:1px solid var(--bd);box-shadow:var(--shl);padding:4px 18px 10px;display:flex;flex-direction:column">
+                      <sc-for list="{{ ph.legal.sections }}" as="ls" hint-placeholder-count="5">
+                        <div style="padding:14px 0;border-bottom:1px solid var(--bd)">
+                          <div style="display:flex;align-items:baseline;gap:10px"><span style="font:800 12px/1 var(--fd);color:var(--pr)">{{ ls.n }}</span><span style="font:700 14px/1.3 var(--fd);letter-spacing:-.2px">{{ ls.h }}</span></div>
+                          <div style="font-size:12px;line-height:1.65;color:var(--tx2);margin-top:6px;text-wrap:pretty">{{ ls.p }}</div>
+                        </div>
+                      </sc-for>
+                    </div>
+                  </div></div>
+                </sc-if>
+
+                <!-- ===== FLOATING TAB BAR ===== -->
+                <sc-if value="{{ ph.hasTabs }}" hint-placeholder-val="{{ false }}">
+                  <div style="position:absolute;left:18px;right:18px;bottom:18px;height:66px;border-radius:33px;background:var(--glass);border:1px solid var(--glassBd);backdrop-filter:blur(24px) saturate(1.4);-webkit-backdrop-filter:blur(24px) saturate(1.4);box-shadow:0 18px 40px -16px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.35);display:flex;align-items:center;padding:6px;gap:4px;z-index:20">
+                    <div onClick="{{ ph.go.scanner }}" style="{{ ph.tabs.scan }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"></path><path d="M17 3h2a2 2 0 0 1 2 2v2"></path><path d="M21 17v2a2 2 0 0 1-2 2h-2"></path><path d="M7 21H5a2 2 0 0 1-2-2v-2"></path><path d="M7 12h10"></path></svg><span>Tara</span></div>
+                    <div onClick="{{ ph.go.history }}" style="{{ ph.tabs.history }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path><path d="M12 7v5l4 2"></path></svg><span>Geçmiş</span></div>
+                    <div onClick="{{ ph.go.profile }}" style="{{ ph.tabs.profile }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg><span>Profil</span></div>
+                  </div>
+                </sc-if>
+
+                <!-- home indicator -->
+                <div style="position:absolute;bottom:7px;left:50%;transform:translateX(-50%);width:120px;height:5px;border-radius:3px;background:{{ ph.hi }};z-index:40"></div>
+              </div>
+            </div>
+            <div style="text-align:center;font-size:11px;font-weight:700;color:#7E8B88;letter-spacing:.6px;text-transform:uppercase;margin-top:12px">{{ ph.themeLabel }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </sc-for>
+
+  <div style="font-size:12px;color:#7E8B88;line-height:1.7;max-width:760px">Sonraki adımlar: (1) Lottie için splash logo animasyonu storyboard'u, (2) Onboarding illüstrasyonlarını Figma'da vektör olarak temizleme, (3) Skor dairesi için reanimated ring-fill mikro-etkileşimi, (4) Kırmızı (sakıncalı) sonuç ekranı varyantı.</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;view&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;both&quot;,&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;both&quot;,&quot;tsType&quot;:&quot;'both'|'light'|'dark'&quot;,&quot;section&quot;:&quot;Görünüm&quot;}}">
+const LIGHT = {bg:'#F7F5EE',sf:'#FFFFFF',sf2:'#E3F3EF',tx:'#0F1F1D',tx2:'#4B5B58',mu:'#7E8B88',bd:'#E4E0D5',pr:'#0F9B8E',prd:'#0B6E66',prl:'#2BC4B4',prf:'#FFFFFF',prg:'linear-gradient(135deg,#19B8A6 0%,#0E8F84 55%,#0B6E66 100%)',prsh:'rgba(11,110,102,.55)',prring:'rgba(15,155,142,.14)',ok:'#1D9E5F',okl:'#DDF4E6',okt:'#146B41',wa:'#E39B07',wal:'#FDF0C7',wat:'#7A4F00',no:'#E03E3E',nol:'#FDE2E2',not:'#9B1C1C',glass:'rgba(255,255,255,0.74)',glassBd:'rgba(255,255,255,0.9)',sh:'0 1px 2px rgba(15,31,29,.04), 0 10px 28px -10px rgba(15,31,29,.14)',shl:'0 1px 1px rgba(15,31,29,.03), 0 3px 10px -3px rgba(15,31,29,.08)',cam:'#0A1413',splash:'linear-gradient(165deg,#1CB9A7 0%,#0F8E83 45%,#0A5B55 100%)'};
+const DARK = {bg:'#0A1514',sf:'#112120',sf2:'#143230',tx:'#F1F5F3',tx2:'#A4B4B0',mu:'#6E807C',bd:'#1E3230',pr:'#2DD4BF',prd:'#5EEAD4',prl:'#5EEAD4',prf:'#04302C',prg:'linear-gradient(135deg,#5EEAD4 0%,#2DD4BF 55%,#14B8A6 100%)',prsh:'rgba(45,212,191,.45)',prring:'rgba(45,212,191,.16)',ok:'#3BD98A',okl:'#0F2E22',okt:'#7BEDB1',wa:'#F5C242',wal:'#352906',wat:'#FBD978',no:'#F36B6B',nol:'#3A1414',not:'#FCA5A5',glass:'rgba(17,33,32,0.72)',glassBd:'rgba(255,255,255,0.08)',sh:'0 1px 2px rgba(0,0,0,.3), 0 12px 32px -12px rgba(0,0,0,.6)',shl:'0 0 0 1px rgba(255,255,255,.03), 0 3px 10px -3px rgba(0,0,0,.45)',cam:'#070F0E',splash:'radial-gradient(120% 70% at 50% 0%,#17403A 0%,#0A1514 65%)'};
+const SLIDES = [
+  {title:'Okut ya da Fotoğrafla',body:'Barkodu tarat ya da içindekiler etiketinin fotoğrafını çek; gerisini biz halledelim.',cta:'Devam Et'},
+  {title:'Tek Renkte Anla',body:'Yeşil güvenli, sarı dikkat, kırmızı sakıncalı. Karmaşık kimyasallar sade Türkçeye dönüşür.',cta:'Devam Et'},
+  {title:'Sana Özel Uyarı',body:'Bebek, hamile, alerji, vegan… Profilini seç, uyarılar sana göre şekillensin.',cta:'Devam Et'},
+  {title:'Ayda 5 Ücretsiz, Pro Sınırsız',body:'Denemek bedava. Her markete Pro ile gir, sınırsız tara.',cta:'Başlayalım'}
+];
+const CHIPS = [{id:'baby',e:'👶',l:'Bebek'},{id:'preg',e:'🤰',l:'Hamile'},{id:'skin',e:'✋',l:'Hassas Cilt'},{id:'gluten',e:'🌾',l:'Gluten'},{id:'lactose',e:'🥛',l:'Laktoz'},{id:'nut',e:'🥜',l:'Fıstık'},{id:'vegan',e:'🌿',l:'Vegan'},{id:'diab',e:'💉',l:'Diyabet'}];
+const HIST = [{n:'Eti Cicibebe',cat:'Gıda',d:'Bugün 14:20',s:'ok',score:86},{n:'Ülker Çikolatalı Gofret',cat:'Gıda',d:'Dün',s:'wa',score:58},{n:'Cif Power Cream',cat:'Temizlik',d:'1 Kas',s:'no',score:24},{n:'Nivea Soft Krem',cat:'Kozmetik',d:'31 Eki',s:'ok',score:81},{n:'Torku Banada',cat:'Gıda',d:'30 Eki',s:'wa',score:61},{n:'Sana Margarin',cat:'Gıda',d:'28 Eki',s:'ok',score:74}];
+const RESULTS = {
+  result:{score:86,s:'ok',label:'Güvenli',product:'Eti Cicibebe',cat:'Gıda · Bebek bisküvisi',barcode:'8690526069265',summary:'Genel olarak güvenli içerik. Doğal tatlandırıcı ve eklenmiş vitaminler var; bebek ve çocuk beslenmesi için uygun bir tercih.',hasBanner:false,items:[{n:'Buğday unu',m:'Temel gıda',s:'ok'},{n:'Şeker',m:'Tatlandırıcı · %12',s:'ok'},{n:'Bitkisel yağ',m:'Yağ kaynağı',s:'ok'},{n:'Demir, B1, B2 vitaminleri',m:'Zenginleştirme',s:'ok'}]},
+  result2:{score:58,s:'wa',label:'Dikkat',product:'Ülker Çikolatalı Gofret',cat:'Gıda · Atıştırmalık',barcode:'8690504012345',summary:'Bazı katkı maddelerine dikkat. Sodyum benzoat ve yüksek şeker nedeniyle hamilelikte sınırlı tüketim önerilir.',hasBanner:true,items:[{n:'Sodyum benzoat',m:'E211 · Koruyucu',s:'no',detail:'Yüksek dozda fetüse zarar verebilir; sınırlı tüketim.'},{n:'Aspartam',m:'E951 · Yapay tatlandırıcı',s:'wa'},{n:'Kakao yağı',m:'Yağ kaynağı',s:'ok'},{n:'Buğday unu',m:'Temel gıda',s:'ok'}]}
+};
+const LEGAL = {
+  privacy:{title:'KVKK Aydınlatma Metni',sections:[{n:'01',h:'Veri sorumlusu',p:'6698 sayılı KVKK uyarınca kişisel verileriniz, veri sorumlusu sıfatıyla İçinde Ne Var? tarafından aşağıdaki amaçlarla işlenir.'},{n:'02',h:'İşlenen veriler',p:'E-posta adresi, cihaz bilgileri, kullanım istatistikleri ve profil tercihleri (kitle seçimi).'},{n:'03',h:'İşleme amaçları',p:'Hesap yönetimi, analiz hizmetinin sunulması, kişiselleştirilmiş uyarılar ve abonelik işlemleri.'},{n:'04',h:'Aktarım',p:'Yasal yükümlülükler kapsamında ve bulut altyapı ile ödeme işlemcisi gibi hizmet sağlayıcılarla paylaşılabilir.'},{n:'05',h:'Haklarınız',p:'KVKK 11. madde uyarınca erişim, düzeltme, silme ve itiraz haklarınızı kullanabilirsiniz.'}]},
+  terms:{title:'Kullanım Şartları',sections:[{n:'01',h:'Hizmet tanımı',p:'Uygulama, ürün içeriklerini analiz eden bir bilgilendirme aracıdır; tıbbi tavsiye niteliği taşımaz.'},{n:'02',h:'Kullanım koşulları',p:'Uygulamayı kullanarak bu şartları kabul etmiş sayılırsınız. Yalnızca kişisel amaçla kullanılabilir.'},{n:'03',h:'Abonelik ve ödeme',p:'Pro abonelik aylık ya da yıllık faturalanır; dönem bitiminden 24 saat önce iptal edilmezse yenilenir.'},{n:'04',h:'Sorumluluk sınırı',p:'Sağlık kararları için mutlaka uzman görüşü alınmalıdır.'},{n:'05',h:'Değişiklikler',p:'Şartlar güncellenebilir; güncellemeler yayınlandığı anda yürürlüğe girer.'}]}
+};
+const DEFS = [
+  {id:'splash',num:'01',label:'Splash',note:'Dokun → onboarding. Logo animasyonunun son karesi.',screen:'splash'},
+  {id:'onb1',num:'02',label:'Onboarding 1/4',note:'Okut ya da Fotoğrafla',screen:'onb',slide:0},
+  {id:'onb2',num:'02',label:'Onboarding 2/4',note:'Tek Renkte Anla',screen:'onb',slide:1},
+  {id:'onb3',num:'02',label:'Onboarding 3/4',note:'Sana Özel Uyarı',screen:'onb',slide:2},
+  {id:'onb4',num:'02',label:'Onboarding 4/4',note:'Ayda 5 Ücretsiz, Pro Sınırsız',screen:'onb',slide:3},
+  {id:'login',num:'03',label:'Login',note:'Şifresiz, e-posta + OTP',screen:'login'},
+  {id:'otp',num:'04',label:'OTP',note:'6 hane, aktif kutu gradient halkalı',screen:'otp'},
+  {id:'scanner',num:'05',label:'Scanner (Ana ekran)',note:'Tam ekran kamera, glass overlay, floating tab bar',screen:'scanner'},
+  {id:'confirm',num:'06',label:'İçerik Onayı',note:'OCR sonrası düzenleme',screen:'confirm'},
+  {id:'result',num:'07',label:'Sonuç — Güvenli',note:'3D skor halkası',screen:'result'},
+  {id:'result2',num:'07',label:'Sonuç — Dikkat + Profil uyarısı',note:'Hamile profili banner + madde detayı',screen:'result2'},
+  {id:'history',num:'08',label:'Geçmiş',note:'Kategori renkleri + skor',screen:'history'},
+  {id:'historyEmpty',num:'08',label:'Geçmiş — Boş',note:'',screen:'historyEmpty'},
+  {id:'profile',num:'09',label:'Profil',note:'Chip\'lere dokun',screen:'profile'},
+  {id:'settings',num:'10',label:'Ayarlar',note:'',screen:'settings'},
+  {id:'paywall',num:'11',label:'Paywall',note:'Plan seçimi tıklanabilir',screen:'paywall'},
+  {id:'privacy',num:'12',label:'KVKK',note:'',screen:'privacy'},
+  {id:'terms',num:'13',label:'Kullanım Şartları',note:'',screen:'terms'}
+];
+const SCREENS = ['splash','onb','login','otp','scanner','confirm','result','result2','history','historyEmpty','profile','settings','paywall','privacy','terms'];
+const TOKENS = [['primary','pr'],['primaryDeep','prd'],['primaryLight','prl'],['background','bg'],['surface','sf'],['surfaceTint','sf2'],['text','tx'],['textSecondary','tx2'],['muted','mu'],['border','bd'],['success','ok'],['successBg','okl'],['warning','wa'],['warningBg','wal'],['danger','no'],['dangerBg','nol']];
+
+class Component extends DCLogic {
+  state = { phones:{}, chips:{baby:true,preg:true,vegan:true}, view:null, plan:'yearly' };
+  ph(key, d){ return this.state.phones[key] || {screen:d.screen, slide:d.slide||0}; }
+  set(key, d, patch){ this.setState(s=>({phones:{...s.phones,[key]:{...this.ph(key,d),...patch}}})); }
+  status(T, s){
+    const map={ok:{c:T.ok,bg:T.okl,fg:T.okt,l:'Güvenli'},wa:{c:T.wa,bg:T.wal,fg:T.wat,l:'Dikkat'},no:{c:T.no,bg:T.nol,fg:T.not,l:'Sakıncalı'}};
+    return map[s];
+  }
+  build(d, th){
+    const T = th==='dark'?DARK:LIGHT, key=d.id+'_'+th, st=this.ph(key,d), scr=st.screen;
+    const go={}; SCREENS.forEach(s=>go[s]=()=>this.set(key,d,{screen:s,slide:0}));
+    const s={}; SCREENS.forEach(x=>s[x]=scr===x); s.result = scr==='result'||scr==='result2'; s.legal = scr==='privacy'||scr==='terms';
+    const vars={}; Object.keys(T).forEach(k=>vars['--'+k]=T[k]);
+    const dark = th==='dark', immersive = scr==='splash'||scr==='scanner'||scr==='paywall';
+    const tabStyle=(on)=>({flex:on?1.5:1,height:54,borderRadius:27,display:'flex',alignItems:'center',justifyContent:'center',gap:8,fontSize:12,fontWeight:700,cursor:'pointer',color:on?T.prf:T.mu,background:on?T.prg:'transparent',boxShadow:on?'0 10px 20px -8px '+T.prsh+', inset 0 1px 0 rgba(255,255,255,.25)':'none',transition:'all .25s'});
+    const active = scr==='history'||scr==='historyEmpty'?'history':scr==='profile'?'profile':'scan';
+    const R0 = RESULTS[scr==='result2'?'result2':'result'], rs=this.status(T,R0.s);
+    const pct = R0.score;
+    const r = {...R0, color:rs.c, glow: rs.c+'55', halo: rs.c, ring:`conic-gradient(from -90deg, ${rs.c} 0%, ${rs.c} ${pct}%, ${T.bd} ${pct}%, ${T.bd} 100%)`,
+      nOk:R0.items.filter(i=>i.s==='ok').length+' güvenli', nWa:R0.items.filter(i=>i.s==='wa').length+' dikkat', nNo:R0.items.filter(i=>i.s==='no').length+' sakıncalı',
+      items:R0.items.map(i=>{const x=this.status(T,i.s);return {...i,label:x.l,hasDetail:!!i.detail,dot:{width:30,height:30,borderRadius:10,background:x.bg,color:x.c,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0},badge:{padding:'4px 9px',borderRadius:999,background:x.bg,color:x.fg,fontSize:10,fontWeight:800,whiteSpace:'nowrap'}};})};
+    const catTile={'Gıda':'linear-gradient(135deg,#F2B544,#E39B07)','Kozmetik':'linear-gradient(135deg,#F08BC4,#D95BA3)','Temizlik':'linear-gradient(135deg,#60A5FA,#3B82F6)'};
+    const history = HIST.map(h=>{const x=this.status(T,h.s);return {...h,label:x.l,scoreColor:x.c,isFood:h.cat==='Gıda',isCos:h.cat==='Kozmetik',isClean:h.cat==='Temizlik',tile:{width:44,height:44,borderRadius:14,background:catTile[h.cat],color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,boxShadow:'0 6px 12px -6px rgba(0,0,0,.35)'},badge:{padding:'3px 8px',borderRadius:999,background:x.bg,color:x.fg,fontSize:10,fontWeight:800},open:()=>this.set(key,d,{screen:h.s==='ok'?'result':'result2'})};});
+    const otpVals=['4','7','2','','',''];
+    const otp = otpVals.map((v,i)=>{const filled=!!v, cur=i===3;return {v: cur?'|':v, style:{flex:1,height:60,borderRadius:16,background:filled?T.sf2:T.sf,border:'2px solid '+(filled||cur?T.pr:T.bd),boxShadow:cur?'0 0 0 4px '+T.prring:T.shl,display:'flex',alignItems:'center',justifyContent:'center',font:'800 24px/1 Bricolage Grotesque, sans-serif',color:cur?T.pr:T.tx,animation:cur?'inv-caret 1s step-end infinite':'none'}};});
+    const slideIdx = st.slide||0;
+    const segs=[0,1,2,3].map(i=>({style:{width:i===slideIdx?26:8,height:6,borderRadius:3,background:i<=slideIdx?T.pr:T.bd,transition:'all .3s'}}));
+    const ap=(on)=>({flex:1,height:38,borderRadius:12,display:'flex',alignItems:'center',justifyContent:'center',fontSize:12,fontWeight:700,background:on?T.prg:'transparent',color:on?T.prf:T.tx2});
+    return {
+      key, vars, s, go, hasTabs: ['scanner','history','historyEmpty','profile'].includes(scr),
+      sb: immersive?'#fff':T.tx, hi: (immersive&&scr!=='paywall')?'rgba(255,255,255,.7)':T.tx,
+      themeLabel: (dark?'Koyu':'Açık')+' · '+d.label,
+      slide:SLIDES[slideIdx], slide0:slideIdx===0, slide1:slideIdx===1, slide2:slideIdx===2, slide3:slideIdx===3, segs,
+      next:()=> slideIdx<3 ? this.set(key,d,{slide:slideIdx+1}) : this.set(key,d,{screen:'login'}),
+      tabs:{scan:tabStyle(active==='scan'),history:tabStyle(active==='history'),profile:tabStyle(active==='profile')},
+      r, history, otp, legal: LEGAL[scr==='terms'?'terms':'privacy'], apLight:ap(!dark), apDark:ap(dark)
+    };
+  }
+  renderVals(){
+    const view = this.state.view || this.props.view || 'both';
+    const themes = view==='both'?['light','dark']:[view];
+    const groups = DEFS.map(d=>({num:d.num,label:d.label,note:d.note,phones:themes.map(t=>this.build(d,t))}));
+    const seg=(on)=>({padding:'8px 16px',borderRadius:999,fontSize:13,fontWeight:700,cursor:'pointer',background:on?'#0F1F1D':'transparent',color:on?'#fff':'#4B5B58'});
+    const chips = CHIPS.map(c=>{const on=!!this.state.chips[c.id];return {...c,toggle:()=>this.setState(s=>({chips:{...s.chips,[c.id]:!s.chips[c.id]}})),
+      style:{display:'flex',alignItems:'center',gap:10,padding:'12px 12px 12px 14px',borderRadius:18,cursor:'pointer',transition:'all .2s',background:on?'var(--sf2)':'var(--sf)',border:'1.5px solid '+(on?'var(--pr)':'var(--bd)'),color:on?'var(--prd)':'var(--tx2)',boxShadow:on?'0 0 0 3px var(--prring)':'var(--shl)'},
+      check:{width:20,height:20,borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',background:on?'var(--pr)':'transparent',border:on?'none':'1.5px solid var(--bd)',color:'var(--prf)'}};});
+    const plan=(on)=>({display:'flex',alignItems:'center',gap:12,padding:'14px 16px',borderRadius:20,cursor:'pointer',background:'var(--sf)',border:'2px solid '+(on?'var(--pr)':'var(--bd)'),boxShadow:on?'0 0 0 4px var(--prring), var(--sh)':'var(--shl)',transition:'all .2s'});
+    const radio=(on)=>({width:22,height:22,borderRadius:'50%',border:on?'7px solid var(--pr)':'2px solid var(--bd)',background:'var(--sf)',flexShrink:0,boxSizing:'border-box'});
+    const yearly=this.state.plan==='yearly';
+    return {
+      groups, tokens: TOKENS.map(([name,k])=>({name,l:LIGHT[k],d:DARK[k]})),
+      setBoth:()=>this.setState({view:'both'}), setLight:()=>this.setState({view:'light'}), setDark:()=>this.setState({view:'dark'}),
+      vBoth:seg(view==='both'), vLight:seg(view==='light'), vDark:seg(view==='dark'),
+      chips, chipCount: Object.values(this.state.chips).filter(Boolean).length,
+      confirmItems:['Sodyum benzoat','Sitrik asit','Potasyum sorbat','Şeker','Su','Mısır nişastası','Doğal aroma verici','Askorbik asit (C vit.)'],
+      setYearly:()=>this.setState({plan:'yearly'}), setMonthly:()=>this.setState({plan:'monthly'}),
+      planYearly:plan(yearly), planMonthly:plan(!yearly), radioYearly:radio(yearly), radioMonthly:radio(!yearly),
+      planCta: yearly?'Yıllık Pro\'ya Başla — 499 TL':'Aylık Pro\'ya Başla — 69 TL'
+    };
+  }
+}
+</script>
+</body>
+</html>

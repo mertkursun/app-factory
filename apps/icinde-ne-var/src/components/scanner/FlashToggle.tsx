@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Platform } from "react-native";
 import { BlurView } from "expo-blur";
-import { Zap, ZapOff } from "lucide-react-native";
+import { Zap } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 
 interface FlashToggleProps {
@@ -8,7 +8,7 @@ interface FlashToggleProps {
   onToggle: () => void;
 }
 
-const ICON_SIZE = 22;
+const ICON_SIZE = 20;
 const BUTTON_SIZE = 48;
 const FLASH_ON_COLOR = "#FACC15";
 const FLASH_OFF_COLOR = "#FFFFFF";
@@ -16,11 +16,7 @@ const FLASH_OFF_COLOR = "#FFFFFF";
 export function FlashToggle({ enabled, onToggle }: FlashToggleProps) {
   const { t } = useTranslation();
 
-  const content = enabled ? (
-    <Zap size={ICON_SIZE} color={FLASH_ON_COLOR} />
-  ) : (
-    <ZapOff size={ICON_SIZE} color={FLASH_OFF_COLOR} />
-  );
+  const content = <Zap size={ICON_SIZE} color={enabled ? FLASH_ON_COLOR : FLASH_OFF_COLOR} />;
 
   if (Platform.OS === "ios") {
     return (
@@ -55,12 +51,10 @@ const styles = StyleSheet.create({
     height: BUTTON_SIZE,
     borderRadius: BUTTON_SIZE / 2,
     overflow: "hidden",
-    alignItems: "center",
-    justifyContent: "center",
   },
   blur: {
-    flex: 1,
-    width: "100%",
+    width: BUTTON_SIZE,
+    height: BUTTON_SIZE,
     alignItems: "center",
     justifyContent: "center",
     borderRadius: BUTTON_SIZE / 2,

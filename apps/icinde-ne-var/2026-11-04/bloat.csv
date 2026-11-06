@@ -1,0 +1,6 @@
+type,name,bloat,waste
+table,public.maddeler_ad_idx,1.7,16 kB
+table,public.maddeler,1.0,0 bytes
+index,public.maddeler::maddeler_es_anlamlilar_idx,0.7,0 bytes
+index,public.maddeler::maddeler_ad_idx,0.6,0 bytes
+index,public.maddeler::maddeler_pkey,0.6,0 bytes

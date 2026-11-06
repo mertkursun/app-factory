@@ -1,9 +1,11 @@
 import "../global.css";
 import "@/i18n";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { StyleSheet, View } from "react-native";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import * as NativeSplash from "expo-splash-screen";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import {
   useFonts,
   PlusJakartaSans_400Regular,
@@ -22,25 +24,18 @@ import { useAppStore } from "@/stores/appStore";
 import { configureRevenueCat, identifyUser } from "@/lib/revenuecat";
 import { SplashAnimation } from "@/components/splash/SplashAnimation";
 import { useNotifications } from "@/hooks/useNotifications";
+import { useTheme } from "@/theme/tokens";
 
 const STALE_TIME_MS = 1000 * 60 * 5;
 
 NativeSplash.preventAutoHideAsync();
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: 2,
-      staleTime: STALE_TIME_MS,
-    },
-  },
-});
 
 function AuthGate() {
   const router = useRouter();
   const segments = useSegments();
   const { session, isInitialized } = useAuthStore();
   const hasSeenOnboarding = useAppStore((s) => s.hasSeenOnboarding);
+  const { colors } = useTheme();
   const isHydrated = useAppStore((s) => s.isHydrated);
 
   useEffect(() => {
@@ -59,7 +54,13 @@ function AuthGate() {
   }, [session, isInitialized, isHydrated, hasSeenOnboarding, segments, router]);
 
   return (
-    <Stack screenOptions={{ headerShown: false, gestureEnabled: true }}>
+    <Stack
+      screenOptions={{
+        headerShown: false,
+        gestureEnabled: true,
+        contentStyle: { backgroundColor: colors.background },
+      }}
+    >
       <Stack.Screen name="(onboarding)" options={{ gestureEnabled: false }} />
       <Stack.Screen name="(auth)" options={{ gestureEnabled: false }} />
       <Stack.Screen name="(tabs)" options={{ gestureEnabled: false }} />
@@ -73,6 +74,14 @@ function AuthGate() {
 }
 
 export default function RootLayout() {
+  const { colors } = useTheme();
+  const queryClientRef = useRef(
+    new QueryClient({
+      defaultOptions: {
+        queries: { retry: 2, staleTime: STALE_TIME_MS },
+      },
+    }),
+  );
   const initialize = useAuthStore((s) => s.initialize);
   const isInitialized = useAuthStore((s) => s.isInitialized);
   const user = useAuthStore((s) => s.user);
@@ -121,19 +130,28 @@ export default function RootLayout() {
     return null;
   }
 
-  if (showSplash) {
-    return (
-      <>
-        <StatusBar style="light" />
-        <SplashAnimation onFinish={handleSplashFinish} />
-      </>
-    );
-  }
-
   return (
-    <QueryClientProvider client={queryClient}>
-      <StatusBar style="auto" />
-      <AuthGate />
-    </QueryClientProvider>
+    <GestureHandlerRootView style={{ flex: 1, backgroundColor: colors.background }}>
+      <QueryClientProvider client={queryClientRef.current}>
+        <StatusBar style={showSplash ? "light" : "auto"} />
+        <AuthGate />
+        {showSplash && (
+          <View style={splashOverlay}>
+            <SplashAnimation onFinish={handleSplashFinish} />
+          </View>
+        )}
+      </QueryClientProvider>
+    </GestureHandlerRootView>
   );
 }
+
+const splashOverlay = StyleSheet.create({
+  overlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 10,
+  },
+}).overlay;

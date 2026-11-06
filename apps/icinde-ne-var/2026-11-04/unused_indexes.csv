@@ -1,0 +1,3 @@
+name,index,index_size,index_scans
+public.maddeler,maddeler_es_anlamlilar_idx,112 kB,0
+public.maddeler,maddeler_ad_idx,40 kB,0

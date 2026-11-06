@@ -4,7 +4,6 @@ import {
   Text,
   TextInput,
   ScrollView,
-  FlatList,
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
@@ -299,56 +298,50 @@ export default function IngredientConfirmScreen() {
 
           {/* Ingredient list card */}
           <Card style={styles.listCard} borderRadius={radius.lg}>
-            <FlatList
-              data={items}
-              scrollEnabled={false}
-              keyExtractor={(item, index) => `${item}-${index}`}
-              renderItem={({ item, index }) => (
-                <View
-                  style={[
-                    styles.ingredientRow,
-                    index < items.length - 1 && {
-                      borderBottomWidth: 1,
-                      borderBottomColor: colors.border,
-                    },
-                  ]}
-                >
-                  <Text style={[styles.ingredientText, { color: colors.text }]} numberOfLines={1}>
-                    {item}
-                  </Text>
-                  <Pressable
-                    onPress={() => handleRemove(index)}
-                    disabled={isSubmitting}
-                    hitSlop={8}
-                    accessibilityRole="button"
-                    accessibilityLabel={t("ingredients.removeIngredient", { name: item })}
-                    style={({ pressed }) => ({
-                      minWidth: 44,
-                      minHeight: 44,
-                      alignItems: "center" as const,
-                      justifyContent: "center" as const,
-                      opacity: pressed ? 0.5 : 1,
-                    })}
-                  >
-                    <X size={14} color={colors.muted} strokeWidth={2.2} />
-                  </Pressable>
-                </View>
-              )}
-              ListFooterComponent={
+            {items.map((item, index) => (
+              <View
+                key={`${item}-${index}`}
+                style={[
+                  styles.ingredientRow,
+                  index < items.length - 1 && {
+                    borderBottomWidth: 1,
+                    borderBottomColor: colors.border,
+                  },
+                ]}
+              >
+                <Text style={[styles.ingredientText, { color: colors.text }]} numberOfLines={1}>
+                  {item}
+                </Text>
                 <Pressable
-                  onPress={handleAddPress}
+                  onPress={() => handleRemove(index)}
                   disabled={isSubmitting}
+                  hitSlop={8}
                   accessibilityRole="button"
-                  accessibilityLabel={t("ingredients.addButton")}
-                  style={styles.addButton}
+                  accessibilityLabel={t("ingredients.removeIngredient", { name: item })}
+                  style={({ pressed }) => ({
+                    minWidth: 44,
+                    minHeight: 44,
+                    alignItems: "center" as const,
+                    justifyContent: "center" as const,
+                    opacity: pressed ? 0.5 : 1,
+                  })}
                 >
-                  <Plus size={14} color={colors.primary} strokeWidth={2.5} />
-                  <Text style={[styles.addButtonText, { color: colors.primary }]}>
-                    {t("ingredients.addButton")}
-                  </Text>
+                  <X size={14} color={colors.muted} strokeWidth={2.2} />
                 </Pressable>
-              }
-            />
+              </View>
+            ))}
+            <Pressable
+              onPress={handleAddPress}
+              disabled={isSubmitting}
+              accessibilityRole="button"
+              accessibilityLabel={t("ingredients.addButton")}
+              style={styles.addButton}
+            >
+              <Plus size={14} color={colors.primary} strokeWidth={2.5} />
+              <Text style={[styles.addButtonText, { color: colors.primary }]}>
+                {t("ingredients.addButton")}
+              </Text>
+            </Pressable>
           </Card>
 
           {/* Inline add input */}

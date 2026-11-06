@@ -1,8 +1,7 @@
 ---
 name: add-feature
-description: Mevcut bir uygulamaya yeni özellik ekler — küçük plan, onay, kod, test, review. Var olan app'e ekran/özellik eklerken kullan.
+description: Mevcut bir uygulamaya yeni özellik ekler — küçük plan, onay, kod, test, review. Kullanıcı "şu özelliği ekle", "şu ekranı yap", "şunu değiştir" gibi mevcut app'e ekleme niyeti belirttiğinde kullan.
 argument-hint: "<slug> \"özellik açıklaması\""
-disable-model-invocation: true
 allowed-tools: Bash(git add *) Bash(git commit *) Bash(git checkout *) Bash(git switch *) Bash(npx expo install *) Bash(npm run *) Bash(npm test *)
 ---
 

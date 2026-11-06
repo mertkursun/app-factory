@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&family=Plus+Jakarta+Sans:wght@600&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#0A1514;overflow:hidden}a{color:#5EEAD4}a:hover{color:#9BF0E3}</style>
+<script>window.OM_SCENES = '[{"name":"Halka","dur":1.1,"desc":"Cam kare belirir, büyüteç halkası ve sapı çizilir"},{"name":"Yaprak","dur":0.8,"desc":"Yaprak merceğin içinde sapından büyür, damarı çizilir"},{"name":"Noktalar","dur":0.9,"desc":"Yeşil, sarı, kırmızı skor noktaları sırayla düşer"},{"name":"Isim","dur":1.1,"desc":"Uygulama adı ve slogan yükselerek belirir"},{"name":"Bekle","dur":1.2,"desc":"Logo nefes alır, sahne tutulur"},{"name":"Cikis","dur":0.6,"desc":"Her şey zemine doğru solar (onboarding geçişi)"}]';</script>
+<script>window.OM_PLAYBACK = '{"mode":"loop"}';</script>
+<script>window.TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{"theme":"light","motionEditor":true}/*EDITMODE-END*/;</script>
+</helmet>
+<div style="position:fixed;inset:0;background:#0A1514">
+  <x-import component-from-global-scope="SplashAnimApp" from="./animations-v3.jsx ./tweaks-panel.jsx ./splash-anim.jsx" hint-size="100%,100%"></x-import>
+</div>
+</x-dc>
+</body>
+</html>

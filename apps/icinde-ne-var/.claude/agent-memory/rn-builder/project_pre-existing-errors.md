@@ -6,8 +6,9 @@ metadata:
 ---
 
 Pre-existing lint errors as of 2026-11-06:
-- `app/encyclopedia.tsx`: prettier formatting, unused imports (useMemo, BookOpen, typography, shadow, isLoading)
-- `app/ingredient-confirm.tsx:135`: missing deps in useCallback (routeBrand, routeCountryOfOrigin)
+- `app/_layout.tsx:134` react-hooks/refs: queryClientRef.current access in render
+- `app/settings.tsx:450` prettier: toUpperTR line formatting
+- `src/components/family/FamilyProfileCard.tsx:104` prettier: style array formatting
 
-**Why:** These errors come from other features and are not related to family profiles work.
-**How to apply:** When running `npm run check`, expect these errors. Focus on verifying zero new errors in changed files.
+**Why:** These errors come from other features and are not related to current work.
+**How to apply:** When running `npm run check`, expect these 3 errors. Focus on verifying zero new errors in changed files.

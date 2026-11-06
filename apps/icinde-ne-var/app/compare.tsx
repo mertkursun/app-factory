@@ -3,6 +3,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ChevronLeft } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
+import { toUpperTR } from "@/utils/text";
 import { useCompare } from "@/hooks/useCompare";
 import type { MaddeCounts } from "@/hooks/useCompare";
 import { ScoreCircle } from "@/components/ui/ScoreCircle";
@@ -24,11 +25,18 @@ const SKOR_TO_STATUS: Record<SkorRenk, StatusKey> = {
   kirmizi: "danger",
 };
 
-const SKOR_NUMERIC: Record<SkorRenk, number> = {
-  yesil: 86,
-  sari: 58,
-  kirmizi: 25,
-};
+const INGREDIENT_WEIGHT = { guvenli: 100, dikkat: 35, sakincali: 0 } as const;
+const FALLBACK_SCORE: Record<SkorRenk, number> = { yesil: 90, sari: 55, kirmizi: 20 };
+
+function computeNumericScore(counts: MaddeCounts, skor: SkorRenk): number {
+  const total = counts.safe + counts.caution + counts.danger;
+  if (total === 0) return FALLBACK_SCORE[skor];
+  const weighted =
+    counts.safe * INGREDIENT_WEIGHT.guvenli +
+    counts.caution * INGREDIENT_WEIGHT.dikkat +
+    counts.danger * INGREDIENT_WEIGHT.sakincali;
+  return Math.round(weighted / total);
+}
 
 const SCORE_CIRCLE_SIZE = 80;
 
@@ -37,7 +45,7 @@ function ProductColumn({ analysis, counts }: { analysis: AnalysisRow; counts: Ma
   const { t } = useTranslation();
   const skor = analysis.skor as SkorRenk;
   const status = SKOR_TO_STATUS[skor];
-  const numericScore = SKOR_NUMERIC[skor];
+  const numericScore = computeNumericScore(counts, skor);
 
   return (
     <View style={styles.column}>
@@ -139,7 +147,7 @@ export default function CompareScreen() {
           <View style={styles.vsContainer}>
             <View style={[styles.vsBadge, { backgroundColor: colors.surfaceTint }]}>
               <Text style={[styles.vsText, { color: colors.primaryDeep }]}>
-                {t("compare.vsLabel")}
+                {toUpperTR(t("compare.vsLabel"))}
               </Text>
             </View>
           </View>
@@ -151,7 +159,7 @@ export default function CompareScreen() {
         <Card style={[styles.resultCard, { backgroundColor: resultBg }]}>
           <View style={styles.resultInner}>
             <Text style={[styles.resultLabel, { color: resultTextColor }]}>
-              {t("compare.result")}
+              {toUpperTR(t("compare.result"))}
             </Text>
             <Text style={[styles.resultMessage, { color: resultTextColor }]}>{resultMessage}</Text>
           </View>
@@ -237,7 +245,6 @@ const styles = StyleSheet.create({
     fontFamily: fonts.body800,
     fontSize: 11,
     letterSpacing: 0.5,
-    textTransform: "uppercase",
   },
   resultCard: {
     borderWidth: 0,
@@ -253,7 +260,6 @@ const styles = StyleSheet.create({
     fontFamily: fonts.body800,
     fontSize: 11,
     letterSpacing: 1,
-    textTransform: "uppercase",
   },
   resultMessage: {
     fontFamily: fonts.display700,

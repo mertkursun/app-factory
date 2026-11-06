@@ -11,6 +11,7 @@ import {
   Heart,
   Volume2,
   VolumeX,
+  AlertTriangle,
 } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
@@ -32,7 +33,8 @@ import { IconButton } from "@/components/ui/IconButton";
 import { LoadingScreen } from "@/components/ui/LoadingScreen";
 import { ErrorScreen } from "@/components/ui/ErrorScreen";
 import { ProductPickerSheet } from "@/components/compare/ProductPickerSheet";
-import { useTheme, fonts, spacing } from "@/theme/tokens";
+import { useTheme, fonts, spacing, radius } from "@/theme/tokens";
+import { AUDIENCE_LABEL_KEYS } from "@/lib/constants";
 import type { SkorRenk } from "@/lib/schemas";
 
 type StatusKey = "success" | "warning" | "danger";
@@ -72,14 +74,26 @@ const SKOR_TO_STATUS: Record<SkorRenk, StatusKey> = {
   kirmizi: "danger",
 };
 
-const SKOR_NUMERIC: Record<SkorRenk, number> = {
-  yesil: 86,
-  sari: 58,
-  kirmizi: 25,
-};
+const INGREDIENT_WEIGHT = { guvenli: 100, dikkat: 35, sakincali: 0 } as const;
+const FALLBACK_SCORE: Record<SkorRenk, number> = { yesil: 90, sari: 55, kirmizi: 20 };
+
+function computeNumericScore(
+  summary: { safe: number; caution: number; danger: number },
+  skor: SkorRenk,
+): number {
+  const total = summary.safe + summary.caution + summary.danger;
+  if (total === 0) return FALLBACK_SCORE[skor];
+
+  const weighted =
+    summary.safe * INGREDIENT_WEIGHT.guvenli +
+    summary.caution * INGREDIENT_WEIGHT.dikkat +
+    summary.danger * INGREDIENT_WEIGHT.sakincali;
+
+  return Math.round(weighted / total);
+}
 
 function capitalize(str: string): string {
-  return str.charAt(0).toUpperCase() + str.slice(1);
+  return str.charAt(0).toLocaleUpperCase("tr-TR") + str.slice(1);
 }
 
 export default function AnalysisScreen() {
@@ -129,6 +143,16 @@ export default function AnalysisScreen() {
     [analysis],
   );
 
+  const affectedAudiences = useMemo(() => {
+    const audiences = new Set<string>();
+    for (const w of profilUyarilari) {
+      if (w.riskSeviyesi === "sakincali" || w.riskSeviyesi === "dikkat") {
+        audiences.add(w.kitle);
+      }
+    }
+    return [...audiences];
+  }, [profilUyarilari]);
+
   const maddeSummary = useMemo(() => {
     let safe = 0;
     let caution = 0;
@@ -176,7 +200,7 @@ export default function AnalysisScreen() {
 
   const skor = analysis.skor as SkorRenk;
   const status = SKOR_TO_STATUS[skor];
-  const numericScore = SKOR_NUMERIC[skor];
+  const numericScore = computeNumericScore(maddeSummary, skor);
 
   const statusColorMap: Record<StatusKey, string> = {
     success: colors.success,
@@ -203,9 +227,11 @@ export default function AnalysisScreen() {
             borderColor: colors.glassBorder,
           }}
         />
-        <Text style={[styles.headerTitle, { color: colors.text }]} numberOfLines={1}>
-          {t("analysis.result")}
-        </Text>
+        <View style={styles.headerTitleContainer}>
+          <Text style={[styles.headerTitle, { color: colors.text }]} numberOfLines={1}>
+            {t("analysis.result")}
+          </Text>
+        </View>
         <View style={styles.headerActions}>
           <IconButton
             icon={
@@ -277,6 +303,17 @@ export default function AnalysisScreen() {
         {/* Score circle */}
         <View style={styles.scoreContainer}>
           <ScoreCircle score={numericScore} status={status} />
+          {affectedAudiences.length > 0 && (
+            <View style={styles.profileChipRow}>
+              <AlertTriangle size={13} color={colors.danger} />
+              <Text style={[styles.profileChipText, { color: colors.danger }]}>
+                {affectedAudiences
+                  .map((a) => (AUDIENCE_LABEL_KEYS[a] ? t(AUDIENCE_LABEL_KEYS[a]) : a))
+                  .join(", ")}{" "}
+                {t("analysis.profileScoreNote")}
+              </Text>
+            </View>
+          )}
         </View>
 
         {/* Product info */}
@@ -380,6 +417,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.screenX,
     paddingVertical: 12,
   },
+  headerTitleContainer: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: "center",
+    alignItems: "center",
+    pointerEvents: "none",
+  },
   headerTitle: {
     fontFamily: fonts.display700,
     fontSize: 17,
@@ -402,6 +449,21 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingTop: 10,
     paddingBottom: 4,
+  },
+  profileChipRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    marginTop: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    borderRadius: radius.pill,
+    backgroundColor: "rgba(224,62,62,0.1)",
+  },
+  profileChipText: {
+    fontFamily: fonts.body600,
+    fontSize: 12,
+    lineHeight: 16,
   },
   productInfo: {
     alignItems: "center",

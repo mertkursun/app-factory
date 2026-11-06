@@ -1,5 +1,16 @@
 import { Stack } from "expo-router";
+import { useTheme } from "@/theme/tokens";
 
 export default function LegalLayout() {
-  return <Stack screenOptions={{ headerShown: false }} />;
+  const { colors } = useTheme();
+
+  return (
+    <Stack
+      screenOptions={{
+        headerShown: false,
+        gestureEnabled: true,
+        contentStyle: { backgroundColor: colors.background },
+      }}
+    />
+  );
 }

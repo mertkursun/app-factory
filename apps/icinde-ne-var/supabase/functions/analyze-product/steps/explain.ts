@@ -1,13 +1,15 @@
 import type { RulesResult } from "../lib/types.ts";
 
+const GEMINI_MODEL = "gemini-3.8-flash";
+
 export async function generateExplanation(
   productName: string | null,
   rules: RulesResult,
   audiences: string[],
+  lang?: string,
 ): Promise<string> {
-  const claudeApiKey = Deno.env.get("CLAUDE_API_KEY");
-  if (!claudeApiKey) {
-    // Claude API yoksa basit açıklama üret
+  const geminiApiKey = Deno.env.get("GEMINI_API_KEY");
+  if (!geminiApiKey) {
     return generateFallbackExplanation(productName, rules);
   }
 
@@ -15,7 +17,23 @@ export async function generateExplanation(
   const cautionCount = rules.maddeler.filter((m) => m.riskSeviyesi === "dikkat").length;
   const dangerCount = rules.maddeler.filter((m) => m.riskSeviyesi === "sakincali").length;
 
-  const prompt = `Bir ürünün içerik analizini 3-4 cümle ile sade Türkçe açıkla.
+  const isEn = lang === "en";
+  const prompt = isEn
+    ? `Explain a product's ingredient analysis in 3-4 simple sentences in English.
+
+Product: ${productName ?? "Unknown"}
+Score: ${rules.skor}
+Ingredients: ${rules.maddeler.map((m) => `${m.ad} (${m.riskSeviyesi})`).join(", ")}
+Safe: ${safeCount}, Caution: ${cautionCount}, Harmful: ${dangerCount}
+Unknown: ${rules.bilinmeyenler.length}
+${audiences.length > 0 ? `User profile: ${audiences.join(", ")}` : ""}
+
+Rules:
+- Use plain, understandable English (add explanation for scientific terms)
+- Start with general assessment, then note concerns
+- Do not give medical advice
+- Maximum 4 sentences`
+    : `Bir ürünün içerik analizini 3-4 cümle ile sade Türkçe açıkla.
 
 Ürün: ${productName ?? "Bilinmiyor"}
 Skor: ${rules.skor}
@@ -30,17 +48,13 @@ Kurallar:
 - Tıbbi tavsiye verme
 - En fazla 4 cümle`;
 
-  const response = await fetch("https://api.anthropic.com/v1/messages", {
+  const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${geminiApiKey}`;
+
+  const response = await fetch(geminiUrl, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-api-key": claudeApiKey,
-      "anthropic-version": "2023-06-01",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      model: "claude-haiku-4-20250514",
-      max_tokens: 512,
-      messages: [{ role: "user", content: prompt }],
+      contents: [{ parts: [{ text: prompt }] }],
     }),
   });
 
@@ -49,7 +63,7 @@ Kurallar:
   }
 
   const result = await response.json();
-  return result.content?.[0]?.text ?? generateFallbackExplanation(productName, rules);
+  return result.candidates?.[0]?.content?.parts?.[0]?.text ?? generateFallbackExplanation(productName, rules);
 }
 
 function generateFallbackExplanation(productName: string | null, rules: RulesResult): string {

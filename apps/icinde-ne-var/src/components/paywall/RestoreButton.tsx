@@ -1,4 +1,5 @@
 import { Text, Pressable } from "react-native";
+import { useTranslation } from "react-i18next";
 
 const MIN_TOUCH_HEIGHT = 44;
 
@@ -8,19 +9,18 @@ interface RestoreButtonProps {
 }
 
 export function RestoreButton({ onPress, isDisabled }: RestoreButtonProps) {
+  const { t } = useTranslation();
+
   return (
     <Pressable
       onPress={onPress}
       disabled={isDisabled}
       accessibilityRole="button"
-      accessibilityLabel="Satın alımları geri yükle"
-      className="items-center justify-center"
-      style={({ pressed }) => ({
-        height: MIN_TOUCH_HEIGHT,
-        opacity: pressed ? 0.6 : 1,
-      })}
+      accessibilityLabel={t("paywall.restoreLabel")}
+      className="items-center justify-center active:opacity-60"
+      style={{ height: MIN_TOUCH_HEIGHT }}
     >
-      <Text className="text-primary text-sm font-label">Satın Alımları Geri Yükle</Text>
+      <Text className="text-primary text-sm font-label">{t("paywall.restore")}</Text>
     </Pressable>
   );
 }

@@ -59,7 +59,10 @@
     "otpDigitLabel": "Verification code digit {{digit}}",
     "trustTitle": "No passwords stored.",
     "trustDesc": "Code is valid for 3 minutes, don't share it.",
-    "codeNotReceived": "Didn't get the code?"
+    "codeNotReceived": "Didn't get the code?",
+    "nameLabel": "Full Name",
+    "namePlaceholder": "Enter your name",
+    "nameValidation": "Name must be at least 2 characters"
   },
   "onboarding": {
     "skip": "Skip",
@@ -168,7 +171,8 @@
     "narratorDanger": "We recommend avoiding this product.",
     "narratorScore": "The product score is {{score}}.",
     "narratorIngredients": "It contains {{safe}} safe, {{caution}} cautionary, and {{danger}} harmful ingredients.",
-    "narratorConclusion": "Overall assessment: {{summary}}"
+    "narratorConclusion": "Overall assessment: {{summary}}",
+    "profileScoreNote": "profile risk detected"
   },
   "ingredients": {
     "confirm": "Confirm Ingredients",

@@ -1,0 +1,8 @@
+name,table_size,index_size,total_size,estimated_row_count,seq_scans
+public.maddeler,120 kB,216 kB,336 kB,427,5
+public.urun_analizleri,16 kB,32 kB,48 kB,3,2
+public.profiller,16 kB,32 kB,48 kB,1,2
+public.kullanim,16 kB,32 kB,48 kB,1,2
+public.tarama_gecmisi,16 kB,32 kB,48 kB,9,2
+public.push_tokens,8192 bytes,24 kB,32 kB,0,3
+public.abonelikler,8192 bytes,16 kB,24 kB,0,2

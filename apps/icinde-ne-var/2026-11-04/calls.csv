@@ -1,0 +1,11 @@
+query,total_exec_time,prop_exec_time,ncalls,sync_io_time
+SHOW transaction_read_only,00:00:00.002373,0.1%,282,00:00:00
+"select set_config('search_path', $1, true), set_config($2, $3, true), set_config('role', $4, true), set_config('request.jwt.claims', $5, true), set_config('request.method', $6, true), set_config('request.path', $7, true), set_config('request.headers', $8, true), set_config('request.cookies', $9, true)",00:00:00.006309,0.2%,114,00:00:00
+begin,00:00:00.000096,0.0%,96,00:00:00
+commit,00:00:00.000079,0.0%,95,00:00:00
+"INSERT INTO realtime.""schema_migrations"" (version) VALUES ($1)",00:00:00.001686,0.0%,91,00:00:00
+"INSERT INTO migrations (""id"", ""name"", ""hash"") VALUES ($1,$2,$3)",00:00:00.003051,0.1%,80,00:00:00
+insert into schema_migrations (version) values ($1),00:00:00.001531,0.0%,75,00:00:00
+SELECT EXISTS (SELECT schema_migrations.* FROM schema_migrations AS schema_migrations WHERE version = $1),00:00:00.001426,0.0%,75,00:00:00
+START TRANSACTION,00:00:00.000052,0.0%,71,00:00:00
+COMMIT,00:00:00.000057,0.0%,70,00:00:00

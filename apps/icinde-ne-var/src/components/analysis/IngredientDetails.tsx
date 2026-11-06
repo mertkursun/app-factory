@@ -88,7 +88,7 @@ export function IngredientDetails({ maddeler }: IngredientDetailsProps) {
           renderItem={({ item: madde, index }) => {
             const isExpanded = expandedIndex === index;
             const statusKey = RISK_STATUS_MAP[madde.riskSeviyesi] ?? "warning";
-            const hasDetail = madde.islev || madde.kaynak || madde.aiTahmini;
+            const hasDetail = true;
 
             return (
               <View>
@@ -118,7 +118,7 @@ export function IngredientDetails({ maddeler }: IngredientDetailsProps) {
                 </Pressable>
 
                 {/* Expanded detail */}
-                {isExpanded && hasDetail ? (
+                {isExpanded ? (
                   <Animated.View
                     entering={FadeIn.duration(200)}
                     exiting={FadeOut.duration(150)}
@@ -132,6 +132,12 @@ export function IngredientDetails({ maddeler }: IngredientDetailsProps) {
                         {madde.islev}
                       </Text>
                     ) : null}
+                    <Text style={[styles.detailText, { color: colors.textSecondary }]}>
+                      <Text style={{ color: colors.text, fontFamily: fonts.body700 }}>
+                        {t("analysis.riskLevel")}:{" "}
+                      </Text>
+                      {t(`analysis.riskDescription.${madde.riskSeviyesi}`)}
+                    </Text>
                     {madde.kaynak ? (
                       <Text style={[styles.detailText, { color: colors.muted }]}>
                         {t("analysis.source", { source: madde.kaynak })}
@@ -141,7 +147,7 @@ export function IngredientDetails({ maddeler }: IngredientDetailsProps) {
                       <Text
                         style={[styles.detailText, { color: colors.muted, fontStyle: "italic" }]}
                       >
-                        {t("analysis.aiEstimate")}
+                        {t("analysis.aiEstimateNote")}
                       </Text>
                     ) : null}
                   </Animated.View>

@@ -457,14 +457,14 @@ export function SplashAnimation({ onFinish }: SplashAnimationProps) {
               </Animated.View>
             </View>
 
-            {/* Title — 26px below tile */}
+            {/* Title — below tile */}
             <Animated.View
               style={[
                 {
                   position: "absolute",
                   left: 0,
                   right: 0,
-                  top: centerY + 66 + 26,
+                  top: centerY + 66 + 100,
                   alignItems: "center",
                 },
                 titleStyle,
@@ -484,14 +484,14 @@ export function SplashAnimation({ onFinish }: SplashAnimationProps) {
               </Text>
             </Animated.View>
 
-            {/* Tagline — 10px below title */}
+            {/* Tagline — below title */}
             <Animated.View
               style={[
                 {
                   position: "absolute",
                   left: 0,
                   right: 0,
-                  top: centerY + 66 + 26 + 34 + 10,
+                  top: centerY + 66 + 100 + 34 + 12,
                   alignItems: "center",
                 },
                 tagStyle,

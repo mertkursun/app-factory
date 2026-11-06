@@ -1,8 +1,7 @@
 ---
 name: new-app
-description: Bir fikirden store'a hazır Expo/React Native uygulaması üretir — plan, onay, kod, test, review. Yeni uygulama başlatırken kullan.
+description: Bir fikirden store'a hazır Expo/React Native uygulaması üretir — plan, onay, kod, test, review. Kullanıcı "yeni uygulama", "app fikrim var", "şunu yapalım" gibi yeni proje niyeti belirttiğinde kullan.
 argument-hint: "<slug> \"fikir açıklaması\""
-disable-model-invocation: true
 allowed-tools: Bash(mkdir *) Bash(git init *) Bash(git add *) Bash(git commit *) Bash(npx create-expo-app *) Bash(npx expo install *) Bash(npm install *) Bash(npm run *) Bash(npm test *)
 ---
 

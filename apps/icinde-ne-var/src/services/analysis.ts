@@ -1,3 +1,4 @@
+import { FunctionsHttpError } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
 import type { Database } from "@/lib/database.types";
 
@@ -27,9 +28,14 @@ export async function getAnalysisByBarcode(barcode: string): Promise<AnalysisRow
 
 export interface AnalyzeRequest {
   barcode?: string;
-  photoUri?: string;
+  storagePath?: string;
   ingredients?: string[];
+  productName?: string;
+  category?: string;
+  brand?: string;
+  countryOfOrigin?: string;
   audiences: string[];
+  lang?: string;
 }
 
 export interface AnalyzeResponse {
@@ -42,7 +48,18 @@ export async function analyzeProduct(request: AnalyzeRequest): Promise<AnalyzeRe
     body: request,
   });
 
-  if (error) throw error;
+  if (error) {
+    let msg = error.message;
+    if (error instanceof FunctionsHttpError) {
+      try {
+        const body = await error.context.json();
+        msg = body?.error ?? msg;
+      } catch {
+        // json parse failed, keep default
+      }
+    }
+    throw new Error(msg);
+  }
   if (!data) throw new Error("Analiz yanıtı boş döndü");
   return data;
 }

@@ -1,4 +1,5 @@
 import Svg, { Circle, Line, Path } from "react-native-svg";
+import { useTranslation } from "react-i18next";
 
 interface LogoMarkProps {
   size?: number;
@@ -6,13 +7,15 @@ interface LogoMarkProps {
 }
 
 export function LogoMark({ size = 80, color = "#0F766E" }: LogoMarkProps) {
+  const { t } = useTranslation();
+
   return (
     <Svg
       width={size}
       height={size}
       viewBox="0 0 120 120"
       fill="none"
-      accessibilityLabel="İçinde Ne Var logosu"
+      accessibilityLabel={t("auth.logoAlt")}
     >
       {/* Büyüteç gövdesi */}
       <Circle cx="52" cy="50" r="22" stroke={color} strokeWidth="3.5" />

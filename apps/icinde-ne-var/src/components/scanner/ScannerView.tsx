@@ -16,6 +16,7 @@ interface ScannerViewProps {
   onPhotoTaken: (uri: string) => void;
   isProcessing: boolean;
   onGalleryPress?: () => void;
+  isGalleryDisabled?: boolean;
 }
 
 const BARCODE_COOLDOWN_MS = 3000;
@@ -27,18 +28,26 @@ function GlassButton({
   onPress,
   accessibilityLabel,
   children,
+  disabled = false,
 }: {
   onPress: () => void;
   accessibilityLabel: string;
   children: ReactNode;
+  disabled?: boolean;
 }) {
+  const opacity = disabled ? 0.35 : 1;
+
   if (Platform.OS === "ios") {
     return (
       <Pressable
         onPress={onPress}
+        disabled={disabled}
         accessibilityRole="button"
         accessibilityLabel={accessibilityLabel}
-        style={({ pressed }) => [styles.glassButton, { opacity: pressed ? 0.7 : 1 }]}
+        style={({ pressed }) => [
+          styles.glassButton,
+          { opacity: pressed && !disabled ? 0.7 : opacity },
+        ]}
       >
         <BlurView intensity={16} tint="dark" style={styles.glassBlur}>
           {children}
@@ -50,12 +59,13 @@ function GlassButton({
   return (
     <Pressable
       onPress={onPress}
+      disabled={disabled}
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
       style={({ pressed }) => [
         styles.glassButton,
         styles.glassAndroid,
-        { opacity: pressed ? 0.7 : 1 },
+        { opacity: pressed && !disabled ? 0.7 : opacity },
       ]}
     >
       {children}
@@ -68,20 +78,25 @@ export function ScannerView({
   onPhotoTaken,
   isProcessing,
   onGalleryPress,
+  isGalleryDisabled = false,
 }: ScannerViewProps) {
   const { t } = useTranslation();
   const cameraRef = useRef<CameraView>(null);
   const [flashEnabled, setFlashEnabled] = useState(false);
-  const [scanned, setScanned] = useState(false);
+  const lastScannedRef = useRef<string | null>(null);
+  const cooldownTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleBarcode = useCallback(
     (result: BarcodeScanningResult) => {
-      if (scanned || isProcessing) return;
-      setScanned(true);
+      if (isProcessing || lastScannedRef.current === result.data) return;
+      lastScannedRef.current = result.data;
       onBarcodeScanned(result.data);
-      setTimeout(() => setScanned(false), BARCODE_COOLDOWN_MS);
+      if (cooldownTimerRef.current) clearTimeout(cooldownTimerRef.current);
+      cooldownTimerRef.current = setTimeout(() => {
+        lastScannedRef.current = null;
+      }, BARCODE_COOLDOWN_MS);
     },
-    [scanned, isProcessing, onBarcodeScanned],
+    [isProcessing, onBarcodeScanned],
   );
 
   const handlePhoto = useCallback(async () => {
@@ -116,7 +131,7 @@ export function ScannerView({
 
       {/* Top gradient overlay */}
       <LinearGradient
-        colors={["rgba(0,0,0,0.55)", "transparent"]}
+        colors={["rgba(0,0,0,0.45)", "transparent"]}
         style={styles.topGradient}
         pointerEvents="none"
       />
@@ -136,7 +151,7 @@ export function ScannerView({
       {/* Hint pill below frame */}
       <View style={styles.hintContainer}>
         <View style={styles.hintPill}>
-          <Sparkles size={14} color="#FFFFFF" />
+          <Sparkles size={13} color="#5EEAD4" strokeWidth={2.4} />
           <Text style={styles.hintText}>{t("scanner.hintPrimary")}</Text>
         </View>
         <Text style={styles.hintSecondary}>{t("scanner.hintSecondary")}</Text>
@@ -146,8 +161,12 @@ export function ScannerView({
       <View style={styles.controlsRow}>
         <FlashToggle enabled={flashEnabled} onToggle={toggleFlash} />
         <PhotoCaptureButton onPress={handlePhoto} disabled={isProcessing} />
-        <GlassButton onPress={handleGallery} accessibilityLabel={t("scanner.gallery")}>
-          <ImageIcon size={22} color="#FFFFFF" />
+        <GlassButton
+          onPress={handleGallery}
+          accessibilityLabel={t("scanner.gallery")}
+          disabled={isGalleryDisabled}
+        >
+          <ImageIcon size={20} color={isGalleryDisabled ? "rgba(255,255,255,0.4)" : "#FFFFFF"} />
         </GlassButton>
       </View>
     </View>
@@ -196,7 +215,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: 0,
     right: 0,
-    bottom: "38%",
+    bottom: "28%",
     alignItems: "center",
     zIndex: 3,
     gap: 6,
@@ -204,10 +223,10 @@ const styles = StyleSheet.create({
   hintPill: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
-    backgroundColor: "rgba(255,255,255,0.10)",
+    gap: 7,
+    backgroundColor: "rgba(0,0,0,0.35)",
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.14)",
+    borderColor: "rgba(255,255,255,0.10)",
     borderRadius: 999,
     paddingHorizontal: 14,
     paddingVertical: 8,
@@ -215,10 +234,10 @@ const styles = StyleSheet.create({
   hintText: {
     fontFamily: fonts.body600,
     fontSize: 12,
-    color: "#FFFFFF",
+    color: "rgba(255,255,255,0.9)",
   },
   hintSecondary: {
-    fontFamily: fonts.body400,
+    fontFamily: fonts.body500,
     fontSize: 11,
     color: "rgba(255,255,255,0.55)",
   },
@@ -230,7 +249,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    gap: 32,
+    gap: 34,
     zIndex: 4,
   },
   glassButton: {
@@ -238,12 +257,10 @@ const styles = StyleSheet.create({
     height: GLASS_BUTTON_SIZE,
     borderRadius: GLASS_BUTTON_SIZE / 2,
     overflow: "hidden",
-    alignItems: "center",
-    justifyContent: "center",
   },
   glassBlur: {
-    flex: 1,
-    width: "100%",
+    width: GLASS_BUTTON_SIZE,
+    height: GLASS_BUTTON_SIZE,
     alignItems: "center",
     justifyContent: "center",
     borderRadius: GLASS_BUTTON_SIZE / 2,

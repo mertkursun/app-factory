@@ -1,0 +1,1 @@
+- [Tekrar eden review kaliplari](project_review-patterns.md) — Hardcoded i18n, ScrollView+map, JSON.parse guvenlik, kota race condition, fiyat hardcoded

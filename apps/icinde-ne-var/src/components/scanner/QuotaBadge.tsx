@@ -50,7 +50,7 @@ export function QuotaBadge() {
             cx={RING_SIZE / 2}
             cy={RING_SIZE / 2}
             r={RING_RADIUS}
-            stroke="rgba(255,255,255,0.2)"
+            stroke="rgba(255,255,255,0.18)"
             strokeWidth={RING_STROKE}
             fill="none"
           />
@@ -81,13 +81,14 @@ const styles = StyleSheet.create({
   pill: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 5,
+    gap: 7,
     backgroundColor: "rgba(255,255,255,0.10)",
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.14)",
     borderRadius: 999,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
+    paddingLeft: 7,
+    paddingRight: 12,
+    paddingVertical: 6,
     minHeight: 44,
   },
   ringContainer: {
@@ -95,9 +96,10 @@ const styles = StyleSheet.create({
     height: RING_SIZE,
   },
   quotaText: {
-    fontFamily: fonts.display700,
+    fontFamily: fonts.body700,
     fontSize: 12,
     color: "#FFFFFF",
+    fontVariant: ["tabular-nums"] as const,
   },
   proText: {
     fontFamily: fonts.display800,
